@@ -1,0 +1,117 @@
+"use client";
+import React from 'react';
+import { motion } from 'motion/react';
+import { AllWinnersConfig } from './AllWinnersRouter';
+
+export default function WinnerDesign4({
+  programName,
+  language,
+  category,
+  eventName = 'AL MAHSAN',
+  eventYear,
+  winnersByPosition,
+  id = 'winner-design-4'
+}: AllWinnersConfig) {
+
+  const positions = [1, 2, 3] as const;
+
+  return (
+    <div
+      id={id}
+      className="flex flex-col md:flex-row relative overflow-x-hidden overflow-y-auto md:overflow-hidden bg-[#0a0a0c] font-sans select-none text-white h-full w-full"
+    >
+      {/* Background grain */}
+      <div className="absolute inset-0 z-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.95%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+
+      {/* Vertical subtle grid lines */}
+      <div className="absolute inset-0 flex justify-between px-[100px] pointer-events-none opacity-5">
+        <div className="w-[1px] h-full bg-white" />
+        <div className="w-[1px] h-full bg-white" />
+        <div className="w-[1px] h-full bg-white" />
+        <div className="w-[1px] h-full bg-white" />
+        <div className="w-[1px] h-full bg-white" />
+      </div>
+
+      {/* Left Typography Column */}
+      <div className="w-full md:w-[35%] h-auto md:h-full p-10 md:p-20 flex flex-col justify-between relative z-10 border-b md:border-b-0 md:border-r border-white/10">
+        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}>
+          <div className="text-white/40 tracking-[0.3em] font-medium text-[16px] uppercase mb-12">
+            {eventName} {eventYear}
+          </div>
+          <h1 className="font-light text-[clamp(32px,5vw,50px)] leading-[0.9] tracking-tighter uppercase break-words">
+            CONGRAGULATION<br />
+            <span className="font-black">WINNERS</span>
+          </h1>
+          <div className="w-[50px] h-[4px] bg-white mt-12 mb-12" />
+          <h2 className="font-black text-[clamp(40px,6vw,64px)] tracking-tight uppercase leading-tight text-[#d4af37] break-words">
+            {programName}
+          </h2>
+          <div className="text-white/50 tracking-[0.2em] font-medium text-[18px] uppercase mt-4">
+            {language} • {category}
+          </div>
+        </motion.div>
+
+        <div className="hidden md:block text-white/20 tracking-[0.5em] font-bold text-[14px] uppercase transform -rotate-90 origin-bottom-left absolute bottom-20 left-20 w-[600px]">
+          OFFICIAL RESULTS
+        </div>
+      </div>
+
+      {/* Right Content Column */}
+      <div className="w-full md:w-[65%] h-auto md:h-full p-6 md:p-20 flex flex-col justify-center relative z-10">
+        <div className="flex flex-col space-y-0 w-full max-w-[1000px] ml-auto">
+          {positions.map((pos, idx) => {
+            const winners = winnersByPosition[pos] || [];
+            if (winners.length === 0) return null;
+
+            const isFirst = pos === 1;
+            const tColor = winners[0]?.teamColor || '#ffffff';
+            const names = winners.map(w => w.studentName).filter(Boolean).join("  •  ");
+            const teams = Array.from(new Set(winners.map(w => w.teamName).filter(Boolean)));
+            const teamStr = teams.length > 0 ? teams.join("  •  ") : "TEAM";
+            const pts = winners.map(w => w.points).filter(p => p !== undefined);
+            const ptsStr = pts.length > 0 ? pts.join(" • ") : undefined;
+
+            return (
+              <motion.div
+                key={pos}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 + (idx * 0.1), ease: [0.16, 1, 0.3, 1] }}
+                className="w-full flex items-center justify-between py-10 border-b border-white/10 group relative"
+              >
+                {/* Hover accent - though for TV it's static, gives a nice visual grounding */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 group-hover:h-[60%] transition-all duration-500" style={{ backgroundColor: tColor }} />
+
+                <div className="flex items-center space-x-6 md:space-x-12">
+                  <div className={`font-light tabular-nums ${isFirst ? 'text-[48px] md:text-[80px] text-white' : 'text-[36px] md:text-[60px] text-white/40'}`}>
+                    0{pos}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
+                      {names}
+                    </h3>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tColor }} />
+                      <span className="text-white/50 tracking-widest text-[18px] uppercase font-semibold">
+                        {teamStr}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {ptsStr !== undefined && (
+                  <div className="flex flex-col items-end">
+                    <span className="text-white/30 tracking-[0.2em] font-medium text-[12px] uppercase mb-1">PTS</span>
+                    <span className={`tabular-nums leading-none ${isFirst ? 'font-black text-[64px]' : 'font-bold text-[48px] text-white/60'}`}>
+                      {ptsStr}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
