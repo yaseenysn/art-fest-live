@@ -148,11 +148,19 @@ export default function TVPage() {
         } else if (tvState.presentationType === 'POSTER' && tvState.presentationData) {
           setCurrentPoster(tvState.presentationData.url);
         }
-      } else if (mode !== 'LEADERBOARD' && !tvState.finalRevealActive) {
+      } else if (!tvState.finalRevealActive) {
+        if (tvState.isActive && tvState.type === 'ALL_WINNERS') {
+          setMode('ALL_WINNERS');
+        } else if (mode !== 'LEADERBOARD') {
+          setMode('LEADERBOARD');
+        }
+      }
+    } else if (!tvState?.finalRevealActive) {
+      if (tvState?.isActive && tvState.type === 'ALL_WINNERS') {
+        setMode('ALL_WINNERS');
+      } else if (mode !== 'LEADERBOARD') {
         setMode('LEADERBOARD');
       }
-    } else if (mode !== 'LEADERBOARD' && !tvState.finalRevealActive) {
-      setMode('LEADERBOARD');
     }
   }, [
     tvState?.finalRevealActive,
@@ -253,7 +261,11 @@ export default function TVPage() {
 
       if (state?.isActive) {
         if (!state.presentationType || new Date(state.presentationExpiresAt).getTime() <= Date.now()) {
-          setMode("LEADERBOARD");
+          if (state.type === 'ALL_WINNERS') {
+            setMode("ALL_WINNERS");
+          } else {
+            setMode("LEADERBOARD");
+          }
         }
       }
     };
@@ -397,7 +409,8 @@ export default function TVPage() {
             currentMode === "RESULT_REVEAL" ||
             currentMode === "POSTER"
           ) {
-            return "LEADERBOARD";
+            const state = queryClient.getQueryData<any>(["tvState"]);
+            return state?.type === 'ALL_WINNERS' ? 'ALL_WINNERS' : 'LEADERBOARD';
           }
 
           return currentMode;
@@ -1041,6 +1054,8 @@ export default function TVPage() {
                   config={
                     tvState?.presentationType === "ALL_WINNERS"
                       ? tvState.presentationData
+                      : tvState?.type === "ALL_WINNERS"
+                      ? tvState.config
                       : undefined
                   }
                 />
