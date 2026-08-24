@@ -6,7 +6,6 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Leaderboard from '../../tv/components/Leaderboard';
-import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
 import ResultsRouter from '../../tv/components/ResultsRouter';
 import { IProgram } from '@/types';
 
@@ -525,17 +524,14 @@ export default function DisplayControl() {
                   <div className="text-sm text-slate-500 mb-2">Presentation: {winnersPreviewConfig.presentation}</div>
                 </div>
                 
-                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl">
-                  <div 
-                    className="absolute top-0 left-0 w-[1920px] h-[1080px] origin-top-left"
-                    ref={(el) => {
-                      if (el && el.parentElement) {
-                        const scale = el.parentElement.clientWidth / 1920;
-                        el.style.transform = `scale(${scale})`;
-                      }
-                    }}
-                  >
-                    <AllWinnersRouter config={winnersPreviewConfig} />
+                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl flex flex-col items-center justify-center">
+                  <MonitorPlay className="w-16 h-16 text-indigo-500 opacity-50 mb-4" />
+                  <div className="text-xl font-bold uppercase tracking-widest text-slate-400">TV Presentation Configuration</div>
+                  <div className="text-3xl font-black text-indigo-400 mt-2 uppercase">
+                    {winnersPreviewConfig.presentation === 'design1' ? 'Design 1 — Original' : winnersPreviewConfig.presentation}
+                  </div>
+                  <div className="mt-6 px-6 py-2 bg-indigo-500/20 text-indigo-300 rounded-full font-semibold border border-indigo-500/30">
+                    Ready to Push to TV
                   </div>
                 </div>
               </div>

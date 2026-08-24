@@ -8,7 +8,6 @@ import { AlertCircle, CheckCircle2, Image as ImageIcon, Download, MonitorPlay, P
 import * as htmlToImage from 'html-to-image';
 import CongratulationsPoster from '@/components/CongratulationsPoster';
 import AllWinnersPoster, { WinnerData } from '@/components/AllWinnersPoster';
-import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
 
@@ -1029,46 +1028,14 @@ export default function ResultsEntry() {
                 <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
                   PREVIEW (16:9)
                 </div>
-                <div className="w-full overflow-hidden flex items-center justify-center shadow-2xl rounded-sm" style={{ aspectRatio: '16/9' }}>
-                  <div className="origin-top-left" style={{ transform: 'scale(calc(min(100%, 400px) / 1920))', width: '1920px', height: '1080px' }}>
-                {(() => {
-                  const program = programs.find(p => String(p._id) === selectedProgramId);
-                  
-                  // Group winners by position
-                  const winnersByPosition = {
-                    1: [] as WinnerData[],
-                    2: [] as WinnerData[],
-                    3: [] as WinnerData[],
-                  };
-
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  savedResultData.forEach((res: any) => {
-                    if (res.position === 1 || res.position === 2 || res.position === 3) {
-                      const pos = res.position as 1 | 2 | 3;
-                      const team = res.teamId as { name: string, color: string };
-                      winnersByPosition[pos].push({
-                        studentName: res.studentName || 'Unknown',
-                        teamName: team?.name || 'Unknown',
-                        teamColor: team?.color || '#f59e0b',
-                        points: res.points || 0,
-                      });
-                    }
-                  });
-
-                  return (
-                    <AllWinnersRouter
-                      config={{
-                        programName: program?.name || 'Program',
-                        language: program?.language || 'Other',
-                        category: program?.category || '',
-                        eventName: EVENT_NAME,
-                        eventYear: new Date().getFullYear().toString(),
-                        winnersByPosition,
-                        presentation: tvState?.allWinnersDesign || 'design1',
-                      }}
-                    />
-                  );
-                })()}
+                <div className="w-full bg-[#04060C] overflow-hidden flex flex-col items-center justify-center shadow-2xl rounded-sm border-2 border-slate-700" style={{ aspectRatio: '16/9' }}>
+                  <MonitorPlay className="w-12 h-12 text-indigo-500 opacity-50 mb-3" />
+                  <div className="text-lg font-bold uppercase tracking-widest text-slate-400">All Winners TV Poster</div>
+                  <div className="text-2xl font-black text-indigo-400 mt-1 uppercase">
+                    {tvState?.allWinnersDesign === 'design1' ? 'Design 1 — Original' : (tvState?.allWinnersDesign || 'design1')}
+                  </div>
+                  <div className="mt-4 px-4 py-1.5 bg-indigo-500/20 text-indigo-300 rounded-full font-semibold border border-indigo-500/30 text-sm">
+                    Ready to Push
                   </div>
                 </div>
               </div>
