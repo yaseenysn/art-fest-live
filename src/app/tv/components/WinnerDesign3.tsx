@@ -40,28 +40,28 @@ export default function WinnerDesign3({
 
   const cards = [
     {
-      position: 2,
-      label: "Play 50 Matches",
-      names: names2,
+      position: 3,
+      label: "3RD PLACE",
+      names: names3,
       active: false,
-      badge: "2",
-      type: "silver",
+      badge: "3",
+      type: "bronze",
     },
     {
       position: 1,
-      label: "Play 10 Matches",
+      label: "1ST PLACE",
       names: names1,
       active: true,
       badge: "1",
       type: "gold",
     },
     {
-      position: 3,
-      label: "Play 100 Matches",
-      names: names3,
+      position: 2,
+      label: "2ND PLACE",
+      names: names2,
       active: false,
-      badge: "3",
-      type: "bronze",
+      badge: "2",
+      type: "silver",
     },
   ];
 
@@ -385,22 +385,30 @@ export default function WinnerDesign3({
             CARDS
         ===================================================== */}
         <div
-          className="absolute flex items-end justify-center"
-          style={{ left: 0, right: 0, top: 310, height: 600, gap: 40 }}
+          className="absolute flex flex-col md:flex-row items-center justify-center"
+          style={{ left: 0, right: 0, top: "clamp(250px, 30vh, 320px)", bottom: "clamp(40px, 10vh, 100px)", gap: "clamp(20px, 3vw, 50px)" }}
         >
           {cards.map((card, index) => {
             const hasWinner = Boolean(card.names);
             const isGold = card.type === "gold";
+            const isSilver = card.position === 2;
+
+            // Define responsive sizing based on hierarchy
+            const width = card.position === 1 ? "clamp(280px, 26vw, 480px)" : isSilver ? "clamp(250px, 23vw, 420px)" : "clamp(220px, 20vw, 380px)";
+            const height = card.position === 1 ? "clamp(350px, 55vh, 600px)" : isSilver ? "clamp(310px, 48vh, 520px)" : "clamp(280px, 42vh, 460px)";
+            const targetScale = card.position === 1 ? 1 : isSilver ? 0.92 : 0.86;
 
             return (
               <motion.div
                 key={card.position}
-                initial={{ opacity: 0, y: 50, scale: card.active ? 0.95 : 1 }}
-                animate={{ opacity: 1, y: 0, scale: card.active ? 1 : 0.95 }}
+                initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: targetScale }}
                 transition={{ duration: 0.8, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className={`relative flex flex-col items-center ${card.active ? 'w-[90%] md:w-[500px] h-[350px] md:h-[580px]' : 'w-[80%] md:w-[380px] h-[300px] md:h-[450px]'}`}
+                className={`relative flex flex-col items-center`}
                 style={{
-                  zIndex: card.active ? 10 : 5,
+                  width,
+                  height,
+                  zIndex: card.position === 1 ? 10 : isSilver ? 8 : 5,
                 }}
               >
                 {/* Golden Glow for 1st Place */}
