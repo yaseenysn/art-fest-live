@@ -9,7 +9,14 @@ import { IProgram } from "@/types";
 export default function CurrentProgramStatus({ presentation }: { presentation?: string }) {
   const queryClient = useQueryClient();
 
-  const containerClasses = "absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center pointer-events-none px-4 text-center w-full max-w-[90vw] md:max-w-2xl";
+  // Determine position based on design presentation
+  let positionClasses = "top-[clamp(40px,6vh,60px)] right-[clamp(30px,5vw,60px)] items-end text-right"; // Default to Top-Right for Design 1, 2, 4
+
+  if (presentation === "design3") {
+    positionClasses = "top-[clamp(40px,6vh,60px)] left-[clamp(30px,5vw,60px)] items-start text-left";
+  }
+
+  const containerClasses = `absolute ${positionClasses} z-50 flex flex-col pointer-events-none px-4 w-full max-w-[90vw] md:max-w-md`;
 
   const { data: programs, isLoading } = useQuery<IProgram[]>({
     queryKey: ["programs"],
@@ -45,8 +52,8 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
     return (
       <div className={containerClasses}>
         <div className="text-[12px] md:text-[14px] font-bold text-blue-200/60 tracking-[0.25em] uppercase mb-2 drop-shadow-md">CURRENT PROGRAM</div>
-        <div className="h-8 md:h-10 w-64 bg-white/20 rounded animate-pulse mb-2" />
-        <div className="h-4 w-24 bg-white/10 rounded animate-pulse" />
+        <div className="h-8 md:h-10 w-[clamp(150px,20vw,256px)] bg-white/20 rounded animate-pulse mb-2" />
+        <div className="h-4 w-[clamp(60px,10vw,96px)] bg-white/10 rounded animate-pulse" />
       </div>
     );
   }
@@ -60,7 +67,7 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
     return (
       <div className={containerClasses}>
         <div className="text-[12px] md:text-[14px] font-bold text-blue-200/60 tracking-[0.25em] uppercase mb-1 drop-shadow-md">CURRENT PROGRAM</div>
-        <div className="text-xl md:text-2xl font-bold text-white/80 uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">NO PROGRAMS</div>
+        <div className="text-[clamp(16px,2.5vw,24px)] font-bold text-white/80 uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">NO PROGRAMS</div>
       </div>
     );
   }
@@ -74,7 +81,7 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
 
       {currentProgram ? (
         <>
-          <h2 className="text-2xl md:text-[32px] font-black text-white text-center leading-tight md:leading-none mb-1.5 md:mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] uppercase tracking-wide truncate w-full">
+          <h2 className={`text-[clamp(20px,3vw,32px)] font-black text-white ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-tight md:leading-none mb-1.5 md:mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] uppercase tracking-wide truncate max-w-full`}>
             {currentProgram.name}
           </h2>
 
@@ -86,7 +93,7 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
           </div>
         </>
       ) : (
-        <h2 className="text-xl md:text-[28px] font-bold text-white/90 text-center leading-tight md:leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] uppercase tracking-wide mt-1">
+        <h2 className={`text-[clamp(16px,2.5vw,28px)] font-bold text-white/90 ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-tight md:leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] uppercase tracking-wide mt-1`}>
           NO ACTIVE PROGRAM
         </h2>
       )}
