@@ -6,7 +6,8 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Leaderboard from '../../tv/components/Leaderboard';
-
+import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
+import ResultsRouter from '../../tv/components/ResultsRouter';
 import { IProgram } from '@/types';
 
 export default function DisplayControl() {
@@ -524,14 +525,18 @@ export default function DisplayControl() {
                   <div className="text-sm text-slate-500 mb-2">Presentation: {winnersPreviewConfig.presentation}</div>
                 </div>
                 
-                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl flex flex-col items-center justify-center">
-                  <MonitorPlay className="w-16 h-16 text-indigo-500 opacity-50 mb-4" />
-                  <div className="text-xl font-bold uppercase tracking-widest text-slate-400">TV Presentation Configuration</div>
-                  <div className="text-3xl font-black text-indigo-400 mt-2 uppercase">
-                    {winnersPreviewConfig.presentation === 'design1' ? 'Design 1 — Original' : winnersPreviewConfig.presentation}
-                  </div>
-                  <div className="mt-6 px-6 py-2 bg-indigo-500/20 text-indigo-300 rounded-full font-semibold border border-indigo-500/30">
-                    Ready to Push to TV
+                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl" style={{ contain: 'strict' }}>
+                  <div 
+                    className="absolute top-0 left-0 w-[1920px] h-[1080px] origin-top-left"
+                    style={{ transform: 'scale(0.1)' }} // Force containing block immediately before ref runs
+                    ref={(el) => {
+                      if (el && el.parentElement) {
+                        const scale = el.parentElement.clientWidth / 1920;
+                        el.style.transform = `scale(${scale})`;
+                      }
+                    }}
+                  >
+                    <AllWinnersRouter config={winnersPreviewConfig} />
                   </div>
                 </div>
               </div>
@@ -611,14 +616,35 @@ export default function DisplayControl() {
                   <div className="text-sm text-slate-500 mb-2">Presentation: {selectedResultsDesign}</div>
                 </div>
                 
-                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl flex flex-col items-center justify-center">
-                  <MonitorPlay className="w-16 h-16 text-indigo-500 opacity-50 mb-4" />
-                  <div className="text-xl font-bold uppercase tracking-widest text-slate-400">TV Results Reveal Configuration</div>
-                  <div className="text-3xl font-black text-indigo-400 mt-2 uppercase">
-                    {selectedResultsDesign === 'Design 1 — Original' ? 'Design 1 — Original' : selectedResultsDesign}
-                  </div>
-                  <div className="mt-6 px-6 py-2 bg-indigo-500/20 text-indigo-300 rounded-full font-semibold border border-indigo-500/30">
-                    Ready to Reveal on TV
+                <div className="relative w-full aspect-video bg-[#04060C] overflow-hidden rounded-xl border-4 border-slate-800 shadow-2xl" style={{ contain: 'strict' }}>
+                  <div 
+                    className="absolute top-0 left-0 w-[1920px] h-[1080px] origin-top-left"
+                    style={{ transform: 'scale(0.1)' }} // Force containing block immediately before ref runs
+                    ref={(el) => {
+                      if (el && el.parentElement) {
+                        const scale = el.parentElement.clientWidth / 1920;
+                        el.style.transform = `scale(${scale})`;
+                      }
+                    }}
+                  >
+                    <ResultsRouter 
+                      design={
+                        selectedResultsDesign === 'Design 2' ? 'design2' :
+                        selectedResultsDesign === 'Design 3' ? 'design3' :
+                        selectedResultsDesign === 'Design 4' ? 'design4' :
+                        'design1'
+                      }
+                      results={[
+                        {
+                          _id: 'mock1',
+                          studentName: 'MONU',
+                          position: 1,
+                          points: 10,
+                          programId: { name: 'PROGRAM', language: 'ARABIC', category: 'SENIOR' },
+                          teamId: { name: 'MOCK TEAM', color: '#10b981' }
+                        } as any
+                      ]}
+                    />
                   </div>
                 </div>
               </div>
