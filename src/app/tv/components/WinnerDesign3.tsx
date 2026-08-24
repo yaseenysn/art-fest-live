@@ -1,8 +1,229 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "motion/react";
 import { AllWinnersConfig } from "./AllWinnersRouter";
+
+type WinnerItem = {
+  studentName?: string;
+  name?: string;
+  teamName?: string;
+  team?: string;
+  teamColor?: string;
+  points?: number;
+};
+
+type PositionWinner = {
+  position: 1 | 2 | 3;
+  names: string[];
+  teamName?: string;
+  programName?: string;
+  exists: boolean;
+};
+
+const POSITION_LABELS = {
+  1: "1ST PLACE",
+  2: "2ND PLACE",
+  3: "3RD PLACE",
+};
+
+const WinnerCard = ({
+  winner,
+  position,
+}: {
+  winner: PositionWinner;
+  position: 1 | 2 | 3;
+}) => {
+  if (!winner.exists) return null;
+
+  const isFirst = position === 1;
+  const isSecond = position === 2;
+  const isThird = position === 3;
+
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: 35,
+        scale: isFirst ? 0.94 : 0.96,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+      }}
+      transition={{
+        duration: 0.7,
+        delay: position === 1 ? 0.25 : position === 2 ? 0.4 : 0.55,
+        ease: "easeOut",
+      }}
+      className={`
+        relative flex flex-col items-center justify-center
+        rounded-[28px]
+        overflow-hidden
+        text-center
+        backdrop-blur-xl
+        transition-all duration-500
+
+        ${isFirst
+          ? `
+              w-[430px] h-[470px]
+              border-[2px] border-[#d4af37]
+              bg-gradient-to-b from-[#211d11] via-[#15130e] to-[#090909]
+              shadow-[0_0_45px_rgba(212,175,55,0.30)]
+            `
+          : isSecond
+            ? `
+              w-[340px] h-[375px]
+              border border-white/[0.13]
+              bg-gradient-to-b from-[#202020] to-[#090909]
+              shadow-[0_20px_50px_rgba(0,0,0,0.45)]
+            `
+            : `
+              w-[315px] h-[350px]
+              border border-white/[0.10]
+              bg-gradient-to-b from-[#1b1b1b] to-[#080808]
+              shadow-[0_15px_40px_rgba(0,0,0,0.4)]
+            `
+        }
+      `}
+    >
+      {/* SUBTLE TOP GLOW */}
+      <div
+        className={`
+          absolute top-0 left-1/2 -translate-x-1/2
+          w-[70%] h-[2px]
+          blur-[4px]
+          ${isFirst
+            ? "bg-[#e5c35b]"
+            : isSecond
+              ? "bg-white/30"
+              : "bg-white/15"
+          }
+        `}
+      />
+
+      {/* WINNER NAME */}
+      <div
+        className={`
+          relative z-10
+          w-[90%]
+          px-4
+          flex flex-col items-center justify-center
+          ${isFirst
+            ? "min-h-[130px] gap-2"
+            : isSecond
+              ? "min-h-[100px] gap-1.5"
+              : "min-h-[90px] gap-1"
+          }
+        `}
+      >
+        {winner.names.length > 0 ? (
+          winner.names.map((name, index) => (
+            <h2
+              key={index}
+              className={`
+                font-black
+                uppercase
+                leading-[1.05]
+                break-words
+                whitespace-normal
+                text-center
+                ${winner.names.length >= 2 
+                  ? (isFirst ? "text-[clamp(22px,2.2vw,34px)]" : isSecond ? "text-[clamp(18px,1.8vw,26px)]" : "text-[clamp(16px,1.6vw,22px)]")
+                  : (isFirst ? "text-[clamp(30px,3vw,48px)]" : isSecond ? "text-[clamp(24px,2.2vw,36px)]" : "text-[clamp(22px,2vw,32px)]")
+                }
+                ${isFirst ? "text-[#d9ad28]" : isSecond ? "text-white" : "text-white/95"}
+              `}
+            >
+              {name}
+            </h2>
+          ))
+        ) : (
+          <h2
+            className={`
+              font-black
+              uppercase
+              leading-[1.05]
+              break-words
+              whitespace-normal
+              text-center
+              ${isFirst ? "text-[clamp(30px,3vw,48px)] text-[#d9ad28]" : isSecond ? "text-[clamp(24px,2.2vw,36px)] text-white" : "text-[clamp(22px,2vw,32px)] text-white/95"}
+            `}
+          >
+            {winner.teamName || "—"}
+          </h2>
+        )}
+      </div>
+
+      {/* TEAM NAME */}
+      {winner.teamName && (
+        <div
+          className={`
+            relative z-10
+            uppercase
+            font-semibold
+            tracking-[0.12em]
+            ${isFirst
+              ? "text-[15px] text-[#d4af37]"
+              : isSecond
+                ? "text-[13px] text-white/55"
+                : "text-[12px] text-white/45"
+            }
+          `}
+        >
+          {winner.teamName}
+        </div>
+      )}
+
+      {/* SEPARATOR */}
+      <div
+        className={`
+          mt-5
+          ${isFirst
+            ? "w-[180px]"
+            : isSecond
+              ? "w-[130px]"
+              : "w-[110px]"
+          }
+          h-px
+          ${isFirst
+            ? "bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"
+            : "bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          }
+        `}
+      />
+
+      {/* POSITION — ALWAYS AT BOTTOM */}
+      <div
+        className={`
+          absolute bottom-8 left-0 right-0
+          text-center
+          font-bold
+          uppercase
+          tracking-[0.35em]
+          ${isFirst
+            ? "text-[17px] text-[#d4af37]"
+            : isSecond
+              ? "text-[14px] text-white/55"
+              : "text-[13px] text-white/40"
+          }
+        `}
+      >
+        {POSITION_LABELS[position]}
+      </div>
+
+      {/* FIRST PLACE EXTRA GLOW */}
+      {isFirst && (
+        <>
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_30%,rgba(212,175,55,0.12),transparent_55%)]" />
+
+          <div className="absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[120px] h-[60px] bg-[#d4af37]/20 blur-[35px]" />
+        </>
+      )}
+    </motion.div>
+  );
+};
 
 export default function WinnerDesign3({
   programName,
@@ -13,517 +234,284 @@ export default function WinnerDesign3({
   winnersByPosition,
   id = "winner-design-3",
 }: AllWinnersConfig) {
+  const getWinner = (
+    position: 1 | 2 | 3
+  ): PositionWinner => {
+    const winners =
+      (winnersByPosition?.[position] || []) as WinnerItem[];
 
+    const names = winners
+      .map(
+        (winner) =>
+          winner.studentName ||
+          winner.name ||
+          ""
+      )
+      .filter(Boolean);
 
-  const w1 = winnersByPosition[1] || [];
-  const w2 = winnersByPosition[2] || [];
-  const w3 = winnersByPosition[3] || [];
-
-  // ---------------------------------------------------------
-  // WINNER NAMES
-  // ---------------------------------------------------------
-
-  const getNames = (winners: typeof w1) => {
-    return winners
-      .map((winner) => winner.studentName)
-      .filter(Boolean)
-      .join(" • ");
+    return {
+      position,
+      names,
+      teamName:
+        winners[0]?.teamName ||
+        winners[0]?.team,
+      programName,
+      exists: winners.length > 0,
+    };
   };
 
-  const names1 = getNames(w1);
-  const names2 = getNames(w2);
-  const names3 = getNames(w3);
-
-  // ---------------------------------------------------------
-  // CARD DATA
-  // ---------------------------------------------------------
-
-  const cards = [
-    {
-      position: 3,
-      label: "3RD PLACE",
-      names: names3,
-      active: false,
-      badge: "3",
-      type: "bronze",
-    },
-    {
-      position: 1,
-      label: "1ST PLACE",
-      names: names1,
-      active: true,
-      badge: "1",
-      type: "gold",
-    },
-    {
-      position: 2,
-      label: "2ND PLACE",
-      names: names2,
-      active: false,
-      badge: "2",
-      type: "silver",
-    },
-  ];
-
-  // ---------------------------------------------------------
-  // MEDAL COMPONENT
-  // ---------------------------------------------------------
-
-  const Medal = ({ type, numeral, active }: { type: string; numeral: string; active: boolean }) => {
-    const isGold = type === "gold";
-    const isSilver = type === "silver";
-
-    const c = isGold
-      ? {
-          primary: "#d4af37",
-          light: "#fde08b",
-          dark: "#997a00",
-          glow: "rgba(212,175,55,0.45)",
-          ribbon: "#c69b2d",
-          ribbonDark: "#7d5e0a",
-        }
-      : isSilver
-      ? {
-          primary: "#cccccc",
-          light: "#ffffff",
-          dark: "#707070",
-          glow: "rgba(200,200,200,0.2)",
-          ribbon: "#a0a0a0",
-          ribbonDark: "#4a4a4a",
-        }
-      : {
-          primary: "#cd7f32",
-          light: "#f0a868",
-          dark: "#8b5a2b",
-          glow: "rgba(205,127,50,0.2)",
-          ribbon: "#b36b22",
-          ribbonDark: "#5c330c",
-        };
-
-    const medalSize = active ? 180 : 150;
-    const innerSize = active ? 150 : 124;
-
-    return (
-      <div
-        className="relative flex flex-col items-center"
-        style={{
-          width: 220,
-          height: active ? 250 : 210,
-        }}
-      >
-        {/* Glow */}
-        <div
-          className="absolute rounded-full z-0"
-          style={{
-            top: 50,
-            width: medalSize + 40,
-            height: medalSize + 40,
-            background: `radial-gradient(circle, ${c.glow} 0%, transparent 60%)`,
-            filter: "blur(20px)",
-          }}
-        />
-
-        {/* Ribbon */}
-        <div
-          className="absolute top-0 z-0 overflow-hidden flex justify-center"
-          style={{ width: "100%", height: 80 }}
-        >
-          {/* Left ribbon */}
-          <div
-            style={{
-              width: active ? 40 : 35,
-              height: 120,
-              background: `repeating-linear-gradient(90deg, ${c.ribbonDark} 0%, ${c.ribbon} 30%, ${c.ribbonDark} 60%)`,
-              transform: "rotate(25deg) translateY(-20px) translateX(10px)",
-              boxShadow: "inset 0 0 15px rgba(0,0,0,0.9)",
-              borderRight: "2px solid rgba(0,0,0,0.4)",
-            }}
-          />
-          {/* Right ribbon */}
-          <div
-            style={{
-              width: active ? 40 : 35,
-              height: 120,
-              background: `repeating-linear-gradient(90deg, ${c.ribbonDark} 0%, ${c.ribbon} 30%, ${c.ribbonDark} 60%)`,
-              transform: "rotate(-25deg) translateY(-20px) translateX(-10px)",
-              boxShadow: "inset 0 0 15px rgba(0,0,0,0.9)",
-              borderLeft: "2px solid rgba(0,0,0,0.4)",
-            }}
-          />
-        </div>
-
-        {/* Medal Coin */}
-        <div
-          className="absolute z-10 rounded-full flex items-center justify-center"
-          style={{
-            top: active ? 55 : 45,
-            width: medalSize,
-            height: medalSize,
-            background: `linear-gradient(135deg, ${c.light} 0%, ${c.primary} 50%, ${c.dark} 100%)`,
-            border: `1.5px solid ${c.light}`,
-            boxShadow: `0 15px 35px rgba(0,0,0,0.7), inset 0 -5px 20px rgba(0,0,0,0.6), inset 0 5px 20px rgba(255,255,255,0.7)`,
-          }}
-        >
-          {/* Inner details */}
-          <div
-            className="rounded-full flex flex-col items-center justify-center relative"
-            style={{
-              width: innerSize,
-              height: innerSize,
-              border: `2px solid rgba(255,255,255,0.25)`,
-              background: `radial-gradient(circle at 35% 35%, ${c.light} 0%, ${c.primary} 55%, ${c.dark} 100%)`,
-              boxShadow: "inset 0 0 25px rgba(0,0,0,0.6)",
-            }}
-          >
-            {/* Wreath decoration SVG */}
-            <svg
-              viewBox="0 0 100 100"
-              className="absolute inset-0 w-full h-full opacity-60"
-              style={{ filter: `drop-shadow(1px 1px 0px ${c.light})` }}
-            >
-              <path
-                d="M 15 60 C 5 30, 45 15, 50 25 C 55 15, 95 30, 85 60 C 75 95, 25 95, 15 60 Z"
-                fill="none"
-                stroke={c.dark}
-                strokeWidth="2"
-              />
-              <path
-                d="M 25 70 C 15 45, 45 35, 50 40 C 55 35, 85 45, 75 70 C 65 95, 35 95, 25 70 Z"
-                fill="none"
-                stroke={c.dark}
-                strokeWidth="1.5"
-              />
-            </svg>
-
-            {/* Number */}
-            <span
-              className="z-10"
-              style={{
-                color: c.light,
-                fontSize: active ? 80 : 65,
-                lineHeight: 1,
-                fontWeight: 900,
-                textShadow: `2px 2px 6px rgba(0,0,0,0.6), -1px -1px 0px ${c.dark}`,
-                fontFamily: "serif",
-              }}
-            >
-              {numeral}
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ---------------------------------------------------------
-  // MAIN
-  // ---------------------------------------------------------
+  const first = getWinner(1);
+  const second = getWinner(2);
+  const third = getWinner(3);
 
   return (
     <div
       id={id}
-      className="fixed inset-0 overflow-hidden bg-black select-none"
+      className="
+        fixed inset-0
+        w-full h-full
+        overflow-hidden
+        select-none
+        bg-[#050505]
+        text-white
+      "
     >
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          fontFamily:
-            "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        {/* =====================================================
-            BACKGROUND
-        ===================================================== */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Black background */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(circle at 50% 30%, #151005 0%, #0a0a0a 45%, #000000 100%)",
-            }}
-          />
-          {/* Subtle center glow */}
-          <div
-            className="absolute"
-            style={{
-              left: "50%",
-              top: "40%",
-              transform: "translate(-50%, -50%)",
-              width: 1000,
-              height: 500,
-              background:
-                "radial-gradient(ellipse, rgba(212,175,55,0.06), transparent 70%)",
-              filter: "blur(40px)",
-            }}
-          />
-        </div>
+      {/* ================= BACKGROUND ================= */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Center warm glow */}
+        <div
+          className="
+            absolute
+            left-1/2 top-[35%]
+            -translate-x-1/2 -translate-y-1/2
+            w-[650px] h-[500px]
+            rounded-full
+            bg-[#b58a20]/[0.07]
+            blur-[130px]
+          "
+        />
 
-        {/* =====================================================
-            TOP LEFT EVENT
-        ===================================================== */}
-        <motion.div
-          className="absolute"
-          style={{ left: 80, top: 60 }}
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }}
+        {/* Left subtle glow */}
+        <div
+          className="
+            absolute
+            left-[-250px] top-[20%]
+            w-[650px] h-[650px]
+            rounded-full
+            bg-[#b58a20]/[0.035]
+            blur-[120px]
+          "
+        />
+
+        {/* Fine texture */}
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.7) 0.7px, transparent 0.7px)",
+            backgroundSize: "7px 7px",
+          }}
+        />
+      </div>
+
+      {/* ================= HEADER ================= */}
+      <div
+        className="
+          relative z-20
+          w-full
+          flex flex-col items-center
+          pt-[35px] md:pt-[48px]
+          px-6
+        "
+      >
+        {/* EVENT HEADER */}
+        <div
+          className="
+            absolute
+            top-[35px] md:top-[55px]
+            left-[5%]
+            text-left
+          "
         >
           <div
-            style={{
-              color: "#d4af37",
-              fontSize: 22,
-              fontWeight: 800,
-              letterSpacing: "0.35em",
-              textTransform: "uppercase",
-            }}
+            className="
+              uppercase
+              font-bold
+              tracking-[0.35em]
+              text-white/75
+              text-[12px] md:text-[17px]
+            "
           >
             {eventName} {eventYear}
           </div>
+
           <div
-            style={{
-              marginTop: 15,
-              color: "rgba(255,255,255,0.5)",
-              fontSize: 14,
-              fontWeight: 700,
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-            }}
+            className="
+              mt-2
+              uppercase
+              font-bold
+              tracking-[0.3em]
+              text-white/45
+              text-[10px] md:text-[14px]
+            "
           >
             ALL WINNERS
           </div>
-        </motion.div>
+        </div>
 
-        {/* =====================================================
-            HEADER (IBRAHIM)
-        ===================================================== */}
-        <div
-          className="relative md:absolute pointer-events-none w-full md:top-[90px] pt-24 md:pt-0 flex justify-center z-20"
+        {/* PROGRAM NAME */}
+        <motion.h1
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="
+            mt-[40px]
+            max-w-[85vw]
+            text-center
+            uppercase
+            font-black
+            tracking-tight
+            leading-none
+            text-[clamp(30px,5vw,76px)]
+            text-[#d7ae31]
+            break-words
+          "
         >
-          <motion.div
-            className="text-center pointer-events-auto w-full max-w-[90%] md:w-[900px]"
-            initial={{ opacity: 0, y: -25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-          <h1
-            className="text-[clamp(40px,7vw,110px)]"
-            style={{
-              margin: 0,
-              lineHeight: 1,
-              fontWeight: 900,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-              background: "linear-gradient(to bottom, #ffffff 0%, #d4af37 50%, #997a00 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0px 10px 20px rgba(0,0,0,0.8))",
-            }}
-          >
-            {programName}
-          </h1>
+          {programName}
+        </motion.h1>
+
+        {/* CATEGORY */}
+        <div
+          className="
+            mt-5
+            uppercase
+            font-bold
+            tracking-[0.38em]
+            text-white/65
+            text-[10px] md:text-[15px]
+          "
+        >
+          {language || "OTHER"}
+
+          <span className="mx-3 text-[#d4af37]">
+            •
+          </span>
+
+          {category || "GENERAL"}
+        </div>
+      </div>
+
+      {/* ================= WINNERS ================= */}
+      <div
+        className="
+          absolute
+          left-0 right-0
+          top-[32%]
+          bottom-[5%]
+          z-10
+          flex
+          items-center
+          justify-center
+          px-6
+        "
+      >
+        <div
+          className="
+            flex
+            items-center
+            justify-center
+            gap-[55px]
+            md:gap-[75px]
+            lg:gap-[90px]
+            w-full
+            max-w-[1450px]
+          "
+        >
+          {/* 3RD — LEFT */}
           <div
-            style={{
-              marginTop: 20,
-              color: "rgba(255,255,255,0.7)",
-              fontSize: 18,
-              fontWeight: 800,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-            }}
+            className="
+              flex
+              items-center
+              justify-center
+              flex-1
+              min-w-0
+              order-1
+            "
           >
-            {language || "ARABIC"}
-            <span style={{ margin: "0 15px", color: "#d4af37" }}>•</span>
-            {category || "SENIOR"}
+            <WinnerCard
+              winner={third}
+              position={3}
+            />
           </div>
-          </motion.div>
-        </div>
 
-        {/* =====================================================
-            LEFT ARROW
-        ===================================================== */}
-        <motion.button
-          className="absolute flex items-center justify-center z-50"
-          style={{
-            left: 70,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 70,
-            height: 70,
-            borderRadius: "50%",
-            border: "1.5px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.02)",
-            color: "#ffffff",
-          }}
-          whileHover={{ scale: 1.08, backgroundColor: "rgba(255,255,255,0.06)" }}
-        >
-          <span style={{ fontSize: 35, fontWeight: 300, lineHeight: 1 }}>‹</span>
-        </motion.button>
-
-        {/* =====================================================
-            RIGHT ARROW
-        ===================================================== */}
-        <motion.button
-          className="absolute flex items-center justify-center z-50"
-          style={{
-            right: 70,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 70,
-            height: 70,
-            borderRadius: "50%",
-            border: "1.5px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.02)",
-            color: "#ffffff",
-          }}
-          whileHover={{ scale: 1.08, backgroundColor: "rgba(255,255,255,0.06)" }}
-        >
-          <span style={{ fontSize: 35, fontWeight: 300, lineHeight: 1 }}>›</span>
-        </motion.button>
-
-        {/* =====================================================
-            CARDS
-        ===================================================== */}
-        <div
-          className="absolute flex flex-col md:flex-row items-center justify-center"
-          style={{ left: 0, right: 0, top: "clamp(250px, 30vh, 320px)", bottom: "clamp(40px, 10vh, 100px)", gap: "clamp(20px, 3vw, 50px)" }}
-        >
-          {cards.map((card, index) => {
-            const hasWinner = Boolean(card.names);
-            const isGold = card.type === "gold";
-            const isSilver = card.position === 2;
-
-            // Define responsive sizing based on hierarchy
-            const width = card.position === 1 ? "clamp(280px, 26vw, 480px)" : isSilver ? "clamp(250px, 23vw, 420px)" : "clamp(220px, 20vw, 380px)";
-            const height = card.position === 1 ? "clamp(350px, 55vh, 600px)" : isSilver ? "clamp(310px, 48vh, 520px)" : "clamp(280px, 42vh, 460px)";
-            const targetScale = card.position === 1 ? 1 : isSilver ? 0.92 : 0.86;
-
-            return (
-              <motion.div
-                key={card.position}
-                initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: targetScale }}
-                transition={{ duration: 0.8, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className={`relative flex flex-col items-center`}
-                style={{
-                  width,
-                  height,
-                  zIndex: card.position === 1 ? 10 : isSilver ? 8 : 5,
-                }}
-              >
-                {/* Golden Glow for 1st Place */}
-                {card.active && (
-                  <div
-                    className="absolute rounded-[30px]"
-                    style={{
-                      inset: -3,
-                      background: "linear-gradient(180deg, #d4af37, #997a00)",
-                      boxShadow: "0 0 40px rgba(212,175,55,0.6), inset 0 0 20px rgba(255,255,255,0.2)",
-                    }}
-                  />
-                )}
-
-                {/* Card Container */}
-                <div
-                  className="absolute inset-0 overflow-hidden rounded-[28px] flex flex-col items-center"
-                  style={{
-                    background: card.active
-                      ? "linear-gradient(180deg, #1f1a0f, #0a0a0a)"
-                      : "linear-gradient(180deg, #1a1a1a, #0a0a0a)",
-                    border: card.active ? "none" : "1.5px solid rgba(255,255,255,0.08)",
-                    boxShadow: card.active
-                      ? "0 25px 60px rgba(0,0,0,0.8)"
-                      : "0 15px 40px rgba(0,0,0,0.6)",
-                  }}
-                >
-                  {/* Subtle top glare */}
-                  <div
-                    className="absolute"
-                    style={{
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      height: 200,
-                      background: isGold
-                        ? "radial-gradient(circle at 50% 0%, rgba(212,175,55,0.15), transparent 70%)"
-                        : "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05), transparent 70%)",
-                    }}
-                  />
-
-                  {/* Winner Names & Place */}
-                  {hasWinner && (
-                    <div className="flex flex-col items-center justify-center h-full w-full px-6 relative z-10">
-                      <div
-                        style={{
-                          color: isGold ? "#d4af37" : "#ffffff",
-                          fontSize: card.active ? 42 : 32,
-                          fontWeight: 900,
-                          lineHeight: 1.2,
-                          textTransform: "uppercase",
-                          textShadow: "0 4px 15px rgba(0,0,0,0.8)",
-                          textAlign: "center",
-                          wordWrap: "break-word",
-                        }}
-                      >
-                        {card.names}
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: 14,
-                          color: isGold ? "#d4af37" : "rgba(255,255,255,0.5)",
-                          fontSize: card.active ? 16 : 14,
-                          fontWeight: 800,
-                          letterSpacing: "0.3em",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {card.position === 1
-                          ? "1ST PLACE"
-                          : card.position === 2
-                          ? "2ND PLACE"
-                          : "3RD PLACE"}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* =====================================================
-            BOTTOM CHEVRON
-        ===================================================== */}
-        <motion.div
-          className="absolute flex flex-col items-center"
-          style={{ left: "50%", bottom: 40, transform: "translateX(-50%)" }}
-          animate={{ y: [0, -10, 0], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
+          {/* 1ST — CENTER */}
           <div
-            style={{
-              width: 40,
-              height: 40,
-              transform: "rotate(45deg)",
-              borderLeft: "4px solid #d4af37",
-              borderTop: "4px solid #d4af37",
-              boxShadow: "-2px -2px 10px rgba(212,175,55,0.5)",
-              marginBottom: -15,
-            }}
-          />
+            className="
+              flex
+              items-center
+              justify-center
+              flex-1
+              min-w-0
+              order-2
+            "
+          >
+            <WinnerCard
+              winner={first}
+              position={1}
+            />
+          </div>
+
+          {/* 2ND — RIGHT */}
           <div
-            style={{
-              width: 40,
-              height: 40,
-              transform: "rotate(45deg)",
-              borderLeft: "4px solid #d4af37",
-              borderTop: "4px solid #d4af37",
-              opacity: 0.5,
-              boxShadow: "-2px -2px 10px rgba(212,175,55,0.5)",
-            }}
-          />
-        </motion.div>
+            className="
+              flex
+              items-center
+              justify-center
+              flex-1
+              min-w-0
+              order-3
+            "
+          >
+            <WinnerCard
+              winner={second}
+              position={2}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ================= MOBILE ================= */}
+      <div
+        className="
+          hidden
+          max-md:flex
+          absolute inset-x-0
+          top-[25%]
+          bottom-4
+          z-20
+          flex-col
+          items-center
+          justify-start
+          overflow-y-auto
+          gap-5
+          px-4
+          pb-10
+        "
+      >
+        <WinnerCard
+          winner={first}
+          position={1}
+        />
+
+        <WinnerCard
+          winner={second}
+          position={2}
+        />
+
+        <WinnerCard
+          winner={third}
+          position={3}
+        />
       </div>
     </div>
   );
