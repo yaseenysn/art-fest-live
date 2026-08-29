@@ -5,7 +5,8 @@ import {
   Trophy, 
   Award, 
   MonitorPlay,
-  Users
+  Users,
+  Image as ImageIcon
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -15,6 +16,7 @@ const navItems = [
   { name: 'Teams', href: '/admin/teams', icon: Users },
   { name: 'Results Entry', href: '/admin/results', icon: Award },
   { name: 'Display Control', href: '/admin/display', icon: MonitorPlay },
+  { name: 'Media Control', href: '/admin/media', icon: ImageIcon },
 ];
 
 export default function Sidebar() {

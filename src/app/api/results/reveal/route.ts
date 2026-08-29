@@ -42,11 +42,13 @@ export const POST = requireAdmin(async (req: NextRequest) => {
     const displayDuration = duration || 15;
     const startedAt = new Date();
     const expiresAt = new Date(startedAt.getTime() + displayDuration * 1000);
+    const presentationId = crypto.randomUUID();
 
     const state = await TVState.findOneAndUpdate(
       {},
       {
         $set: {
+          presentationId,
           presentationType: 'RESULT_REVEAL',
           presentationData: { programId, position, results: allPositionResults },
           presentationStartedAt: startedAt,
@@ -65,6 +67,7 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       
       // Also emit presentation state updated so the central timer picks it up
       io.emit(SOCKET_EVENTS.PRESENTATION_STATE_UPDATED, {
+        presentationId,
         presentationType: 'RESULT_REVEAL',
         presentationStartedAt: startedAt,
         presentationExpiresAt: expiresAt,

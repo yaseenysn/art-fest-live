@@ -6,15 +6,14 @@ import { LeaderboardConfig } from '@/types';
 export default function LeaderboardDesign4({ config }: { config: LeaderboardConfig }) {
   const rows = config.rows.slice(0, 4);
 
-  // We want a 2x2 grid. 
+  // We want a standard 2x2 grid. 
   // 1 2
-  // 4 3 
-  // to match the snake-like dotted connection.
+  // 3 4
   const gridPositions = [
     { rank: 1, order: 0 }, // top-left
     { rank: 2, order: 1 }, // top-right
-    { rank: 4, order: 3 }, // bottom-left
-    { rank: 3, order: 2 }, // bottom-right
+    { rank: 3, order: 2 }, // bottom-left
+    { rank: 4, order: 3 }, // bottom-right
   ];
 
   // Re-order the rows to match the grid array visually, if we have 4 rows.
@@ -51,7 +50,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
           <div className="absolute inset-0 pointer-events-none z-0 hidden md:block">
             <svg className="w-full h-full" preserveAspectRatio="xMidYMid meet">
               <path
-                d="M 25% 25% L 75% 25% L 75% 75% L 25% 75%"
+                d="M 25% 25% L 75% 25% M 25% 75% L 75% 75%"
                 fill="none"
                 stroke="rgba(255,255,255,0.2)"
                 strokeWidth="3"

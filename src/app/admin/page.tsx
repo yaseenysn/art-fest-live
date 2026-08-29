@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Users,
   Tv,
-  Power
+  Power,
+  Image as ImageIcon
 } from 'lucide-react';
 import TeamModal from '@/components/admin/TeamModal';
 
@@ -468,7 +469,7 @@ export default function AdminDashboard() {
       {/* BOTTOM: QUICK ACTIONS */}
       <div>
         <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <button
             onClick={() => setIsTeamModalOpen(true)}
             className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group"
@@ -491,6 +492,13 @@ export default function AdminDashboard() {
               <Megaphone className="w-6 h-6 text-indigo-600" />
             </div>
             <span className="font-semibold text-slate-700">Announcement</span>
+          </Link>
+
+          <Link href="/admin/media" className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+            <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-emerald-100 transition-colors">
+              <ImageIcon className="w-6 h-6 text-emerald-600" />
+            </div>
+            <span className="font-semibold text-slate-700">Media Control</span>
           </Link>
 
           <Link href="/tv" target="_blank" className="flex flex-col items-center justify-center p-6 bg-slate-900 rounded-2xl border border-slate-800 hover:bg-slate-800 hover:shadow-md transition-all group">

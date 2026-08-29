@@ -63,6 +63,7 @@ export default function DisplayControl() {
   const [winnersPreviewConfig, setWinnersPreviewConfig] = useState<any>(null);
   const [winnersStatus, setWinnersStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [pushingWinners, setPushingWinners] = useState(false);
+  const [allWinnersDisplayTime, setAllWinnersDisplayTime] = useState<number>(15);
 
   // Results Entry States
   const resultsOptions = [
@@ -306,9 +307,7 @@ export default function DisplayControl() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: tvState.type,
-          config: tvState.config,
-          isActive: false
+          clearPresentationId: tvState.presentationId || 'force'
         })
       });
       if (!res.ok) throw new Error("Failed to hide poster");
@@ -515,6 +514,26 @@ export default function DisplayControl() {
             </div>
           </div>
 
+          <div className="mt-2">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Display Time (Seconds)</label>
+            <div className="flex space-x-2">
+              {[10, 15, 20, 30, 45, 60].map(time => (
+                <button
+                  key={time}
+                  onClick={() => setAllWinnersDisplayTime(time)}
+                  className={clsx(
+                    "px-4 py-2 rounded-lg font-bold transition-colors",
+                    allWinnersDisplayTime === time
+                      ? "bg-indigo-100 text-indigo-700 border-2 border-indigo-500"
+                      : "bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200"
+                  )}
+                >
+                  {time}s
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* PREVIEW */}
           <div className="bg-slate-50 rounded-lg border border-slate-200 p-4">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Preview</h3>
@@ -667,6 +686,24 @@ export default function DisplayControl() {
           className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)]"
         >
           <span>OPEN FINAL TEAM REVEAL</span>
+          <ArrowRight className="w-5 h-5" />
+        </Link>
+      </div>
+
+      <div className="bg-slate-900 text-white rounded-xl shadow-lg border border-slate-800 p-8 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-emerald-500/20 to-transparent pointer-events-none" />
+        <h2 className="text-2xl font-black mb-2 uppercase tracking-tight flex items-center">
+          <MonitorPlay className="mr-3 text-emerald-400" /> MEDIA CONTROL
+        </h2>
+        <p className="text-slate-400 mb-8 max-w-xl">
+          Upload images and videos from your PC and play them on the TV fullscreen.
+        </p>
+        
+        <Link 
+          href="/admin/media"
+          className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+        >
+          <span>OPEN MEDIA CONTROL</span>
           <ArrowRight className="w-5 h-5" />
         </Link>
       </div>

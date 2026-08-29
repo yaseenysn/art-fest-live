@@ -16,6 +16,17 @@ import ResultsRouter from "./components/ResultsRouter";
 import AnnouncementOverlay from "./components/AnnouncementOverlay";
 import AllWinnersRouter from "./components/AllWinnersRouter";
 import FinalTeamReveal from "./components/FinalTeamReveal";
+import MediaPlayer from "./components/MediaPlayer";
+
+const isPresentationActive = (
+  presentationType?: string | null,
+  presentationExpiresAt?: string | null
+) => {
+  if (!presentationType) return false;
+  if (presentationType === "MEDIA") return true; // Media controls its own expiration
+  if (!presentationExpiresAt) return false;
+  return Date.now() < new Date(presentationExpiresAt).getTime();
+};
 
 type TVMode =
   | "LEADERBOARD"
@@ -44,6 +55,24 @@ export default function TVPage() {
   const [finalRevealKey, setFinalRevealKey] = useState(0);
 
   /* =========================================================
+     INTERACTION STATE (FOR AUTOPLAY)
+  ========================================================= */
+
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    const handleInteraction = () => setHasInteracted(true);
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
+  }, []);
+
+  /* =========================================================
      TV STATE
   ========================================================= */
 
@@ -68,108 +97,56 @@ export default function TVPage() {
     staleTime: 60000,
   });
 
-  /* =========================================================
-     RESULT / ANNOUNCEMENT / POSTER STATE
-  ========================================================= */
 
-  const [currentResult, setCurrentResult] =
-    useState<IResult[] | null>(null);
-
-  const [currentAnnouncement, setCurrentAnnouncement] =
-    useState<IAnnouncement | null>(null);
-
-  const [currentPoster, setCurrentPoster] =
-    useState<string | null>(null);
-
-  const [currentProgramId, setCurrentProgramId] =
-    useState<string | null>(null);
-
-  const [currentPosition, setCurrentPosition] =
-    useState<number | null>(null);
-
-  const [revealKey, setRevealKey] =
-    useState<number>(0);
 
   /* =========================================================
-     STATE REF
+     SAFE RETURN TO LEADERBOARD
   ========================================================= */
 
-  const stateRef = useRef({
-    programId: currentProgramId,
-    position: currentPosition,
-    mode,
-  });
-
-  useEffect(() => {
-    stateRef.current = {
-      programId: currentProgramId,
-      position: currentPosition,
-      mode,
-    };
-  }, [
-    currentProgramId,
-    currentPosition,
-    mode,
-  ]);
-
-  /* =========================================================
-     INITIAL TV STATE SYNC
-  ========================================================= */
-
-  useEffect(() => {
-    if (!tvState) return;
-
-    /* =======================================================
-       FINAL TEAM REVEAL INITIAL SYNC
-    ======================================================= */
-
-    if (tvState?.finalRevealActive !== undefined) {
-      setFinalRevealActive(Boolean(tvState.finalRevealActive));
-      setFinalRevealTeamName(tvState.finalRevealTeamName || "");
-      setFinalRevealPosition(Number(tvState.finalRevealPosition || 1));
+  const returnToLeaderboard = async (expiredId: string) => {
+    if (!expiredId) return;
+    
+    // Verify before clearing optimism
+    const state = queryClient.getQueryData<any>(["tvState"]);
+    if (state && state.presentationId && state.presentationId !== expiredId) {
+      console.log("[TV] Optimistic clear aborted. Current ID:", state.presentationId, "Expired ID:", expiredId);
+      return;
     }
 
-    /* =======================================================
-       PRESENTATION INITIAL SYNC
-    ======================================================= */
-    if (tvState?.presentationExpiresAt && tvState?.presentationType) {
-      const expiresAt = new Date(tvState.presentationExpiresAt).getTime();
-      const now = Date.now();
-      if (now < expiresAt && !tvState.finalRevealActive) {
-        setMode(tvState.presentationType as TVMode);
-        
-        // Restore data based on presentation type
-        if (tvState.presentationType === 'RESULT_REVEAL' && tvState.presentationData) {
-          setCurrentProgramId(tvState.presentationData.programId);
-          setCurrentPosition(tvState.presentationData.position);
-          setCurrentResult(tvState.presentationData.results);
-        } else if (tvState.presentationType === 'ANNOUNCEMENT' && tvState.presentationData) {
-          setCurrentAnnouncement(tvState.presentationData);
-        } else if (tvState.presentationType === 'POSTER' && tvState.presentationData) {
-          setCurrentPoster(tvState.presentationData.url);
-        }
-      } else if (!tvState.finalRevealActive) {
-        if (tvState.isActive && tvState.type === 'ALL_WINNERS') {
-          setMode('ALL_WINNERS');
-        } else if (mode !== 'LEADERBOARD') {
-          setMode('LEADERBOARD');
-        }
-      }
-    } else if (!tvState?.finalRevealActive) {
-      if (tvState?.isActive && tvState.type === 'ALL_WINNERS') {
-        setMode('ALL_WINNERS');
-      } else if (mode !== 'LEADERBOARD') {
-        setMode('LEADERBOARD');
-      }
+    console.log("[TV] Returning to Leaderboard. Clearing presentation ID:", expiredId);
+    
+    // Optimistic cache update
+    queryClient.setQueryData(["tvState"], (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        presentationId: null,
+        presentationType: null,
+        presentationStartedAt: null,
+        presentationExpiresAt: null,
+        presentationDuration: null,
+        presentationData: null,
+      };
+    });
+
+    try {
+      await fetch('/api/tv-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clearPresentationId: expiredId
+        })
+      });
+    } catch (e) {
+      console.error("[TV] Failed to clear presentation state on server:", e);
     }
-  }, [
-    tvState?.finalRevealActive,
-    tvState?.finalRevealTeamName,
-    tvState?.finalRevealPosition,
-    tvState?.presentationExpiresAt,
-    tvState?.presentationType,
-    tvState?.presentationData,
-  ]);
+  };
+
+
+
+  /* =========================================================
+     CENTRAL EXPIRATION TIMER
+  ========================================================= */
 
   /* =========================================================
      CENTRAL EXPIRATION TIMER
@@ -178,18 +155,14 @@ export default function TVPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       const state = queryClient.getQueryData<any>(["tvState"]);
-      if (state && state.presentationExpiresAt && state.presentationType) {
+      
+      if (state && state.presentationType && state.presentationExpiresAt && state.presentationId) {
         const expiresAt = new Date(state.presentationExpiresAt).getTime();
         const now = Date.now();
 
-        if (now >= expiresAt && !state.finalRevealActive && stateRef.current.mode !== 'LEADERBOARD') {
-          console.log("[TV] Presentation expired, returning to LEADERBOARD");
-          setMode('LEADERBOARD');
-          setCurrentPoster(null);
-          setCurrentProgramId(null);
-          setCurrentPosition(null);
-          setCurrentResult(null);
-          setCurrentAnnouncement(null);
+        if (now >= expiresAt) {
+          console.log("[TV] Central Timer: Presentation expired. Initiating return to LEADERBOARD.");
+          returnToLeaderboard(state.presentationId);
         }
       }
     }, 1000);
@@ -274,68 +247,8 @@ export default function TVPage() {
        RESULT REVEAL
     ======================================================= */
 
-    const onPositionResultRevealed = (
-      payload: {
-        programId: string;
-        position: number;
-        results: IResult[];
-      }
-    ) => {
-      console.log(
-        "[TV] RESULT REVEAL RECEIVED",
-        {
-          finalRevealActive,
-          mode,
-          programId: payload.programId,
-          position: payload.position
-        }
-      );
-      setFinalRevealActive(false);
-
-      setCurrentProgramId(
-        payload.programId
-      );
-
-      setCurrentPosition(
-        payload.position
-      );
-
-      setCurrentResult(
-        payload.results
-      );
-
-      setMode(
-        "RESULT_REVEAL"
-      );
-
-      setRevealKey(
-        Date.now()
-      );
-    };
-
-    /* =======================================================
-       RESULT REVEAL ENDED
-    ======================================================= */
-
-    const onPositionRevealEnded = (
-      payload: {
-        programId: string;
-        position: number;
-      }
-    ) => {
-      const current =
-        stateRef.current;
-
-      if (
-        current.mode === "RESULT_REVEAL" &&
-        current.programId === payload.programId &&
-        current.position === payload.position
-      ) {
-        setMode("LEADERBOARD");
-
-        setCurrentProgramId(null);
-        setCurrentPosition(null);
-      }
+    const onPositionResultRevealed = (payload: any) => {
+      console.log("[TV] RESULT REVEAL RECEIVED via socket... Waiting for PRESENTATION_STATE_UPDATED");
     };
 
     /* =======================================================
@@ -343,11 +256,7 @@ export default function TVPage() {
     ======================================================= */
 
     const onAnnouncementShown = (announcement: IAnnouncement) => {
-      console.log("[TV] ANNOUNCEMENT RECEIVED");
-      setFinalRevealActive(false);
-      setCurrentAnnouncement(announcement);
-      setMode("ANNOUNCEMENT");
-      // Timeout is now handled centrally by PRESENTATION_STATE_UPDATED and the interval
+      console.log("[TV] ANNOUNCEMENT RECEIVED via socket... Waiting for PRESENTATION_STATE_UPDATED");
     };
 
     /* =======================================================
@@ -355,11 +264,7 @@ export default function TVPage() {
     ======================================================= */
 
     const onPosterShown = (data: { url: string; duration: number }) => {
-      console.log("[TV] POSTER RECEIVED");
-      setFinalRevealActive(false);
-      setCurrentPoster(data.url);
-      setMode("POSTER");
-      // Timeout is now handled centrally by PRESENTATION_STATE_UPDATED and the interval
+      console.log("[TV] POSTER RECEIVED via socket... Waiting for PRESENTATION_STATE_UPDATED");
     };
 
     /* =======================================================
@@ -383,11 +288,6 @@ export default function TVPage() {
       queryClient.invalidateQueries({
         queryKey: ["rankings"],
       });
-
-      if (payload?._id) {
-        setMode("LEADERBOARD");
-        setCurrentPoster(null);
-      }
     };
 
     /* =======================================================
@@ -402,22 +302,6 @@ export default function TVPage() {
       queryClient.invalidateQueries({
         queryKey: ["rankings"],
       });
-
-      if (payload?.programId) {
-        setMode(currentMode => {
-          if (
-            currentMode === "RESULT_REVEAL" ||
-            currentMode === "POSTER"
-          ) {
-            const state = queryClient.getQueryData<any>(["tvState"]);
-            return state?.type === 'ALL_WINNERS' ? 'ALL_WINNERS' : 'LEADERBOARD';
-          }
-
-          return currentMode;
-        });
-
-        setCurrentPoster(null);
-      }
     };
 
     /* =======================================================
@@ -426,7 +310,6 @@ export default function TVPage() {
 
     const onEventReset = () => {
       console.log("[TV] EVENT RESET");
-      setFinalRevealActive(false);
       queryClient.removeQueries({
         queryKey: ["rankings"],
       });
@@ -434,15 +317,6 @@ export default function TVPage() {
       queryClient.invalidateQueries({
         queryKey: ["rankings"],
       });
-
-      setMode("LEADERBOARD");
-
-      setCurrentResult(null);
-      setCurrentAnnouncement(null);
-      setCurrentPoster(null);
-
-      setCurrentProgramId(null);
-      setCurrentPosition(null);
     };
 
     /* =======================================================
@@ -548,11 +422,6 @@ export default function TVPage() {
     );
 
     socket.on(
-      SOCKET_EVENTS.POSITION_REVEAL_ENDED,
-      onPositionRevealEnded
-    );
-
-    socket.on(
       SOCKET_EVENTS.ANNOUNCEMENT_SHOWN,
       onAnnouncementShown
     );
@@ -631,12 +500,6 @@ export default function TVPage() {
         SOCKET_EVENTS.POSITION_RESULT_REVEALED,
         onPositionResultRevealed
       );
-
-      socket.off(
-        SOCKET_EVENTS.POSITION_REVEAL_ENDED,
-        onPositionRevealEnded
-      );
-
       socket.off(
         SOCKET_EVENTS.ANNOUNCEMENT_SHOWN,
         onAnnouncementShown
@@ -691,7 +554,13 @@ export default function TVPage() {
   ]);
 
   /* =========================================================
-     TV ROOT
+     COMPUTE ACTIVE RENDER MODE (SOURCE OF TRUTH)
+  ========================================================= */
+
+  const isPresentation = isPresentationActive(tvState?.presentationType, tvState?.presentationExpiresAt);
+
+  /* =========================================================
+     RENDER
   ========================================================= */
 
   return (
@@ -707,8 +576,25 @@ export default function TVPage() {
         font-sans
       "
     >
-
-
+      {/* =====================================================
+          INTERACTION OVERLAY (For Autoplay Audio)
+      ===================================================== */}
+      {!hasInteracted && (
+        <div 
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md cursor-pointer text-white"
+          onClick={() => setHasInteracted(true)}
+        >
+          <div className="bg-indigo-600 px-10 py-8 rounded-3xl shadow-2xl flex flex-col items-center space-y-6 animate-pulse">
+            <svg className="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+            <div className="text-center">
+              <h2 className="text-3xl font-black tracking-widest uppercase mb-2">Click to Start TV</h2>
+              <p className="text-lg font-bold text-indigo-200">Required by browser to enable Audio Autoplay</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =====================================================
           DEEP SPACE BACKGROUND
@@ -910,297 +796,105 @@ export default function TVPage() {
         "
       >
         <AnimatePresence mode="wait">
-
-          {/* =================================================
-              FINAL TEAM REVEAL
-          ================================================= */}
-
-          {finalRevealActive && (
+          {!tvState?.displayEnabled ? (
             <motion.div
-              key={`final-reveal-${finalRevealKey}`}
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-              }}
-              transition={{
-                duration: 0.5,
-              }}
-              className="
-                absolute
-                inset-0
-                z-[1000]
-                w-full
-                h-full
-              "
+              key="black_screen"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black z-[2000]"
+            />
+          ) : isPresentation && tvState?.presentationType === "FINAL_TEAM_REVEAL" ? (
+            <motion.div
+              key={`final-reveal-${tvState.presentationId}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 z-[1000] w-full h-full"
             >
               <FinalTeamReveal
-                key={finalRevealKey}
-                teamName={
-                  finalRevealTeamName ||
-                  "TEAM"
-                }
-                position={
-                  finalRevealPosition || 1
-                }
+                key={tvState.presentationId}
+                teamName={tvState.finalRevealTeamName || "TEAM"}
+                position={tvState.finalRevealPosition || 1}
                 active={true}
-                onComplete={() => {
-                  setFinalRevealActive(false);
-                  fetch('/api/tv-state', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ finalRevealActive: false })
-                  }).catch(console.error);
-                }}
+                onComplete={() => { }}
               />
             </motion.div>
+          ) : isPresentation && tvState?.presentationType === "ALL_WINNERS" ? (
+            <motion.div
+              key={`all_winners-${tvState.presentationId}`}
+              initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <AllWinnersRouter config={tvState.presentationData} />
+            </motion.div>
+          ) : isPresentation && tvState?.presentationType === "RESULT_REVEAL" && tvState.presentationData ? (
+            <motion.div
+              key={`result-${tvState.presentationId}`}
+              initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -40, filter: "blur(10px)" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <ResultsRouter
+                results={tvState.presentationData.results}
+                design={tvState?.resultsDesign || "design1"}
+              />
+            </motion.div>
+          ) : isPresentation && tvState?.presentationType === "ANNOUNCEMENT" && tvState.presentationData ? (
+            <motion.div
+              key={`announcement-${tvState.presentationId}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <AnnouncementOverlay announcement={tvState.presentationData} />
+            </motion.div>
+          ) : isPresentation && tvState?.presentationType === "MEDIA" && tvState.presentationData ? (
+            <motion.div
+              key={`media-${tvState.presentationId}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <MediaPlayer
+                presentationId={tvState.presentationId!}
+                playlist={tvState.presentationData.playlist}
+              />
+            </motion.div>
+          ) : isPresentation && tvState?.presentationType === "POSTER" && tvState.presentationData ? (
+            <motion.div
+              key={`poster-${tvState.presentationId}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 w-[100vw] h-[100vh] z-[100] bg-[#050B14] flex items-center justify-center overflow-hidden"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={tvState.presentationData.url} alt="Congratulations Poster" className="w-[100vw] h-[100vh] object-contain drop-shadow-2xl" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="leaderboard"
+              initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <Leaderboard config={tvState?.isActive && tvState.type !== "ALL_WINNERS" ? tvState.config : undefined} />
+            </motion.div>
           )}
-
-          {/* =================================================
-              LEADERBOARD
-          ================================================= */}
-
-          {!finalRevealActive &&
-            mode === "LEADERBOARD" && (
-              <motion.div
-                key="leaderboard"
-                initial={{
-                  opacity: 0,
-                  scale: 0.98,
-                  filter: "blur(10px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  filter: "blur(0px)",
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 1.02,
-                  filter: "blur(10px)",
-                }}
-                transition={{
-                  duration: 0.6,
-                  ease: [
-                    0.16,
-                    1,
-                    0.3,
-                    1,
-                  ],
-                }}
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                "
-              >
-                <Leaderboard
-                  config={
-                    tvState?.isActive &&
-                      tvState.type !==
-                      "ALL_WINNERS"
-                      ? tvState.config
-                      : undefined
-                  }
-                />
-              </motion.div>
-            )}
-
-          {/* =================================================
-              ALL WINNERS
-          ================================================= */}
-
-          {!finalRevealActive &&
-            mode === "ALL_WINNERS" && (
-              <motion.div
-                key="all_winners"
-                initial={{
-                  opacity: 0,
-                  scale: 0.98,
-                  filter: "blur(10px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  filter: "blur(0px)",
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 1.02,
-                  filter: "blur(10px)",
-                }}
-                transition={{
-                  duration: 0.6,
-                  ease: [
-                    0.16,
-                    1,
-                    0.3,
-                    1,
-                  ],
-                }}
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                "
-              >
-                <AllWinnersRouter
-                  config={
-                    tvState?.presentationType === "ALL_WINNERS"
-                      ? tvState.presentationData
-                      : tvState?.type === "ALL_WINNERS"
-                      ? tvState.config
-                      : undefined
-                  }
-                />
-              </motion.div>
-            )}
-
-          {/* =================================================
-              RESULT REVEAL
-          ================================================= */}
-
-          {!finalRevealActive &&
-            mode === "RESULT_REVEAL" &&
-            currentResult && (
-              <motion.div
-                key={`result-${revealKey}`}
-                initial={{
-                  opacity: 0,
-                  y: 40,
-                  filter: "blur(10px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  filter: "blur(0px)",
-                }}
-                exit={{
-                  opacity: 0,
-                  y: -40,
-                  filter: "blur(10px)",
-                }}
-                transition={{
-                  duration: 0.6,
-                  ease: [
-                    0.16,
-                    1,
-                    0.3,
-                    1,
-                  ],
-                }}
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                "
-              >
-                <ResultsRouter
-                  results={
-                    currentResult
-                  }
-                  design={
-                    tvState?.resultsDesign ||
-                    "design1"
-                  }
-                />
-              </motion.div>
-            )}
-
-          {/* =================================================
-              ANNOUNCEMENT
-          ================================================= */}
-
-          {!finalRevealActive &&
-            mode === "ANNOUNCEMENT" &&
-            currentAnnouncement && (
-              <motion.div
-                key="announcement"
-                initial={{
-                  opacity: 0,
-                  scale: 0.95,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 1.05,
-                }}
-                transition={{
-                  duration: 0.5,
-                }}
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                "
-              >
-                <AnnouncementOverlay
-                  announcement={
-                    currentAnnouncement
-                  }
-                />
-              </motion.div>
-            )}
-
-          {/* =================================================
-              POSTER
-          ================================================= */}
-
-          {!finalRevealActive &&
-            mode === "POSTER" &&
-            currentPoster && (
-              <motion.div
-                key="poster"
-                initial={{
-                  opacity: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                }}
-                transition={{
-                  duration: 0.8,
-                }}
-                className="
-                  absolute
-                  inset-0
-                  w-[100vw]
-                  h-[100vh]
-                  z-[100]
-                  bg-[#050B14]
-                  flex
-                  items-center
-                  justify-center
-                  overflow-hidden
-                "
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={currentPoster}
-                  alt="Congratulations Poster"
-                  className="
-                    w-[100vw]
-                    h-[100vh]
-                    object-contain
-                    drop-shadow-2xl
-                  "
-                />
-              </motion.div>
-            )}
-
         </AnimatePresence>
       </div>
     </div>

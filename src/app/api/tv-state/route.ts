@@ -18,27 +18,46 @@ export const POST = async (req: NextRequest) => {
   try {
     await connectDB();
     const data = await req.json();
-    const { type, config, isActive, leaderboardDesign, allWinnersDesign, resultsDesign, finalRevealActive, finalRevealTeamName, finalRevealPosition, displayEnabled, presentationType, presentationStartedAt, presentationExpiresAt, presentationDuration, presentationData } = data;
+    const { type, config, isActive, leaderboardDesign, allWinnersDesign, resultsDesign, finalRevealActive, finalRevealTeamName, finalRevealPosition, displayEnabled, presentationId, presentationType, presentationStartedAt, presentationExpiresAt, presentationDuration, presentationData, clearPresentationId } = data;
 
-    console.log("[API] received presentation update:", { type, presentationType });
+    console.log("[API] received presentation update:", { type, presentationType, clearPresentationId, presentationId });
 
-    // Use findOneAndUpdate with upsert to maintain a singleton TVState
-    const updatePayload: any = {};
-    if (type !== undefined) updatePayload.type = type;
-    if (config !== undefined) updatePayload.config = config;
-    if (isActive !== undefined) updatePayload.isActive = isActive;
-    if (leaderboardDesign !== undefined) updatePayload.leaderboardDesign = leaderboardDesign;
-    if (allWinnersDesign !== undefined) updatePayload.allWinnersDesign = allWinnersDesign;
-    if (resultsDesign !== undefined) updatePayload.resultsDesign = resultsDesign;
-    if (finalRevealActive !== undefined) updatePayload.finalRevealActive = finalRevealActive;
-    if (finalRevealTeamName !== undefined) updatePayload.finalRevealTeamName = finalRevealTeamName;
-    if (finalRevealPosition !== undefined) updatePayload.finalRevealPosition = finalRevealPosition;
-    if (displayEnabled !== undefined) updatePayload.displayEnabled = displayEnabled;
-    if (presentationType !== undefined) updatePayload.presentationType = presentationType;
-    if (presentationStartedAt !== undefined) updatePayload.presentationStartedAt = presentationStartedAt;
-    if (presentationExpiresAt !== undefined) updatePayload.presentationExpiresAt = presentationExpiresAt;
-    if (presentationDuration !== undefined) updatePayload.presentationDuration = presentationDuration;
-    if (presentationData !== undefined) updatePayload.presentationData = presentationData;
+    let updatePayload: any = {};
+
+    if (clearPresentationId) {
+      const currentState = await TVState.findOne();
+      if (currentState && currentState.presentationId && currentState.presentationId !== clearPresentationId) {
+        console.log("[API] Ignored stale clear request. Current:", currentState.presentationId, "Requested:", clearPresentationId);
+        return NextResponse.json({ message: 'Ignored stale request', state: currentState });
+      }
+      // ID matches or is empty, safe to clear
+      updatePayload = {
+        presentationId: null,
+        presentationType: null,
+        presentationStartedAt: null,
+        presentationExpiresAt: null,
+        presentationDuration: null,
+        presentationData: null,
+        finalRevealActive: false,
+      };
+    } else {
+      if (type !== undefined) updatePayload.type = type;
+      if (config !== undefined) updatePayload.config = config;
+      if (isActive !== undefined) updatePayload.isActive = isActive;
+      if (leaderboardDesign !== undefined) updatePayload.leaderboardDesign = leaderboardDesign;
+      if (allWinnersDesign !== undefined) updatePayload.allWinnersDesign = allWinnersDesign;
+      if (resultsDesign !== undefined) updatePayload.resultsDesign = resultsDesign;
+      if (finalRevealActive !== undefined) updatePayload.finalRevealActive = finalRevealActive;
+      if (finalRevealTeamName !== undefined) updatePayload.finalRevealTeamName = finalRevealTeamName;
+      if (finalRevealPosition !== undefined) updatePayload.finalRevealPosition = finalRevealPosition;
+      if (displayEnabled !== undefined) updatePayload.displayEnabled = displayEnabled;
+      if (presentationId !== undefined) updatePayload.presentationId = presentationId;
+      if (presentationType !== undefined) updatePayload.presentationType = presentationType;
+      if (presentationStartedAt !== undefined) updatePayload.presentationStartedAt = presentationStartedAt;
+      if (presentationExpiresAt !== undefined) updatePayload.presentationExpiresAt = presentationExpiresAt;
+      if (presentationDuration !== undefined) updatePayload.presentationDuration = presentationDuration;
+      if (presentationData !== undefined) updatePayload.presentationData = presentationData;
+    }
 
     const state = await TVState.findOneAndUpdate(
       {},
@@ -48,7 +67,7 @@ export const POST = async (req: NextRequest) => {
 
     console.log("[TV STATE] saving presentation:", state?.config?.presentation);
 
-    const presentationKeys = ['presentationType', 'presentationStartedAt', 'presentationExpiresAt', 'presentationDuration', 'presentationData'];
+    const presentationKeys = ['presentationId', 'presentationType', 'presentationStartedAt', 'presentationExpiresAt', 'presentationDuration', 'presentationData'];
     const finalRevealKeys = ['finalRevealActive', 'finalRevealTeamName', 'finalRevealPosition'];
     const displayKeys = ['displayEnabled'];
     
@@ -78,6 +97,7 @@ export const POST = async (req: NextRequest) => {
 
       if (hasPresentationUpdates) {
         io.emit(SOCKET_EVENTS.PRESENTATION_STATE_UPDATED, {
+          presentationId: state.presentationId,
           presentationType: state.presentationType,
           presentationStartedAt: state.presentationStartedAt,
           presentationExpiresAt: state.presentationExpiresAt,

@@ -1117,6 +1117,7 @@ export default function ResultsEntry() {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
+                          presentationId: crypto.randomUUID(),
                           presentationType: 'ALL_WINNERS',
                           presentationData: config,
                           presentationStartedAt: startedAt.toISOString(),

@@ -23,13 +23,21 @@ export default function FinalRevealAdminPage() {
   const handleStartReveal = async () => {
     setIsStarting(true);
     try {
+      const duration = 20;
+      const startedAt = new Date();
+      const expiresAt = new Date(startedAt.getTime() + duration * 1000);
       await fetch('/api/tv-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           finalRevealActive: true,
           finalRevealTeamName: teamName,
-          finalRevealPosition: position
+          finalRevealPosition: position,
+          presentationId: crypto.randomUUID(),
+          presentationType: 'FINAL_TEAM_REVEAL',
+          presentationStartedAt: startedAt.toISOString(),
+          presentationExpiresAt: expiresAt.toISOString(),
+          presentationDuration: duration
         })
       });
       alert('Final Team Reveal activated on TV.');

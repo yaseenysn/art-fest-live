@@ -29,6 +29,7 @@ const TVStateSchema = new mongoose.Schema({
   finalRevealTeamName: { type: String, default: '' },
   finalRevealPosition: { type: Number, default: 1 },
   displayEnabled: { type: Boolean, default: true },
+  presentationId: { type: String, default: null },
   presentationType: { type: String, default: null },
   presentationStartedAt: { type: Date, default: null },
   presentationExpiresAt: { type: Date, default: null },
