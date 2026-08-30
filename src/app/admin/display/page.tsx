@@ -16,9 +16,18 @@ export default function DisplayControl() {
   const [duration, setDuration] = useState(10);
   const [status, setStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [sending, setSending] = useState(false);
-  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isResetConfirmModalOpen, setIsResetConfirmModalOpen] = useState(false); // To avoid conflict if we just renamed
   const [resetConfirmText, setResetConfirmText] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+
+  // Premium Custom Announcements State
+  const [customAnnTemplate, setCustomAnnTemplate] = useState<'NEXT_PROGRAM' | 'JUDGES_THANK_YOU'>('NEXT_PROGRAM');
+  const [nextProgName, setNextProgName] = useState('');
+  const [nextProgChess, setNextProgChess] = useState('');
+  const [judgesList, setJudgesList] = useState<{name: string}[]>([{name: ''}]);
+  const [customAnnDuration, setCustomAnnDuration] = useState(15);
+  const [customAnnStatus, setCustomAnnStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
+  const [pushingCustomAnn, setPushingCustomAnn] = useState(false);
 
   // Leaderboard States
   const { data: tvState, refetch: refetchTvState } = useQuery<any>({
@@ -356,7 +365,7 @@ export default function DisplayControl() {
       const res = await fetch('/api/reset', { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
-        setIsResetModalOpen(false);
+        setIsResetConfirmModalOpen(false);
         setResetConfirmText('');
         alert("Event reset successfully. All competition data cleared.");
       } else {
@@ -367,6 +376,61 @@ export default function DisplayControl() {
       alert("Failed to reach reset endpoint.");
     } finally {
       setIsResetting(false);
+    }
+  };
+
+  const handlePushCustomAnnouncement = async () => {
+    setCustomAnnStatus(null);
+
+    if (customAnnTemplate === 'NEXT_PROGRAM') {
+      if (!nextProgName.trim() || !nextProgChess.trim()) {
+        setCustomAnnStatus({ type: 'error', text: 'Program Name and Chess Number are required.'});
+        return;
+      }
+    } else if (customAnnTemplate === 'JUDGES_THANK_YOU') {
+      const validJudges = judgesList.filter(j => j.name.trim() !== '');
+      if (validJudges.length === 0) {
+        setCustomAnnStatus({ type: 'error', text: 'At least one Judge Name is required.'});
+        return;
+      }
+    }
+
+    setPushingCustomAnn(true);
+    try {
+      const presentationId = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now().toString();
+      const now = Date.now();
+      
+      let presentationData: any = { template: customAnnTemplate };
+      if (customAnnTemplate === 'NEXT_PROGRAM') {
+        presentationData.programName = nextProgName.trim();
+        presentationData.chessNumber = nextProgChess.trim();
+      } else {
+        presentationData.judges = judgesList.filter(j => j.name.trim() !== '');
+      }
+
+      const payload = {
+        presentationType: "CUSTOM_ANNOUNCEMENT",
+        presentationId,
+        presentationStartedAt: new Date(now).toISOString(),
+        presentationExpiresAt: new Date(now + customAnnDuration * 1000).toISOString(),
+        presentationDuration: customAnnDuration,
+        presentationData
+      };
+
+      const res = await fetch('/api/tv-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Failed to push Custom Announcement");
+      setCustomAnnStatus({ type: 'success', text: 'Custom Announcement is now live on TV.' });
+      refetchTvState();
+      setTimeout(() => setCustomAnnStatus(null), 3000);
+    } catch(err: any) {
+      setCustomAnnStatus({ type: 'error', text: err.message });
+    } finally {
+      setPushingCustomAnn(false);
     }
   };
 
@@ -708,8 +772,145 @@ export default function DisplayControl() {
         </Link>
       </div>
 
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-8">
+        <h2 className="text-xl font-semibold mb-6 flex items-center justify-between">
+          Premium Custom Announcements
+          {tvState?.isActive && tvState.presentationType === 'CUSTOM_ANNOUNCEMENT' && (
+            <div className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-4 py-1 rounded-full text-sm font-bold border border-emerald-200">
+              <span className="animate-pulse h-2 w-2 bg-emerald-500 rounded-full"></span>
+              <span>CURRENTLY SHOWING</span>
+            </div>
+          )}
+        </h2>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">TEMPLATE</label>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setCustomAnnTemplate('NEXT_PROGRAM')}
+                className={clsx(
+                  "flex-1 p-4 rounded-xl border-2 font-bold transition-all text-center",
+                  customAnnTemplate === 'NEXT_PROGRAM' ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300 text-slate-600"
+                )}
+              >
+                NEXT PROGRAM
+              </button>
+              <button
+                onClick={() => setCustomAnnTemplate('JUDGES_THANK_YOU')}
+                className={clsx(
+                  "flex-1 p-4 rounded-xl border-2 font-bold transition-all text-center",
+                  customAnnTemplate === 'JUDGES_THANK_YOU' ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300 text-slate-600"
+                )}
+              >
+                JUDGES THANK YOU
+              </button>
+            </div>
+          </div>
+
+          {customAnnTemplate === 'NEXT_PROGRAM' && (
+            <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Program Name</label>
+                <input
+                  type="text"
+                  className="w-full border-slate-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border"
+                  placeholder="e.g. Quran Recitation"
+                  value={nextProgName}
+                  onChange={e => setNextProgName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Chess Number</label>
+                <input
+                  type="text"
+                  className="w-full border-slate-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border text-2xl font-black"
+                  placeholder="025"
+                  value={nextProgChess}
+                  onChange={e => setNextProgChess(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {customAnnTemplate === 'JUDGES_THANK_YOU' && (
+            <div className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Judges List</label>
+              <div className="space-y-3">
+                {judgesList.map((judge, idx) => (
+                  <div key={idx} className="flex space-x-2">
+                    <input
+                      type="text"
+                      className="flex-1 border-slate-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border"
+                      placeholder={`Judge ${idx + 1} Name`}
+                      value={judge.name}
+                      onChange={e => {
+                        const newList = [...judgesList];
+                        newList[idx].name = e.target.value;
+                        setJudgesList(newList);
+                      }}
+                    />
+                    <button
+                      onClick={() => setJudgesList(judgesList.filter((_, i) => i !== idx))}
+                      className="px-4 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 font-bold"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setJudgesList([...judgesList, { name: '' }])}
+                className="mt-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center"
+              >
+                + ADD JUDGE
+              </button>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">DISPLAY DURATION</label>
+            <div className="flex space-x-4">
+              {[10, 15, 20, 30].map(d => (
+                <button
+                  key={d}
+                  onClick={() => setCustomAnnDuration(d)}
+                  className={clsx(
+                    "px-6 py-2 rounded-lg font-bold transition-colors",
+                    customAnnDuration === d 
+                      ? "bg-indigo-100 text-indigo-700 border-2 border-indigo-500" 
+                      : "bg-slate-50 text-slate-600 border-2 border-transparent hover:bg-slate-100"
+                  )}
+                >
+                  {d}s
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {customAnnStatus && (
+            <div className={clsx(
+              "p-4 rounded-lg flex items-center space-x-2",
+              customAnnStatus.type === 'error' ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+            )}>
+              {customAnnStatus.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+              <span className="font-semibold">{customAnnStatus.text}</span>
+            </div>
+          )}
+
+          <button
+            onClick={handlePushCustomAnnouncement}
+            disabled={pushingCustomAnn}
+            className="w-full flex items-center justify-center space-x-2 bg-indigo-600 text-white rounded-lg py-4 font-black text-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-md tracking-widest"
+          >
+            <MonitorPlay className="w-6 h-6" />
+            <span>SHOW ON TV</span>
+          </button>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-        <h2 className="text-xl font-semibold mb-6">Custom Announcement</h2>
+        <h2 className="text-xl font-semibold mb-6">Standard Text Announcement</h2>
         
         <div className="space-y-6">
           <div>
@@ -775,7 +976,7 @@ export default function DisplayControl() {
             <p className="text-red-700 text-sm mt-1">Deletes ALL programs, teams, results and competition data.</p>
           </div>
           <button 
-            onClick={() => { setIsResetModalOpen(true); setResetConfirmText(''); }}
+            onClick={() => { setIsResetConfirmModalOpen(true); setResetConfirmText(''); }}
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition-colors"
           >
             RESET EVENT
@@ -783,7 +984,7 @@ export default function DisplayControl() {
         </div>
       </div>
 
-      {isResetModalOpen && (
+      {isResetConfirmModalOpen && (
         <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 border border-red-200">
             <div className="flex items-center space-x-3 text-red-600 mb-6">
@@ -814,7 +1015,7 @@ export default function DisplayControl() {
 
             <div className="flex justify-end space-x-3">
               <button
-                onClick={() => setIsResetModalOpen(false)}
+                onClick={() => setIsResetConfirmModalOpen(false)}
                 disabled={isResetting}
                 className="px-6 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50 uppercase tracking-wider"
               >

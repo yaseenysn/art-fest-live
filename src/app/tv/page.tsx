@@ -17,6 +17,7 @@ import AnnouncementOverlay from "./components/AnnouncementOverlay";
 import AllWinnersRouter from "./components/AllWinnersRouter";
 import FinalTeamReveal from "./components/FinalTeamReveal";
 import MediaPlayer from "./components/MediaPlayer";
+import CustomAnnouncementOverlay from "./components/CustomAnnouncementOverlay";
 
 const isPresentationActive = (
   presentationType?: string | null,
@@ -832,6 +833,17 @@ export default function TVPage() {
               className="absolute inset-0 w-full h-full"
             >
               <AnnouncementOverlay announcement={tvState.presentationData} />
+            </motion.div>
+          ) : isPresentation && tvState?.presentationType === "CUSTOM_ANNOUNCEMENT" && tvState.presentationData ? (
+            <motion.div
+              key={`custom-announcement-${tvState.presentationId}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <CustomAnnouncementOverlay data={tvState.presentationData} />
             </motion.div>
           ) : isPresentation && tvState?.presentationType === "MEDIA" && tvState.presentationData ? (
             <motion.div
