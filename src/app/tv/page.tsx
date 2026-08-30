@@ -55,22 +55,8 @@ export default function TVPage() {
   const [finalRevealKey, setFinalRevealKey] = useState(0);
 
   /* =========================================================
-     INTERACTION STATE (FOR AUTOPLAY)
+     INTERACTION STATE (FOR AUTOPLAY) - REMOVED BY USER REQUEST
   ========================================================= */
-
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  useEffect(() => {
-    const handleInteraction = () => setHasInteracted(true);
-    window.addEventListener('click', handleInteraction);
-    window.addEventListener('touchstart', handleInteraction);
-    window.addEventListener('keydown', handleInteraction);
-    return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('keydown', handleInteraction);
-    };
-  }, []);
 
   /* =========================================================
      TV STATE
@@ -584,25 +570,7 @@ export default function TVPage() {
         font-sans
       "
     >
-      {/* =====================================================
-          INTERACTION OVERLAY (For Autoplay Audio)
-      ===================================================== */}
-      {!hasInteracted && (
-        <div 
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md cursor-pointer text-white"
-          onClick={() => setHasInteracted(true)}
-        >
-          <div className="bg-indigo-600 px-10 py-8 rounded-3xl shadow-2xl flex flex-col items-center space-y-6 animate-pulse">
-            <svg className="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-            </svg>
-            <div className="text-center">
-              <h2 className="text-3xl font-black tracking-widest uppercase mb-2">Click to Start TV</h2>
-              <p className="text-lg font-bold text-indigo-200">Required by browser to enable Audio Autoplay</p>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* =====================================================
           DEEP SPACE BACKGROUND

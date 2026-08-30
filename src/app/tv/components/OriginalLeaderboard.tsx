@@ -13,39 +13,46 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
   const maxItemsPerPage = 5;
   const totalPages = Math.ceil((rows?.length || 0) / maxItemsPerPage);
 
+  const rowsRef = React.useRef(rows);
+  React.useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
+
   useEffect(() => {
-    if (rows && rows.length > 0) {
-      if (!activeTeamId || !rows.find(r => r.id === activeTeamId)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setActiveTeamId(rows[0].id);
+    const currentRows = rowsRef.current;
+    if (currentRows && currentRows.length > 0) {
+      if (!activeTeamId || !currentRows.find(r => r.id === activeTeamId)) {
+        setActiveTeamId(currentRows[0].id);
       }
     } else {
-       
       setActiveTeamId(null);
     }
-  }, [rows, activeTeamId]);
+  }, [rows.length, activeTeamId]); // Only run if the number of rows changes, or activeTeamId changes (to check validity)
 
   // Automatic rotation through ALL rankings
   useEffect(() => {
-    if (!rows || rows.length === 0 || isHovered) return;
+    if (rows.length === 0 || isHovered) return;
 
     const interval = setInterval(() => {
       setActiveTeamId(currentId => {
-        if (!currentId) return rows[0].id;
-        const currentIndex = rows.findIndex(r => r.id === currentId);
-        const nextIndex = (currentIndex + 1) % rows.length;
-        return rows[nextIndex].id;
+        const currentRows = rowsRef.current;
+        if (currentRows.length === 0) return null;
+        if (!currentId) return currentRows[0].id;
+        const currentIndex = currentRows.findIndex(r => r.id === currentId);
+        const nextIndex = (currentIndex + 1) % currentRows.length;
+        return currentRows[nextIndex].id;
       });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [rows, isHovered]);
+  }, [rows.length, isHovered]);
 
   // Sync page with activeTeamId so the active row is always visible
   useEffect(() => {
-    if (!activeTeamId || rows.length === 0) return;
+    const currentRows = rowsRef.current;
+    if (!activeTeamId || currentRows.length === 0) return;
 
-    const activeIndex = rows.findIndex(r => r.id === activeTeamId);
+    const activeIndex = currentRows.findIndex(r => r.id === activeTeamId);
 
     if (activeIndex !== -1) {
       const expectedPage = Math.floor(activeIndex / maxItemsPerPage);
@@ -54,7 +61,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         setPage(expectedPage);
       }
     }
-  }, [activeTeamId, rows, page]);
+  }, [activeTeamId, page]); // Intentionally omitting `rows` reference to avoid jumping on score updates
 
   if (!config) return null;
 
@@ -135,24 +142,41 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
 
         </div>
 
-        {/* Glowing Wavy Line Chart */}
+        {/* Glowing Wavy Line Chart (Fake Glow via thick stroke) */}
         <div
-          className="absolute top-[20%] left-0 w-full h-[300px] pointer-events-none opacity-[0.3] z-10"
-          style={{
-            filter: `drop-shadow(0 0 20px ${activeColor})`
-          }}
+          className="absolute top-[20%] left-0 w-full h-[300px] pointer-events-none z-10"
         >
           <svg
             className="w-full h-full"
             viewBox="0 0 1000 400"
             preserveAspectRatio="none"
           >
+            {/* Fake Glow Path */}
+            <motion.path
+              d={pathData}
+              fill="none"
+              stroke={activeColor}
+              strokeWidth="15"
+              strokeDasharray="10 10"
+              opacity={0.15}
+              animate={{
+                d: pathData,
+                stroke: activeColor
+              }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0
+              }}
+            />
+            {/* Main Path */}
             <motion.path
               d={pathData}
               fill="none"
               stroke={activeColor}
               strokeWidth="3"
               strokeDasharray="10 10"
+              opacity={0.5}
               animate={{
                 d: pathData,
                 stroke: activeColor
@@ -269,12 +293,22 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                         animate={{
                           backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.02)',
                           borderColor: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
-                          scale: isActive ? 1.05 : 1,
-                          boxShadow: isActive ? `0 20px 40px -10px rgba(0,0,0,0.5), inset 0 0 20px ${rColor}30` : 'none'
+                          scale: isActive ? 1.05 : 1
                         }}
                         transition={{ duration: 0.5 }}
                         className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-5 md:p-6 rounded-2xl border`}
                       >
+
+                        {/* GPU-Friendly Shadow (Opacity Fade) */}
+                        <motion.div
+                          initial={false}
+                          animate={{ opacity: isActive ? 1 : 0 }}
+                          transition={{ duration: 0.5 }}
+                          className="absolute inset-0 pointer-events-none rounded-2xl"
+                          style={{
+                            boxShadow: `0 20px 40px -10px rgba(0,0,0,0.5), inset 0 0 20px ${rColor}30`
+                          }}
+                        />
 
                         {/* Active Indicator Bar */}
                         <motion.div

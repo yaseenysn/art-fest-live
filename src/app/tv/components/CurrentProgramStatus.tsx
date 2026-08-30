@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket-client";
 import { SOCKET_EVENTS } from "@/lib/socket";
 import { IProgram } from "@/types";
 
-export default function CurrentProgramStatus({ presentation }: { presentation?: string }) {
+const CurrentProgramStatus = React.memo(function CurrentProgramStatus({ presentation }: { presentation?: string }) {
   const queryClient = useQueryClient();
 
   // Determine position based on design presentation
@@ -48,16 +48,6 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
     };
   }, [queryClient]);
 
-  if (isLoading) {
-    return (
-      <div className={containerClasses}>
-        <div className="text-[12px] md:text-[14px] font-bold text-blue-200/60 tracking-[0.25em] uppercase mb-2 drop-shadow-md">CURRENT PROGRAM</div>
-        <div className="h-8 md:h-10 w-[clamp(150px,20vw,256px)] bg-white/20 rounded animate-pulse mb-2" />
-        <div className="h-4 w-[clamp(60px,10vw,96px)] bg-white/10 rounded animate-pulse" />
-      </div>
-    );
-  }
-
   const allPrograms = useMemo(() => programs || [], [programs]);
   const totalPrograms = allPrograms.length;
 
@@ -71,6 +61,17 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
       if (orderA !== orderB) return orderA - orderB;
       return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
     }), [allPrograms]);
+
+  if (isLoading) {
+    return (
+      <div className={containerClasses}>
+        <div className="text-[12px] md:text-[14px] font-bold text-blue-200/60 tracking-[0.25em] uppercase mb-2 drop-shadow-md">CURRENT PROGRAM</div>
+        <div className="h-8 md:h-10 w-[clamp(150px,20vw,256px)] bg-white/20 rounded animate-pulse mb-2" />
+        <div className="h-4 w-[clamp(60px,10vw,96px)] bg-white/10 rounded animate-pulse" />
+      </div>
+    );
+  }
+
     
   const nextProgram = upcomingPrograms[0];
   const displayProgram = currentProgram || nextProgram;
@@ -123,4 +124,6 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
       )}
     </div>
   );
-}
+});
+
+export default CurrentProgramStatus;
