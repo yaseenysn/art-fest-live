@@ -102,7 +102,7 @@ export default function MediaPlayer({
 
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, currentMedia]);
+  }, [currentIndex, currentMedia?.id, currentMedia?.url, currentMedia?.type, currentMedia?.imageDuration]);
 
   const handleMediaError = () => {
     console.error('[TV MEDIA] Error loading media:', currentMedia?.url);
@@ -160,7 +160,7 @@ export default function MediaPlayer({
         });
       }
     }
-  }, [currentIndex, currentMedia]);
+  }, [currentIndex, currentMedia?.id, currentMedia?.url, currentMedia?.type]);
 
   const rotation = (currentMedia as any)?.rotation || 0;
   const isVertical = rotation === 90 || rotation === 270;

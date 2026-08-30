@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { LeaderboardConfig } from '@/types';
 import OriginalLeaderboard from './OriginalLeaderboard';
 import LeaderboardDesign2 from './LeaderboardDesign2';
@@ -7,7 +8,7 @@ import LeaderboardDesign3 from './LeaderboardDesign3';
 import LeaderboardDesign4 from './LeaderboardDesign4';
 import CurrentProgramStatus from './CurrentProgramStatus';
 
-export default function Leaderboard({ config, isPreview }: { config?: LeaderboardConfig; isPreview?: boolean }) {
+const Leaderboard = React.memo(function Leaderboard({ config, isPreview }: { config?: LeaderboardConfig; isPreview?: boolean }) {
   console.log("[LEADERBOARD] rendering:", config?.presentation);
   
   if (!config) return null;
@@ -32,4 +33,6 @@ export default function Leaderboard({ config, isPreview }: { config?: Leaderboar
       {renderDesign()}
     </div>
   );
-}
+});
+
+export default Leaderboard;

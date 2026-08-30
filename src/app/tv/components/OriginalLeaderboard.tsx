@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LeaderboardConfig, EVENT_NAME } from '@/types';
 
-export default function OriginalLeaderboard({ config }: { config?: LeaderboardConfig }) {
+const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: { config?: LeaderboardConfig }) {
   const rows = config?.rows || [];
   const [page, setPage] = useState(0);
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
@@ -92,12 +92,13 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
       className="w-screen h-screen flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-4 md:p-8"
       onMouseLeave={handleMouseLeave}
     >
-      <BackgroundTexture />
+      <MemoizedBackgroundTexture />
 
       {/* Dynamic Ambient Accent Glow */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full blur-[200px] mix-blend-screen opacity-[0.08] pointer-events-none transition-colors duration-1000 z-0"
-        style={{ backgroundColor: activeColor }}
+      <motion.div
+        animate={{ backgroundColor: activeColor }}
+        transition={{ duration: 1 }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full blur-[200px] mix-blend-screen opacity-[0.08] pointer-events-none z-0"
       />
 
       {/* Main Glass Widget */}
@@ -120,9 +121,10 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
         />
 
         {/* Dynamic Internal Glow */}
-        <div
-          className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-[100px] mix-blend-screen opacity-20 pointer-events-none transition-colors duration-1000 z-0"
-          style={{ backgroundColor: activeColor }}
+        <motion.div
+          animate={{ backgroundColor: activeColor }}
+          transition={{ duration: 1 }}
+          className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-[100px] mix-blend-screen opacity-20 pointer-events-none z-0"
         />
 
         {/* Header */}
@@ -137,8 +139,7 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
         <div
           className="absolute top-[20%] left-0 w-full h-[300px] pointer-events-none opacity-[0.3] z-10"
           style={{
-            filter: `drop-shadow(0 0 20px ${activeColor})`,
-            transition: 'filter 800ms ease-in-out'
+            filter: `drop-shadow(0 0 20px ${activeColor})`
           }}
         >
           <svg
@@ -170,26 +171,24 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
           {/* Left Hero Data */}
           <div className="flex-1 p-6 md:p-14 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative">
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               <motion.div
                 key={activeRow?.id}
                 initial={{
                   opacity: 0,
-                  y: 20,
-                  filter: 'blur(10px)'
+                  y: 20
                 }}
                 animate={{
                   opacity: 1,
-                  y: 0,
-                  filter: 'blur(0px)'
+                  y: 0
                 }}
                 exit={{
                   opacity: 0,
                   y: -20,
-                  filter: 'blur(10px)'
+                  position: 'absolute'
                 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col h-full justify-center"
+                className="flex flex-col h-full justify-center w-full"
               >
 
                 <div className="flex items-center space-x-4 mb-4">
@@ -263,32 +262,31 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
                     const rColor = row.color || '#3b82f6';
 
                     return (
-                      <div
+                      <motion.div
                         key={row.id}
-                        onMouseEnter={() =>
-                          handleMouseEnter(row.id as string)
-                        }
-                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-5 md:p-6 rounded-2xl transition-all duration-500 border ${isActive
-                          ? 'border-white/20 bg-white/10 scale-105 shadow-xl'
-                          : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/10'
-                          }`}
-                        style={{
-                          boxShadow: isActive
-                            ? `0 20px 40px -10px rgba(0,0,0,0.5), inset 0 0 20px ${rColor}30`
-                            : undefined
+                        onMouseEnter={() => handleMouseEnter(row.id as string)}
+                        initial={false}
+                        animate={{
+                          backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.02)',
+                          borderColor: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                          scale: isActive ? 1.05 : 1,
+                          boxShadow: isActive ? `0 20px 40px -10px rgba(0,0,0,0.5), inset 0 0 20px ${rColor}30` : 'none'
                         }}
+                        transition={{ duration: 0.5 }}
+                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-5 md:p-6 rounded-2xl border`}
                       >
 
                         {/* Active Indicator Bar */}
-                        {isActive && (
-                          <motion.div
-                            layoutId="activeBar"
-                            className="absolute left-0 top-0 bottom-0 w-1.5"
-                            style={{
-                              backgroundColor: rColor
-                            }}
-                          />
-                        )}
+                        <motion.div
+                          initial={false}
+                          animate={{ 
+                            opacity: isActive ? 1 : 0,
+                            scaleY: isActive ? 1 : 0.8
+                          }}
+                          transition={{ duration: 0.3 }}
+                          className="absolute left-0 top-0 bottom-0 w-1.5 origin-center"
+                          style={{ backgroundColor: rColor }}
+                        />
 
                         <div className="flex items-center space-x-5 md:space-x-6 relative z-10">
 
@@ -348,7 +346,7 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
                           </div>
                         )}
 
-                      </div>
+                      </motion.div>
                     );
                   })}
 
@@ -402,7 +400,9 @@ export default function OriginalLeaderboard({ config }: { config?: LeaderboardCo
       </motion.div>
     </div>
   );
-}
+});
+
+export default OriginalLeaderboard;
 
 // Reusable Background Texture
 const BackgroundTexture = () => (
@@ -425,3 +425,5 @@ const BackgroundTexture = () => (
     </svg>
   </div>
 );
+
+const MemoizedBackgroundTexture = React.memo(BackgroundTexture);

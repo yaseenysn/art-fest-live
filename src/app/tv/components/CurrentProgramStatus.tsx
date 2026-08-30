@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket-client";
 import { SOCKET_EVENTS } from "@/lib/socket";
@@ -58,19 +58,19 @@ export default function CurrentProgramStatus({ presentation }: { presentation?: 
     );
   }
 
-  const allPrograms = programs || [];
+  const allPrograms = useMemo(() => programs || [], [programs]);
   const totalPrograms = allPrograms.length;
 
-  const currentProgram = allPrograms.find(p => p.status === "live");
+  const currentProgram = useMemo(() => allPrograms.find(p => p.status === "live"), [allPrograms]);
 
-  const upcomingPrograms = allPrograms
+  const upcomingPrograms = useMemo(() => allPrograms
     .filter(p => p.status === "upcoming")
     .sort((a, b) => {
       const orderA = a.programOrder ?? 999999;
       const orderB = b.programOrder ?? 999999;
       if (orderA !== orderB) return orderA - orderB;
       return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
-    });
+    }), [allPrograms]);
     
   const nextProgram = upcomingPrograms[0];
   const displayProgram = currentProgram || nextProgram;

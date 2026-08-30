@@ -153,22 +153,30 @@ export default function TVPage() {
   ========================================================= */
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const state = queryClient.getQueryData<any>(["tvState"]);
-      
-      if (state && state.presentationType && state.presentationExpiresAt && state.presentationId) {
-        const expiresAt = new Date(state.presentationExpiresAt).getTime();
-        const now = Date.now();
+    const state = queryClient.getQueryData<any>(["tvState"]);
+    
+    if (state && state.presentationType && state.presentationExpiresAt && state.presentationId) {
+      const expiresAt = new Date(state.presentationExpiresAt).getTime();
+      const now = Date.now();
+      const remaining = expiresAt - now;
 
-        if (now >= expiresAt) {
-          console.log("[TV] Central Timer: Presentation expired. Initiating return to LEADERBOARD.");
-          returnToLeaderboard(state.presentationId);
-        }
+      if (remaining <= 0) {
+        console.log("[TV] Central Timer: Presentation expired. Initiating return to LEADERBOARD.");
+        returnToLeaderboard(state.presentationId);
+      } else {
+        const timeoutId = setTimeout(() => {
+          const currentState = queryClient.getQueryData<any>(["tvState"]);
+          // Verify it's still the same presentation before returning
+          if (currentState && currentState.presentationId === state.presentationId) {
+            console.log("[TV] Central Timer: Scheduled expiration fired. Initiating return to LEADERBOARD.");
+            returnToLeaderboard(state.presentationId);
+          }
+        }, remaining);
+        
+        return () => clearTimeout(timeoutId);
       }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [queryClient]);
+    }
+  }, [queryClient, tvState?.presentationExpiresAt, tvState?.presentationId, tvState?.presentationType]);
 
   /* =========================================================
      SOCKET CONNECTION
@@ -824,9 +832,9 @@ export default function TVPage() {
           ) : isPresentation && tvState?.presentationType === "ALL_WINNERS" ? (
             <motion.div
               key={`all_winners-${tvState.presentationId}`}
-              initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0 w-full h-full"
             >
@@ -835,9 +843,9 @@ export default function TVPage() {
           ) : isPresentation && tvState?.presentationType === "RESULT_REVEAL" && tvState.presentationData ? (
             <motion.div
               key={`result-${tvState.presentationId}`}
-              initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -40, filter: "blur(10px)" }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0 w-full h-full"
             >
@@ -886,9 +894,9 @@ export default function TVPage() {
           ) : (
             <motion.div
               key="leaderboard"
-              initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0 w-full h-full"
             >
