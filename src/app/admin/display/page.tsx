@@ -8,6 +8,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Leaderboard from '../../tv/components/Leaderboard';
 import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
 import ResultsRouter from '../../tv/components/ResultsRouter';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
 import { IProgram } from '@/types';
 
 export default function DisplayControl() {
@@ -460,15 +462,15 @@ export default function DisplayControl() {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">LEADERBOARD DESIGN</label>
-            <select
-              className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border text-lg font-semibold text-text-primary"
+            <Select
+              wrapperClassName="w-full text-lg font-semibold"
               value={selectedLeaderboard}
-              onChange={(e) => handleLeaderboardChange(e.target.value)}
+              onChange={(e: any) => handleLeaderboardChange(e.target.value)}
             >
               {leaderboardOptions.map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           {/* PREVIEW */}
@@ -553,28 +555,28 @@ export default function DisplayControl() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">SELECT PROGRAM</label>
-              <select
-                className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border text-lg font-semibold text-text-primary"
+              <Select
+                wrapperClassName="w-full text-lg font-semibold"
                 value={selectedProgramId}
-                onChange={(e) => setSelectedProgramId(e.target.value)}
+                onChange={(e: any) => setSelectedProgramId(e.target.value)}
               >
                 <option value="">-- Select a Program --</option>
                 {programs.map(p => (
                   <option key={String(p._id)} value={String(p._id)}>{p.name}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">POSTER DESIGN</label>
-              <select
-                className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border text-lg font-semibold text-text-primary"
+              <Select
+                wrapperClassName="w-full text-lg font-semibold"
                 value={selectedWinnersDesign}
-                onChange={(e) => handleWinnersDesignChange(e.target.value)}
+                onChange={(e: any) => handleWinnersDesignChange(e.target.value)}
               >
                 {winnersOptions.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 

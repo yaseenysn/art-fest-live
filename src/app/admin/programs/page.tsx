@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IProgram, IResult, PROGRAM_LANGUAGES, PROGRAM_CATEGORIES } from '@/types';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
 import { 
@@ -435,40 +437,37 @@ export default function ProgramsPage() {
         <div className="flex gap-4">
           <div className="relative">
             <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted" />
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
+              onChange={(e: any) => setStatusFilter(e.target.value)}
             >
               <option value="All">All Status</option>
               <option value="Upcoming">Upcoming</option>
               <option value="Live">Live</option>
               <option value="Completed">Completed</option>
-            </select>
+            </Select>
           </div>
           <div className="relative">
-            <select
+            <Select
               value={languageFilter}
-              onChange={(e) => setLanguageFilter(e.target.value)}
-              className="px-4 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
+              onChange={(e: any) => setLanguageFilter(e.target.value)}
             >
               <option value="All">All Languages</option>
               {allLanguageOptions.map(lang => (
                 <option key={lang} value={lang}>{lang}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="relative">
-            <select
+            <Select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
+              onChange={(e: any) => setCategoryFilter(e.target.value)}
             >
               <option value="All">All Age Groups</option>
               {allCategoryOptions.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
       </div>
@@ -659,11 +658,10 @@ export default function ProgramsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-1">Language *</label>
-                  <select
+                  <Select
                     required
                     value={formData.language}
-                    onChange={e => setFormData({ ...formData, language: e.target.value })}
-                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
+                    onChange={(e: any) => setFormData({ ...formData, language: e.target.value })}
                   >
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {isEditModalOpen && formData.language && !PROGRAM_LANGUAGES.includes(formData.language as any) && (
@@ -672,15 +670,14 @@ export default function ProgramsPage() {
                     {PROGRAM_LANGUAGES.map(lang => (
                       <option key={lang} value={lang}>{lang}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-1">Age Group *</label>
-                  <select
+                  <Select
                     required
                     value={formData.category}
-                    onChange={e => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
+                    onChange={(e: any) => setFormData({ ...formData, category: e.target.value })}
                   >
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {isEditModalOpen && formData.category && !PROGRAM_CATEGORIES.includes(formData.category as any) && (
@@ -689,21 +686,20 @@ export default function ProgramsPage() {
                     {PROGRAM_CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-1">Competition Type *</label>
-                  <select
+                  <Select
                     value={formData.type}
-                    onChange={e => setFormData({ ...formData, type: e.target.value as 'Individual' | 'Team' })}
-                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
+                    onChange={(e: any) => setFormData({ ...formData, type: e.target.value as 'Individual' | 'Team' })}
                   >
                     <option value="Individual">Individual</option>
                     <option value="Team">Team</option>
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-text-primary mb-1">Maximum Points *</label>

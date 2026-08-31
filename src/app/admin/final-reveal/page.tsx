@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, MonitorPlay, EyeOff, RotateCcw } from 'lucide-react';
 import FinalTeamReveal from '../../tv/components/FinalTeamReveal';
 import clsx from 'clsx';
+import { Select } from '@/components/ui/Select';
 
 export default function FinalRevealAdminPage() {
   const [teamName, setTeamName] = useState('AL MAHSAN');
@@ -117,15 +118,15 @@ export default function FinalRevealAdminPage() {
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">
                   Position
                 </label>
-                <select
+                <Select
                   value={position}
-                  onChange={(e) => setPosition(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-xl border border-border-card bg-card-secondary focus:bg-card focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-bold text-white text-lg uppercase"
+                  onChange={(e: any) => setPosition(Number(e.target.value))}
+                  wrapperClassName="text-lg font-bold uppercase"
                 >
                   <option value={1}>1ST PLACE</option>
                   <option value={2}>2ND PLACE</option>
                   <option value={3}>3RD PLACE</option>
-                </select>
+                </Select>
               </div>
             </div>
 

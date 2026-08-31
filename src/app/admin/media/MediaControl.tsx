@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, UploadCloud, PlayCircle, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon, Video, MonitorPlay } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
+import { Select } from '@/components/ui/Select';
 
 type MediaItem = {
   _id: string;
@@ -332,30 +333,32 @@ export default function MediaControl() {
                           ) : (
                             <div className="flex items-center space-x-1">
                               <span className="text-xs text-text-muted">Duration:</span>
-                              <select 
+                              <Select 
                                 value={item.imageDuration}
-                                onChange={(e) => updateImageDuration(item.id, parseInt(e.target.value))}
-                                className="bg-slate-700 text-xs rounded border border-slate-600 px-1 py-0.5"
+                                onChange={(e: any) => updateImageDuration(item.id, parseInt(e.target.value))}
+                                className="!min-h-0 !py-1 !px-2 text-xs bg-slate-800"
+                                wrapperClassName="w-24"
                               >
                                 {[5, 10, 15, 20, 30, 45, 60, 120, 180, 300].map(s => (
                                   <option key={s} value={s}>{s >= 60 ? `${s / 60} MIN` : `${s}s`}</option>
                                 ))}
-                              </select>
+                              </Select>
                             </div>
                           )}
 
                           <div className="flex items-center space-x-1 border-l border-slate-600 pl-2">
                             <span className="text-xs text-text-muted">Rotate:</span>
-                            <select 
+                            <Select 
                               value={item.rotation || 0}
-                              onChange={(e) => updateRotation(item.id, parseInt(e.target.value))}
-                              className="bg-slate-700 text-xs rounded border border-slate-600 px-1 py-0.5"
+                              onChange={(e: any) => updateRotation(item.id, parseInt(e.target.value))}
+                              className="!min-h-0 !py-1 !px-2 text-xs bg-slate-800"
+                              wrapperClassName="w-24"
                             >
                               <option value={0}>0&deg;</option>
                               <option value={90}>90&deg;</option>
                               <option value={180}>180&deg;</option>
                               <option value={270}>270&deg;</option>
-                            </select>
+                            </Select>
                           </div>
                         </div>
 

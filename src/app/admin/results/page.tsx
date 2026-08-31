@@ -8,6 +8,8 @@ import { AlertCircle, CheckCircle2, Image as ImageIcon, Download, MonitorPlay, P
 import * as htmlToImage from 'html-to-image';
 import CongratulationsPoster from '@/components/CongratulationsPoster';
 import AllWinnersPoster, { WinnerData } from '@/components/AllWinnersPoster';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
 import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
@@ -474,10 +476,10 @@ export default function ResultsEntry() {
       {/* Program Selector */}
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-6">
         <label className="block text-sm font-semibold text-text-primary mb-2">Select Live Program</label>
-        <select
+        <Select
           value={selectedProgramId}
-          onChange={(e) => setSelectedProgramId(e.target.value)}
-          className="w-full lg:w-1/2 px-4 py-3 border border-border-card rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card shadow-sm"
+          onChange={(e: any) => setSelectedProgramId(e.target.value)}
+          wrapperClassName="w-full lg:w-1/2"
         >
           <option value="">-- Please select a program --</option>
           {programs
@@ -491,7 +493,7 @@ export default function ResultsEntry() {
               {p.name} ({p.category}) {p.status === 'live' ? ' 🔴 LIVE' : ''}
             </option>
           ))}
-        </select>
+        </Select>
         {selectedProgram && (
           <div className="mt-4 p-4 bg-card-secondary border border-border-card rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div><span className="block text-text-muted text-xs uppercase font-bold mb-1">Language • Age Group</span><span className="font-semibold text-text-primary">{selectedProgram.language || 'Other'} • {selectedProgram.category}</span></div>
@@ -576,11 +578,11 @@ export default function ResultsEntry() {
                                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                                     <div>
                                       <label className="text-xs text-text-muted block mb-1">Position</label>
-                                      <select className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.position} onChange={(e)=>setEditingResultData({...editingResultData, position: Number(e.target.value)})}>
+                                      <Select value={editingResultData.position} onChange={(e: any)=>setEditingResultData({...editingResultData, position: Number(e.target.value)})}>
                                         <option value={1}>1st</option>
                                         <option value={2}>2nd</option>
                                         <option value={3}>3rd</option>
-                                      </select>
+                                      </Select>
                                     </div>
                                     <div>
                                       <label className="text-xs text-text-muted block mb-1">Student</label>
@@ -588,9 +590,9 @@ export default function ResultsEntry() {
                                     </div>
                                     <div>
                                       <label className="text-xs text-text-muted block mb-1">Team</label>
-                                      <select className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.teamId} onChange={(e)=>setEditingResultData({...editingResultData, teamId: e.target.value})}>
+                                      <Select value={editingResultData.teamId} onChange={(e: any)=>setEditingResultData({...editingResultData, teamId: e.target.value})}>
                                         {teams.map(team => <option key={String(team._id)} value={String(team._id)}>{team.name}</option>)}
-                                      </select>
+                                      </Select>
                                     </div>
                                     <div>
                                       <label className="text-xs text-text-muted block mb-1">Points</label>
@@ -770,15 +772,14 @@ export default function ResultsEntry() {
                 <div key={row.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-card-secondary p-4 rounded-xl border border-border-card items-start">
                   <div className="md:col-span-2">
                     <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Position</label>
-                    <select 
-                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-semibold text-lg" 
+                    <Select 
                       value={row.position} 
-                      onChange={(e) => updateRow(row.id, 'position', parseInt(e.target.value))}
+                      onChange={(e: any) => updateRow(row.id, 'position', parseInt(e.target.value))}
                     >
                       <option value={1}>1st Place</option>
                       <option value={2}>2nd Place</option>
                       <option value={3}>3rd Place</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="md:col-span-4">
                     <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Student Name</label>
@@ -792,14 +793,13 @@ export default function ResultsEntry() {
                   </div>
                   <div className="md:col-span-3">
                     <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Team</label>
-                    <select 
-                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-semibold" 
+                    <Select 
                       value={row.teamId} 
-                      onChange={(e) => updateRow(row.id, 'teamId', e.target.value)}
+                      onChange={(e: any) => updateRow(row.id, 'teamId', e.target.value)}
                     >
                       <option value="">-- Team --</option>
                       {teams.map(t => <option key={String(t._id)} value={String(t._id)}>{t.name}</option>)}
-                    </select>
+                    </Select>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Points</label>
