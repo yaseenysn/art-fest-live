@@ -468,7 +468,7 @@ export default function ResultsEntry() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary">Results Entry</h1>
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">RESULTS ENTRY</h1>
           <p className="text-text-muted mt-1">Enter competition results and reveal them on the live TV</p>
         </div>
       </div>

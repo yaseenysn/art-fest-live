@@ -310,7 +310,7 @@ export default function ProgramsPage() {
       {/* HEADER & SUMMARY */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary">PROGRAMS</h1>
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">PROGRAMS</h1>
           <p className="text-text-muted mt-1">Manage all competition programs</p>
         </div>
         <button

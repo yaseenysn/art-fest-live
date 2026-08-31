@@ -210,7 +210,7 @@ export default function MediaControl() {
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <div>
-            <h1 className="text-3xl font-black text-text-primary tracking-tight">Media Control</h1>
+            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">MEDIA CONTROL</h1>
             <p className="text-text-muted font-medium">Manage images and videos to display on the TV</p>
           </div>
         </div>

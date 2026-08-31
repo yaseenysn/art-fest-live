@@ -439,7 +439,7 @@ export default function DisplayControl() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary">Display Control</h1>
+        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">DISPLAY CONTROL</h1>
         <p className="text-text-muted mt-1">Send custom announcements to the live TV</p>
       </div>
 
