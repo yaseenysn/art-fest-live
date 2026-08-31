@@ -45,8 +45,10 @@ const getPositionLabel = (position: number) => {
 
 export default function ResultsDesign1({
   results,
+  revealStage = 'WINNER'
 }: {
   results: IResult[];
+  revealStage?: 'PLACE' | 'WINNER';
 }) {
   if (!results || results.length === 0) return null;
 
@@ -520,55 +522,57 @@ export default function ResultsDesign1({
               WINNER NAME
           ====================================================== */}
 
-          <motion.div
-            className="
-              relative
-              font-light
-              uppercase
-              break-words
-            "
-            style={{
-              fontSize:
-                studentName.length > 24
-                  ? "clamp(3rem, 7vw, 7rem)"
-                  : studentName.length > 16
-                    ? "clamp(3.5rem, 8vw, 8rem)"
-                    : "clamp(4.5rem, 10vw, 10rem)",
+          {revealStage === 'WINNER' && (
+            <motion.div
+              key="winner-name-3"
+              className="
+                relative
+                font-light
+                uppercase
+                break-words
+              "
+              style={{
+                fontSize:
+                  studentName.length > 24
+                    ? "clamp(3rem, 7vw, 7rem)"
+                    : studentName.length > 16
+                      ? "clamp(3.5rem, 8vw, 8rem)"
+                      : "clamp(4.5rem, 10vw, 10rem)",
 
-              lineHeight: 0.92,
+                lineHeight: 0.92,
 
-              letterSpacing: "-0.045em",
+                letterSpacing: "-0.045em",
 
-              color: theme.text,
+                color: theme.text,
 
-              fontWeight: 300,
+                fontWeight: 300,
 
-              textShadow: `
-                0 0 10px rgba(173,211,255,0.24),
-                0 0 30px rgba(90,145,220,0.22),
-                0 8px 35px rgba(0,0,0,0.80)
-              `,
-            }}
-            initial={{
-              opacity: 0,
-              y: 45,
-              filter: "blur(18px)",
-              letterSpacing: "0.08em",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-              letterSpacing: "-0.045em",
-            }}
-            transition={{
-              duration: 1.4,
-              delay: 0.65,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            {studentName}
-          </motion.div>
+                textShadow: `
+                  0 0 10px rgba(173,211,255,0.24),
+                  0 0 30px rgba(90,145,220,0.22),
+                  0 8px 35px rgba(0,0,0,0.80)
+                `,
+              }}
+              initial={{
+                opacity: 0,
+                y: 45,
+                filter: "blur(18px)",
+                letterSpacing: "0.08em",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                letterSpacing: "-0.045em",
+              }}
+              transition={{
+                duration: 1.4,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              {studentName}
+            </motion.div>
+          )}
 
           {/* =====================================================
               POSITION
@@ -588,7 +592,6 @@ export default function ResultsDesign1({
             }}
             transition={{
               duration: 0.9,
-              delay: 1.05,
               ease: [0.16, 1, 0.3, 1],
             }}
           >

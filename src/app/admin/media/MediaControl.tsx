@@ -202,22 +202,22 @@ export default function MediaControl() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <div className="min-h-screen bg-card-secondary p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center space-x-4 mb-8">
-          <Link href="/admin/display" className="p-3 bg-white text-slate-500 hover:text-indigo-600 rounded-full shadow-sm hover:shadow-md transition-all">
+          <Link href="/admin/display" className="p-3 bg-card text-text-muted hover:text-primary-indigo rounded-full shadow-sm hover:shadow-md transition-all">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight">Media Control</h1>
-            <p className="text-slate-500 font-medium">Manage images and videos to display on the TV</p>
+            <h1 className="text-3xl font-black text-text-primary tracking-tight">Media Control</h1>
+            <p className="text-text-muted font-medium">Manage images and videos to display on the TV</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT: Library */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border-card p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold flex items-center">
                   <ImageIcon className="w-6 h-6 mr-2 text-indigo-500" /> 
@@ -235,7 +235,7 @@ export default function MediaControl() {
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="flex items-center space-x-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50"
+                    className="flex items-center space-x-2 bg-primary-purple/10 border border-primary-purple/20 text-indigo-700 hover:bg-primary-purple/20 px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50"
                   >
                     <UploadCloud className="w-5 h-5" />
                     <span>{uploading ? 'Uploading...' : 'Upload Media'}</span>
@@ -244,17 +244,17 @@ export default function MediaControl() {
               </div>
 
               {uploadError && (
-                <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm font-bold">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-700 p-3 rounded-lg mb-4 text-sm font-bold">
                   {uploadError}
                 </div>
               )}
 
               {isLoading ? (
-                <div className="text-slate-400 p-8 text-center">Loading media...</div>
+                <div className="text-text-muted p-8 text-center">Loading media...</div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {mediaLibrary.map(media => (
-                    <div key={media._id} className="group relative bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex flex-col">
+                    <div key={media._id} className="group relative bg-row rounded-xl overflow-hidden border border-border-card flex flex-col">
                       <div className="aspect-video bg-black relative flex items-center justify-center overflow-hidden">
                         {media.type === 'video' || media.mimeType?.startsWith('video/') ? (
                           <video src={media.url} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -265,12 +265,12 @@ export default function MediaControl() {
                           {media.type}
                         </div>
                       </div>
-                      <div className="p-3 flex-1 flex flex-col justify-between bg-white">
-                        <p className="text-xs font-bold text-slate-700 truncate mb-2" title={media.name}>{media.name}</p>
+                      <div className="p-3 flex-1 flex flex-col justify-between bg-card">
+                        <p className="text-xs font-bold text-text-primary truncate mb-2" title={media.name}>{media.name}</p>
                         <div className="flex space-x-2">
                           <button 
                             onClick={() => addToPlaylist(media)}
-                            className="flex-1 bg-indigo-600 text-white py-1.5 rounded text-xs font-bold hover:bg-indigo-700 transition-colors"
+                            className="flex-1 bg-primary-indigo text-white text-white py-1.5 rounded text-xs font-bold hover:bg-primary-purple text-white transition-colors"
                           >
                             Add to Playlist
                           </button>
@@ -289,7 +289,7 @@ export default function MediaControl() {
                     </div>
                   ))}
                   {mediaLibrary.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div className="col-span-full py-12 text-center text-text-muted border-2 border-dashed border-border-card rounded-xl">
                       No media uploaded yet.
                     </div>
                   )}
@@ -300,7 +300,7 @@ export default function MediaControl() {
 
           {/* RIGHT: Playlist */}
           <div className="space-y-6">
-            <div className="bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800 p-6">
+            <div className="bg-card-secondary text-white rounded-xl shadow-xl border border-border-card p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <PlayCircle className="w-6 h-6 mr-2 text-emerald-400" /> 
                 Playlist
@@ -308,16 +308,16 @@ export default function MediaControl() {
 
               <div className="space-y-3 mb-6 min-h-[300px]">
                 {playlist.length === 0 ? (
-                  <div className="text-center text-slate-500 py-12 border-2 border-dashed border-slate-700 rounded-xl">
+                  <div className="text-center text-text-muted py-12 border-2 border-dashed border-border-card rounded-xl">
                     Playlist is empty.
                   </div>
                 ) : (
                   playlist.map((item, index) => (
-                    <div key={item.id} className="bg-slate-800 border border-slate-700 rounded-lg p-3 flex items-center space-x-3">
+                    <div key={item.id} className="bg-row border border-border-card rounded-lg p-3 flex items-center space-x-3">
                       <div className="w-12 h-12 bg-black rounded overflow-hidden flex-shrink-0">
                         {item.media.type === 'video' || item.media.mimeType?.startsWith('video/') ? (
                           <div className="w-full h-full flex items-center justify-center bg-slate-700" style={{ transform: `rotate(${item.rotation || 0}deg)` }}>
-                            <Video className="w-6 h-6 text-slate-400" />
+                            <Video className="w-6 h-6 text-text-muted" />
                           </div>
                         ) : (
                           <img src={item.media.url} className="w-full h-full object-cover" style={{ transform: `rotate(${item.rotation || 0}deg)` }} />
@@ -328,24 +328,24 @@ export default function MediaControl() {
                         
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           {item.media.type === 'video' || item.media.mimeType?.startsWith('video/') ? (
-                            <p className="text-xs text-slate-400 uppercase font-semibold">Video (Native duration)</p>
+                            <p className="text-xs text-text-muted uppercase font-semibold">Video (Native duration)</p>
                           ) : (
                             <div className="flex items-center space-x-1">
-                              <span className="text-xs text-slate-400">Duration:</span>
+                              <span className="text-xs text-text-muted">Duration:</span>
                               <select 
                                 value={item.imageDuration}
                                 onChange={(e) => updateImageDuration(item.id, parseInt(e.target.value))}
                                 className="bg-slate-700 text-xs rounded border border-slate-600 px-1 py-0.5"
                               >
-                                {[5, 10, 15, 20, 30, 45, 60].map(s => (
-                                  <option key={s} value={s}>{s}s</option>
+                                {[5, 10, 15, 20, 30, 45, 60, 120, 180, 300].map(s => (
+                                  <option key={s} value={s}>{s >= 60 ? `${s / 60} MIN` : `${s}s`}</option>
                                 ))}
                               </select>
                             </div>
                           )}
 
                           <div className="flex items-center space-x-1 border-l border-slate-600 pl-2">
-                            <span className="text-xs text-slate-400">Rotate:</span>
+                            <span className="text-xs text-text-muted">Rotate:</span>
                             <select 
                               value={item.rotation || 0}
                               onChange={(e) => updateRotation(item.id, parseInt(e.target.value))}
@@ -361,10 +361,10 @@ export default function MediaControl() {
 
                       </div>
                       <div className="flex flex-col space-y-1">
-                        <button onClick={() => movePlaylist(index, 'up')} disabled={index === 0} className="text-slate-400 hover:text-white disabled:opacity-30">
+                        <button onClick={() => movePlaylist(index, 'up')} disabled={index === 0} className="text-text-muted hover:text-white disabled:opacity-30">
                           <ArrowUp className="w-4 h-4" />
                         </button>
-                        <button onClick={() => movePlaylist(index, 'down')} disabled={index === playlist.length - 1} className="text-slate-400 hover:text-white disabled:opacity-30">
+                        <button onClick={() => movePlaylist(index, 'down')} disabled={index === playlist.length - 1} className="text-text-muted hover:text-white disabled:opacity-30">
                           <ArrowDown className="w-4 h-4" />
                         </button>
                       </div>
@@ -380,7 +380,7 @@ export default function MediaControl() {
                 <button 
                   onClick={handlePlayOnTV}
                   disabled={playlist.length === 0 || pushing}
-                  className="w-full flex items-center justify-center space-x-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 rounded-lg py-4 font-black text-lg transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center space-x-2 bg-emerald-500/10 border border-emerald-500/200 hover:bg-emerald-400 text-white rounded-lg py-4 font-black text-lg transition-colors disabled:opacity-50"
                 >
                   <MonitorPlay className="w-6 h-6" />
                   <span>{pushing ? 'SENDING...' : 'PLAY PLAYLIST ON TV'}</span>
@@ -396,7 +396,7 @@ export default function MediaControl() {
                 <button 
                   onClick={() => setPlaylist([])}
                   disabled={playlist.length === 0}
-                  className="w-full py-2 text-sm font-bold text-slate-400 hover:text-white transition-colors disabled:opacity-50"
+                  className="w-full py-2 text-sm font-bold text-text-muted hover:text-white transition-colors disabled:opacity-50"
                 >
                   CLEAR PLAYLIST
                 </button>
@@ -405,7 +405,7 @@ export default function MediaControl() {
               {pushStatus && (
                 <div className={clsx(
                   "mt-4 p-3 rounded-lg text-sm font-bold text-center",
-                  pushStatus.type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                  pushStatus.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/200/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                 )}>
                   {pushStatus.text}
                 </div>

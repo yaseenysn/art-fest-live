@@ -214,109 +214,110 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
     }
 
     return (
-      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center overflow-hidden bg-[#f8f9fa] select-none font-sans">
+      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden bg-[#FAFAFA] select-none font-sans text-neutral-900">
 
-        {/* SUBTLE BACKGROUND PATTERN */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15-15 15L15 15 30 0zm0 60l15-15-15-15-15 15 30 15z' fill='%23000000' fill-rule='evenodd'/%3E%3C/svg%3E\")",
-            backgroundSize: "120px 120px",
-          }}
-        />
-
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          className="relative z-10 flex w-full max-w-[92vw] flex-col items-center"
-        >
-
-          {/* ARABIC */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.2,
-              duration: 1,
+        {/* OVERSIZED ARABIC WATERMARK */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.025] overflow-hidden mix-blend-multiply">
+          <div
+            dir="rtl"
+            className="font-extrabold whitespace-nowrap -rotate-[12deg] scale-125 select-none"
+            style={{
+              fontSize: "clamp(200px, 35vw, 500px)",
+              fontFamily: "'Amiri', 'Noto Naskh Arabic', 'Traditional Arabic', serif",
             }}
-            className="mb-[7vh] w-full text-center"
           >
-            <h1
-              dir="rtl"
-              className="
-                w-full
-                overflow-visible
-                text-center
-                font-extrabold
-                leading-tight
-                tracking-tight
-                text-slate-900
-              "
-              style={{
-                fontSize: "clamp(60px, 11vw, 180px)",
-              }}
-            >
-              جَزَاكُمُ اللهُ خَيْرًا
-            </h1>
-          </motion.div>
+            جَزَاكُمُ اللهُ خَيْرًا
+          </div>
+        </div>
 
-
-          {/* JUDGES */}
-          {judges.length > 0 && (
+        {/* MAIN CONTENT AREA */}
+        <div className="relative z-10 flex flex-1 w-full flex-col items-center justify-center pt-[8vh]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 1,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="flex w-full flex-col items-center"
+          >
+            {/* ARABIC CALLIGRAPHY */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
-                delay: 0.4,
-                duration: 0.8,
+                delay: 0.2,
+                duration: 1,
               }}
-              className={`
-                grid
-                ${gridCols}
-                w-full
-                max-w-[1400px]
-                mx-auto
-                gap-x-[6vw]
-                gap-y-[6vh]
-                px-[2vw]
-              `}
+              className="mb-[6vh] w-full text-center px-[4vw]"
             >
-              {judges.map((judge, idx) => (
-                <div
-                  key={idx}
-                  className="flex flex-col items-center justify-center text-center"
-                >
-
-                  <div className="mb-5 h-[2px] w-12 bg-slate-300" />
-
-                  <h3
-                    className="
-                      max-w-full
-                      overflow-visible
-                      font-bold
-                      leading-none
-                      tracking-tight
-                      text-slate-800
-                    "
-                    style={{
-                      fontSize: "clamp(24px, 3.5vw, 56px)",
-                    }}
-                  >
-                    {judge.name}
-                  </h3>
-
-                </div>
-              ))}
+              <h1
+                dir="rtl"
+                className="text-[#1a1a1a] tracking-normal leading-tight font-bold"
+                style={{
+                  fontSize: "clamp(70px, 13vw, 220px)",
+                  fontFamily: "'Amiri', 'Noto Naskh Arabic', 'Traditional Arabic', 'Dubai', serif",
+                }}
+              >
+                جَزَاكُمُ اللهُ خَيْرًا
+              </h1>
             </motion.div>
-          )}
+
+            {/* JUDGES LIST */}
+            {judges.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.4,
+                  duration: 0.8,
+                }}
+                className={`
+                  grid
+                  ${gridCols}
+                  w-full
+                  max-w-[1400px]
+                  mx-auto
+                  gap-x-[4vw]
+                  gap-y-[5vh]
+                  px-[4vw]
+                `}
+              >
+                {judges.map((judge, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center justify-center text-center"
+                  >
+                    <h3
+                      className="max-w-full overflow-visible font-medium tracking-wide text-neutral-800"
+                      style={{
+                        fontSize: "clamp(80px, 5vw, 180px)",
+                      }}
+
+                    >
+                      {judge.name}
+                    </h3>
+                    <div className="mt-[1.5vh] h-[2px] w-[3vw] min-w-[30px] max-w-[60px] bg-neutral-300 rounded-full" />
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* SUBTLE FOOTER */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            delay: 0.6,
+            duration: 1,
+          }}
+          className="relative z-10 w-full flex items-end justify-center pb-[4vh] opacity-40"
+        >
 
         </motion.div>
+
       </div>
     );
   }
@@ -354,6 +355,20 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
    890                  901
 ============================================================ */
 
+function getGridDimensions(total: number) {
+  if (total === 0) return { cols: 1, rows: 1 };
+  if (total <= 4) return { cols: 1, rows: total };
+  if (total <= 8) return { cols: 2, rows: Math.ceil(total / 2) };
+  if (total <= 10) return { cols: 2, rows: Math.ceil(total / 2) };
+  if (total <= 12) return { cols: 3, rows: Math.ceil(total / 3) };
+  if (total <= 15) return { cols: 3, rows: Math.ceil(total / 3) };
+  if (total <= 16) return { cols: 4, rows: Math.ceil(total / 4) };
+  if (total <= 20) return { cols: 4, rows: Math.ceil(total / 4) };
+  
+  const cols = Math.ceil(total / 5);
+  return { cols, rows: Math.ceil(total / cols) };
+}
+
 function ChessNumberGrid({
   chessNumber,
 }: {
@@ -364,15 +379,29 @@ function ChessNumberGrid({
     .map((item) => item.trim())
     .filter(Boolean);
 
-  const visibleNumbers = numbers.slice(0, 8);
+  const total = numbers.length;
+  const { cols, rows } = getGridDimensions(total);
 
-  const leftNumbers = visibleNumbers.filter(
-    (_, index) => index % 2 === 0
-  );
+  const columnsData = Array.from({ length: cols }, (_, colIndex) => {
+    return numbers.slice(colIndex * rows, (colIndex + 1) * rows);
+  });
 
-  const rightNumbers = visibleNumbers.filter(
-    (_, index) => index % 2 === 1
-  );
+  const maxVal = Math.max(cols, rows);
+  let minSize = 20, vwSize = 2, maxSize = 40;
+
+  if (maxVal <= 2) {
+    minSize = 60; vwSize = 8; maxSize = 130;
+  } else if (maxVal <= 3) {
+    minSize = 50; vwSize = 6; maxSize = 100;
+  } else if (maxVal <= 4) {
+    minSize = 40; vwSize = 4.5; maxSize = 80;
+  } else if (maxVal <= 5) {
+    minSize = 30; vwSize = 3.5; maxSize = 60;
+  } else {
+    minSize = 20; vwSize = 2.5; maxSize = 45;
+  }
+
+  const fontSizeClamp = `clamp(${minSize}px, ${vwSize}vw, ${maxSize}px)`;
 
   return (
     <div
@@ -381,44 +410,26 @@ function ChessNumberGrid({
         min-h-0
         flex-1
         w-full
-        grid-cols-2
         gap-x-[5vw]
       "
+      style={{
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
+      }}
     >
-
-      {/* ======================================================
-          LEFT COLUMN
-      ====================================================== */}
-      <div className="flex min-h-0 flex-col">
-
-        {leftNumbers.map((number, index) => (
-          <ChessNumberRow
-            key={`left-${index}`}
-            number={number}
-          />
-        ))}
-
-      </div>
-
-
-      {/* ======================================================
-          RIGHT COLUMN
-      ====================================================== */}
-      <div className="flex min-h-0 flex-col">
-
-        {rightNumbers.map((number, index) => (
-          <ChessNumberRow
-            key={`right-${index}`}
-            number={number}
-          />
-        ))}
-
-      </div>
-
+      {columnsData.map((colNumbers, colIdx) => (
+        <div key={`col-${colIdx}`} className="flex min-h-0 flex-col">
+          {colNumbers.map((number, idx) => (
+            <ChessNumberRow
+              key={`row-${colIdx}-${idx}`}
+              number={number}
+              fontSizeClamp={fontSizeClamp}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
-
 
 /* ============================================================
    SINGLE CHESS NUMBER ROW
@@ -426,8 +437,10 @@ function ChessNumberGrid({
 
 function ChessNumberRow({
   number,
+  fontSizeClamp,
 }: {
   number: string;
+  fontSizeClamp: string;
 }) {
   return (
     <div
@@ -442,19 +455,10 @@ function ChessNumberRow({
         border-white/15
       "
     >
-
       <motion.div
-        initial={{
-          opacity: 0,
-          scale: 0.92,
-        }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
-        transition={{
-          duration: 0.5,
-        }}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
         className="
           overflow-visible
           text-center
@@ -465,7 +469,7 @@ function ChessNumberRow({
           text-white
         "
         style={{
-          fontSize: "clamp(54px, 7vw, 125px)",
+          fontSize: fontSizeClamp,
           fontVariantNumeric: "tabular-nums",
           whiteSpace: "nowrap",
           textRendering: "geometricPrecision",
@@ -473,7 +477,6 @@ function ChessNumberRow({
       >
         {number}
       </motion.div>
-
     </div>
   );
 }

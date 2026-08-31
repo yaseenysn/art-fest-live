@@ -8,6 +8,9 @@ import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
 import { Users, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import clsx from 'clsx';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card, CardContent } from '@/components/ui/Card';
 
 export default function TeamsPage() {
   const queryClient = useQueryClient();
@@ -109,42 +112,39 @@ export default function TeamsPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Teams</h1>
-          <p className="text-slate-500 mt-1">Manage competition teams and colors.</p>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-purple to-primary-pink tracking-tight">Teams</h1>
+          <p className="text-text-muted mt-1 font-medium">Manage competition teams and colors.</p>
         </div>
-        <button 
-          onClick={openCreateModal}
-          className="mt-4 md:mt-0 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold tracking-widest uppercase hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/20 flex items-center space-x-2"
-        >
-          <Users className="w-5 h-5" />
-          <span>Add Team</span>
-        </button>
+        <Button onClick={openCreateModal} className="mt-4 md:mt-0 uppercase tracking-widest">
+          <Users className="w-5 h-5 mr-2" />
+          Add Team
+        </Button>
       </div>
 
       {deleteStatus && (
         <div className={clsx(
           "p-4 rounded-xl flex items-start space-x-3 shadow-sm border",
-          deleteStatus.type === 'error' ? "bg-red-50 border-red-200 text-red-700" : "bg-emerald-50 border-emerald-200 text-emerald-700"
+          deleteStatus.type === 'error' ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
         )}>
           <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <span className="font-medium">{deleteStatus.message}</span>
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <Card>
         {teams.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">
-            <Users className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-            <p className="text-lg">No teams found.</p>
+          <CardContent className="p-12 text-center text-text-muted">
+            <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p className="text-lg text-text-primary">No teams found.</p>
             <p className="text-sm mt-1">Create a team to get started.</p>
-          </div>
+          </CardContent>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm uppercase tracking-wider font-bold">
+              <thead className="bg-row border-b border-border-card text-text-muted text-xs uppercase tracking-wider font-bold">
                 <tr>
                   <th className="px-6 py-4">Color</th>
                   <th className="px-6 py-4">Name</th>
@@ -152,30 +152,34 @@ export default function TeamsPage() {
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border-card bg-card">
                 {teams.map(team => (
-                  <tr key={String(team._id)} className="hover:bg-slate-50 transition-colors">
+                  <tr key={String(team._id)} className="hover:bg-row transition-colors">
                     <td className="px-6 py-4">
-                      <div className="w-8 h-8 rounded-full shadow-inner border border-slate-200 flex items-center justify-center text-[10px] font-bold text-white mix-blend-difference" style={{ backgroundColor: team.color }}>
+                      <div className="w-8 h-8 rounded-full shadow-inner border border-border-card flex items-center justify-center text-[10px] font-bold text-white mix-blend-difference" style={{ backgroundColor: team.color }}>
                         {team.color}
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{team.name}</td>
-                    <td className="px-6 py-4 font-medium text-slate-500 uppercase">{team.shortName || '-'}</td>
+                    <td className="px-6 py-4 font-bold text-text-primary">{team.name}</td>
+                    <td className="px-6 py-4 font-medium text-text-muted uppercase">{team.shortName || '-'}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end space-x-3">
-                        <button 
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
                           onClick={() => openEditModal(team)}
-                          className="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                          className="!p-2 text-primary-indigo hover:text-white"
                         >
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
+                        </Button>
+                        <Button 
+                          variant="danger" 
+                          size="sm"
                           onClick={() => confirmDelete(team)}
-                          className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                          className="!p-2"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -184,7 +188,7 @@ export default function TeamsPage() {
             </table>
           </div>
         )}
-      </div>
+      </Card>
 
       <TeamModal
         isOpen={isModalOpen}
@@ -195,15 +199,15 @@ export default function TeamsPage() {
 
       {/* DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && teamToDelete && (
-        <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[200] overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+        <div className="fixed inset-0 bg-app/90 backdrop-blur-sm flex items-center justify-center p-4 z-[200] overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border-card">
             <div className="p-6">
-              <div className="flex items-center space-x-3 mb-4 text-red-600">
+              <div className="flex items-center space-x-3 mb-4 text-red-400">
                 <AlertCircle className="w-8 h-8" />
-                <h2 className="text-2xl font-black uppercase tracking-widest">DELETE TEAM?</h2>
+                <h2 className="text-2xl font-black uppercase tracking-widest text-text-primary">DELETE TEAM?</h2>
               </div>
               
-              <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200">
+              <div className="mb-6 p-4 bg-red-500/10 text-red-400 rounded-xl border border-red-500/20">
                 <p className="font-bold mb-2">Team: {teamToDelete.name}</p>
                 <p className="text-sm font-medium">
                   WARNING: This will permanently delete this team and all competition data associated with it, including its results. This action cannot be undone.
@@ -211,39 +215,35 @@ export default function TeamsPage() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">
-                  Type <span className="font-black text-slate-900 select-all">{teamToDelete.name}</span> to confirm
+                <label className="block text-sm font-bold text-text-muted mb-2 uppercase tracking-wide">
+                  Type <span className="font-black text-text-primary select-all">{teamToDelete.name}</span> to confirm
                 </label>
-                <input
+                <Input
                   type="text"
                   value={deleteConfirmationText}
                   onChange={(e) => setDeleteConfirmationText(e.target.value)}
                   placeholder={teamToDelete.name}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all font-medium text-slate-900"
                   disabled={isDeleting}
                 />
               </div>
 
               <div className="flex space-x-3">
-                <button
+                <Button
+                  variant="secondary"
                   onClick={() => setIsDeleteModalOpen(false)}
                   disabled={isDeleting}
-                  className="flex-1 py-3 px-4 bg-slate-100 text-slate-700 rounded-xl font-bold uppercase tracking-wider hover:bg-slate-200 transition-colors disabled:opacity-50"
+                  className="flex-1 uppercase tracking-wider"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
                   onClick={executeDelete}
                   disabled={isDeleting || deleteConfirmationText !== teamToDelete.name}
-                  className={clsx(
-                    "flex-1 py-3 px-4 rounded-xl font-bold uppercase tracking-wider transition-all shadow-lg",
-                    (isDeleting || deleteConfirmationText !== teamToDelete.name)
-                      ? "bg-red-300 text-white cursor-not-allowed shadow-none"
-                      : "bg-red-600 text-white hover:bg-red-700 shadow-red-600/20 active:scale-[0.98]"
-                  )}
+                  className="flex-1 uppercase tracking-wider"
                 >
                   {isDeleting ? 'Deleting...' : 'DELETE EVERYTHING'}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

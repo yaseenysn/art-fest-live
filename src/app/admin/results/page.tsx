@@ -83,6 +83,9 @@ export default function ResultsEntry() {
 
   // Re-reveal toast state tracking per position
   const [revealToasts, setRevealToasts] = useState<{ [pos: number]: boolean }>({});
+  
+  // Track active reveal stage for UI disabling
+  const [activeRevealState, setActiveRevealState] = useState<{pos: number, stage: 'PLACE'|'WINNER'} | null>(null);
 
   // Poster State
   const [isPosterModalOpen, setIsPosterModalOpen] = useState(false);
@@ -336,11 +339,8 @@ export default function ResultsEntry() {
   };
 
   // --- SEQUENTIAL REVEAL WORKFLOW ---
-  const handleStartReveal = async (position: number, isAlreadyRevealed: boolean) => {
-    if (isAlreadyRevealed) {
-      setRevealToasts(prev => ({ ...prev, [position]: true }));
-      setTimeout(() => setRevealToasts(prev => ({ ...prev, [position]: false })), 3000);
-    } else {
+  const handleReveal = async (position: number, isAlreadyRevealed: boolean, stage: 'PLACE' | 'WINNER') => {
+    if (!isAlreadyRevealed && stage === 'PLACE') {
       if (!confirm(`Are you sure you want to reveal the ${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} Place results on the TV now?`)) return;
     }
     
@@ -348,10 +348,11 @@ export default function ResultsEntry() {
       const res = await fetch('/api/results/reveal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ programId: selectedProgramId, position, duration: resultRevealDisplayTime })
+        body: JSON.stringify({ programId: selectedProgramId, position, duration: resultRevealDisplayTime, revealStage: stage })
       });
       if (!res.ok) throw new Error('Failed to reveal');
       
+      setActiveRevealState({ pos: position, stage });
       queryClient.invalidateQueries({ queryKey: ['results', selectedProgramId] });
       queryClient.invalidateQueries({ queryKey: ['results', 'recent'] });
     } catch (err: unknown) {
@@ -465,18 +466,18 @@ export default function ResultsEntry() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Results Entry</h1>
-          <p className="text-slate-500 mt-1">Enter competition results and reveal them on the live TV</p>
+          <h1 className="text-3xl font-bold text-text-primary">Results Entry</h1>
+          <p className="text-text-muted mt-1">Enter competition results and reveal them on the live TV</p>
         </div>
       </div>
 
       {/* Program Selector */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <label className="block text-sm font-semibold text-slate-700 mb-2">Select Live Program</label>
+      <div className="bg-card rounded-xl shadow-sm border border-border-card p-6">
+        <label className="block text-sm font-semibold text-text-primary mb-2">Select Live Program</label>
         <select
           value={selectedProgramId}
           onChange={(e) => setSelectedProgramId(e.target.value)}
-          className="w-full lg:w-1/2 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+          className="w-full lg:w-1/2 px-4 py-3 border border-border-card rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card shadow-sm"
         >
           <option value="">-- Please select a program --</option>
           {programs
@@ -492,16 +493,16 @@ export default function ResultsEntry() {
           ))}
         </select>
         {selectedProgram && (
-          <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div><span className="block text-slate-500 text-xs uppercase font-bold mb-1">Language • Age Group</span><span className="font-semibold text-slate-800">{selectedProgram.language || 'Other'} • {selectedProgram.category}</span></div>
-            <div><span className="block text-slate-500 text-xs uppercase font-bold mb-1">Type</span><span className="font-semibold text-slate-800">{selectedProgram.type || 'Standard'}</span></div>
-            <div><span className="block text-slate-500 text-xs uppercase font-bold mb-1">Max Points</span><span className="font-semibold text-slate-800">{selectedProgram.maxPoints || 10}</span></div>
+          <div className="mt-4 p-4 bg-card-secondary border border-border-card rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div><span className="block text-text-muted text-xs uppercase font-bold mb-1">Language • Age Group</span><span className="font-semibold text-text-primary">{selectedProgram.language || 'Other'} • {selectedProgram.category}</span></div>
+            <div><span className="block text-text-muted text-xs uppercase font-bold mb-1">Type</span><span className="font-semibold text-text-primary">{selectedProgram.type || 'Standard'}</span></div>
+            <div><span className="block text-text-muted text-xs uppercase font-bold mb-1">Max Points</span><span className="font-semibold text-text-primary">{selectedProgram.maxPoints || 10}</span></div>
             <div>
-              <span className="block text-slate-500 text-xs uppercase font-bold mb-1">Status</span>
+              <span className="block text-text-muted text-xs uppercase font-bold mb-1">Status</span>
               <span className={clsx(
                 "font-bold uppercase",
-                selectedProgram.status === 'live' ? 'text-red-600' : 
-                selectedProgram.status === 'completed' ? 'text-emerald-600' : 'text-slate-600'
+                selectedProgram.status === 'live' ? 'text-red-400' : 
+                selectedProgram.status === 'completed' ? 'text-emerald-400' : 'text-text-secondary'
               )}>
                 {selectedProgram.status === 'live' && '🔴 '}
                 {selectedProgram.status}
@@ -512,23 +513,23 @@ export default function ResultsEntry() {
       </div>
 
       {!selectedProgramId ? (
-        <div className="text-center p-12 bg-white rounded-xl border border-dashed border-slate-300">
-          <h2 className="text-xl font-bold text-slate-400">SELECT A PROGRAM TO ENTER RESULTS</h2>
-          <p className="text-slate-500 mt-2">Choose a competition program above to begin.</p>
+        <div className="text-center p-12 bg-card rounded-xl border border-dashed border-border-card">
+          <h2 className="text-xl font-bold text-text-muted">SELECT A PROGRAM TO ENTER RESULTS</h2>
+          <p className="text-text-muted mt-2">Choose a competition program above to begin.</p>
         </div>
       ) : selectedProgram?.status === 'upcoming' ? (
-        <div className="text-center p-12 bg-white rounded-xl border border-dashed border-slate-300">
-          <h2 className="text-xl font-bold text-slate-400">PROGRAM NOT STARTED</h2>
-          <p className="text-slate-500 mt-2">This program has not started yet. Go to Programs to start it.</p>
+        <div className="text-center p-12 bg-card rounded-xl border border-dashed border-border-card">
+          <h2 className="text-xl font-bold text-text-muted">PROGRAM NOT STARTED</h2>
+          <p className="text-text-muted mt-2">This program has not started yet. Go to Programs to start it.</p>
         </div>
       ) : (
         <>
           {/* SAVED RESULTS SECTION (REVIEW) */}
           {savedResultData.length > 0 && (
-            <div className="bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-800">
+            <div className="bg-card-secondary rounded-2xl shadow-xl overflow-hidden border border-border-card">
               <div className="p-8 text-white">
                 <h2 className="text-2xl font-black mb-1 tracking-wider text-slate-100">RESULT REVIEW</h2>
-                <h3 className="text-lg text-slate-400 mb-8 uppercase tracking-widest">SAVED RESULTS FOR: {selectedProgram?.name}</h3>
+                <h3 className="text-lg text-text-muted mb-8 uppercase tracking-widest">SAVED RESULTS FOR: {selectedProgram?.name}</h3>
                 
                 <div className="space-y-12 max-w-3xl mx-auto">
                   {[1, 2, 3].map(pos => {
@@ -549,7 +550,7 @@ export default function ResultsEntry() {
                     const posName = pos === 1 ? '1ST PLACE' : pos === 2 ? '2ND PLACE' : '3RD PLACE';
 
                     return (
-                      <div key={pos} className="border border-slate-700 rounded-xl overflow-hidden bg-slate-800">
+                      <div key={pos} className="border border-border-card rounded-xl overflow-hidden bg-row">
                         <div className="bg-slate-700 px-6 py-4 flex justify-between items-center border-b border-slate-600">
                           <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
                           <div className="text-sm font-bold uppercase tracking-widest">
@@ -558,7 +559,7 @@ export default function ResultsEntry() {
                             ) : isEnabled ? (
                               <span className="text-amber-400">● READY</span>
                             ) : (
-                              <span className="text-slate-500">🔒 LOCKED</span>
+                              <span className="text-text-muted">🔒 LOCKED</span>
                             )}
                           </div>
                         </div>
@@ -571,59 +572,59 @@ export default function ResultsEntry() {
                             
                             if (isRowEditing && editingResultData) {
                               return (
-                                <div key={String(r._id)} className="bg-slate-900 p-4 rounded-xl border border-indigo-500">
+                                <div key={String(r._id)} className="bg-card-secondary p-4 rounded-xl border border-indigo-500">
                                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                                     <div>
-                                      <label className="text-xs text-slate-400 block mb-1">Position</label>
-                                      <select className="w-full bg-slate-950 text-white border border-slate-700 rounded p-2" value={editingResultData.position} onChange={(e)=>setEditingResultData({...editingResultData, position: Number(e.target.value)})}>
+                                      <label className="text-xs text-text-muted block mb-1">Position</label>
+                                      <select className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.position} onChange={(e)=>setEditingResultData({...editingResultData, position: Number(e.target.value)})}>
                                         <option value={1}>1st</option>
                                         <option value={2}>2nd</option>
                                         <option value={3}>3rd</option>
                                       </select>
                                     </div>
                                     <div>
-                                      <label className="text-xs text-slate-400 block mb-1">Student</label>
-                                      <input type="text" className="w-full bg-slate-950 text-white border border-slate-700 rounded p-2" value={editingResultData.studentName} onChange={(e)=>setEditingResultData({...editingResultData, studentName: e.target.value})} />
+                                      <label className="text-xs text-text-muted block mb-1">Student</label>
+                                      <input type="text" className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.studentName} onChange={(e)=>setEditingResultData({...editingResultData, studentName: e.target.value})} />
                                     </div>
                                     <div>
-                                      <label className="text-xs text-slate-400 block mb-1">Team</label>
-                                      <select className="w-full bg-slate-950 text-white border border-slate-700 rounded p-2" value={editingResultData.teamId} onChange={(e)=>setEditingResultData({...editingResultData, teamId: e.target.value})}>
+                                      <label className="text-xs text-text-muted block mb-1">Team</label>
+                                      <select className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.teamId} onChange={(e)=>setEditingResultData({...editingResultData, teamId: e.target.value})}>
                                         {teams.map(team => <option key={String(team._id)} value={String(team._id)}>{team.name}</option>)}
                                       </select>
                                     </div>
                                     <div>
-                                      <label className="text-xs text-slate-400 block mb-1">Points</label>
-                                      <input type="number" className="w-full bg-slate-950 text-white border border-slate-700 rounded p-2" value={editingResultData.points} onChange={(e)=>setEditingResultData({...editingResultData, points: Number(e.target.value)})} />
+                                      <label className="text-xs text-text-muted block mb-1">Points</label>
+                                      <input type="number" className="w-full bg-slate-950 text-white border border-border-card rounded p-2" value={editingResultData.points} onChange={(e)=>setEditingResultData({...editingResultData, points: Number(e.target.value)})} />
                                     </div>
                                   </div>
                                   <div className="flex justify-end space-x-2 mt-4">
                                     <button onClick={cancelEdit} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-bold transition">CANCEL</button>
-                                    <button onClick={saveEdit} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded text-sm font-bold transition">SAVE</button>
+                                    <button onClick={saveEdit} className="px-4 py-2 bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 rounded text-sm font-bold transition">SAVE</button>
                                   </div>
                                 </div>
                               );
                             }
 
                             return (
-                              <div key={String(r._id)} className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                              <div key={String(r._id)} className="flex flex-col sm:flex-row sm:items-center justify-between bg-card-secondary/80 p-4 rounded-xl border border-border-card">
                                 <div className="flex items-center space-x-4">
                                   <div>
                                     <div className="font-bold text-lg text-white">{r.studentName}</div>
-                                    <div className="text-slate-400 text-sm flex items-center space-x-2 mt-1">
+                                    <div className="text-text-muted text-sm flex items-center space-x-2 mt-1">
                                       <div className="w-3 h-3 rounded-full shadow-sm" style={{backgroundColor: t.color}}></div>
                                       <span className="uppercase font-semibold tracking-wider">{t.name}</span>
                                     </div>
                                   </div>
                                 </div>
                                 <div className="mt-4 sm:mt-0 flex items-center space-x-6">
-                                  <div className="text-xl font-black text-amber-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">
-                                    {r.points} <span className="text-xs font-medium text-slate-500 uppercase">pts</span>
+                                  <div className="text-xl font-black text-amber-400 bg-slate-950 px-3 py-1 rounded-lg border border-border-card">
+                                    {r.points} <span className="text-xs font-medium text-text-muted uppercase">pts</span>
                                   </div>
                                   <div className="flex flex-col space-y-2">
-                                    <button onClick={() => startEdit(r)} className="text-slate-400 hover:text-indigo-400 transition" title="Edit">
+                                    <button onClick={() => startEdit(r)} className="text-text-muted hover:text-indigo-400 transition" title="Edit">
                                       <Edit2 className="w-5 h-5" />
                                     </button>
-                                    <button onClick={() => handleDeleteResult(String(r._id))} className="text-slate-400 hover:text-red-400 transition" title="Delete">
+                                    <button onClick={() => handleDeleteResult(String(r._id))} className="text-text-muted hover:text-red-400 transition" title="Delete">
                                       <Trash2 className="w-5 h-5" />
                                     </button>
                                   </div>
@@ -633,11 +634,11 @@ export default function ResultsEntry() {
                           })}
                         </div>
 
-                        <div className="bg-slate-800/50 p-4 border-t border-slate-700 space-y-4">
+                        <div className="bg-row/50 p-4 border-t border-border-card space-y-4">
                           <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Display Duration</label>
-                            <div className="flex items-center space-x-2">
-                              {[5, 10, 15, 30].map(time => (
+                            <label className="text-xs font-bold text-text-muted uppercase tracking-wider">Display Duration</label>
+                            <div className="flex flex-wrap gap-2">
+                              {[5, 10, 15, 30, 60, 120, 180, 300].map(time => (
                                 <button
                                   key={time}
                                   onClick={() => setResultRevealDisplayTime(time)}
@@ -645,44 +646,56 @@ export default function ResultsEntry() {
                                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                                     resultRevealDisplayTime === time 
                                       ? "bg-indigo-900/50 text-indigo-300 border border-indigo-500/50"
-                                      : "bg-slate-900/50 text-slate-400 border border-transparent hover:bg-slate-800"
+                                      : "bg-card-secondary/50 text-text-muted border border-transparent hover:bg-row"
                                   )}
                                 >
-                                  {time} sec
+                                  {time >= 60 ? `${time / 60} MIN` : `${time} sec`}
                                 </button>
                               ))}
                             </div>
                           </div>
-                          <div className="flex space-x-4">
-                          <button
-                            onClick={() => handleStartReveal(pos, isPosRevealed)}
-                            disabled={!isEnabled}
-                            className={clsx(
-                              "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase relative overflow-hidden",
-                              isPosRevealed 
-                                ? "bg-indigo-900/40 hover:bg-indigo-800 text-indigo-300 border border-indigo-500/30"
-                                : isEnabled
-                                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/20"
-                                  : "bg-slate-700/50 text-slate-500 cursor-not-allowed border border-slate-600/50"
-                            )}
-                          >
-                            {revealToasts[pos] ? (
-                              <span className="text-emerald-400 font-black animate-pulse">ALREADY REVEALED — SHOWING AGAIN</span>
-                            ) : isPosRevealed ? (
-                              "REVEAL AGAIN"
-                            ) : (
-                              "START REVEAL"
-                            )}
-                          </button>
-                          
-                          <button
-                            onClick={() => handleEndReveal(pos)}
-                            disabled={!isPosRevealed}
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleReveal(pos, isPosRevealed, 'PLACE')}
+                              disabled={!isEnabled || (activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE')}
+                              className={clsx(
+                                "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase relative overflow-hidden",
+                                activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE'
+                                  ? "bg-indigo-900/40 text-indigo-300 border border-indigo-500/30 cursor-not-allowed"
+                                  : isEnabled
+                                    ? "bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 shadow-indigo-500/20"
+                                    : "bg-slate-700/50 text-text-muted cursor-not-allowed border border-slate-600/50"
+                              )}
+                            >
+                              {activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE' ? "PLACE REVEALED" : "REVEAL PLACE"}
+                            </button>
+
+                            <button
+                              onClick={() => handleReveal(pos, isPosRevealed, 'WINNER')}
+                              disabled={!isPosRevealed || (activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER')}
+                              className={clsx(
+                                "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase relative overflow-hidden",
+                                activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER'
+                                  ? "bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 cursor-not-allowed"
+                                  : isPosRevealed
+                                    ? "bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-400 shadow-emerald-500/20"
+                                    : "bg-slate-700/50 text-text-muted cursor-not-allowed border border-slate-600/50"
+                              )}
+                            >
+                              {activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER' ? "NAME REVEALED" : "REVEAL NAME"}
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                handleEndReveal(pos);
+                                setActiveRevealState(null);
+                              }}
+                              disabled={!isPosRevealed}
                             className={clsx(
                               "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase",
                               isPosRevealed
                                 ? "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
-                                : "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
+                                : "bg-row text-text-secondary cursor-not-allowed border border-border-card"
                             )}
                           >
                             END REVEAL
@@ -698,7 +711,7 @@ export default function ResultsEntry() {
                                 setGeneratedPosterUrl(null);
                                 setIsPosterModalOpen(true);
                               }}
-                              className="w-full py-2 rounded-lg font-bold text-xs tracking-wider transition-all bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 uppercase"
+                              className="w-full py-2 rounded-lg font-bold text-xs tracking-wider transition-all bg-emerald-500/10 border border-emerald-500/200/10 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/200/20 border border-emerald-500/20 uppercase"
                             >
                               GENERATE CONGRATULATIONS POSTER
                             </button>
@@ -710,12 +723,12 @@ export default function ResultsEntry() {
                 </div>
 
                 {/* ALL WINNERS POSTER BUTTON */}
-                <div className="mt-8 max-w-3xl mx-auto border-t border-slate-800 pt-8">
+                <div className="mt-8 max-w-3xl mx-auto border-t border-border-card pt-8">
                   <div className="flex flex-col items-center space-y-6">
                     <div className="flex flex-col space-y-2 items-center">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Display Duration</label>
-                      <div className="flex items-center space-x-2">
-                        {[5, 10, 15, 30].map(time => (
+                      <label className="text-xs font-bold text-text-muted uppercase tracking-wider">Display Duration</label>
+                      <div className="flex flex-wrap gap-2">
+                        {[5, 10, 15, 30, 60, 120, 180, 300].map(time => (
                           <button
                             key={time}
                             onClick={() => setAllWinnersDisplayTime(time)}
@@ -723,10 +736,10 @@ export default function ResultsEntry() {
                               "px-6 py-3 rounded-xl text-sm font-bold transition-colors",
                               allWinnersDisplayTime === time 
                                 ? "bg-indigo-900/50 text-indigo-300 border border-indigo-500/50"
-                                : "bg-slate-900/50 text-slate-400 border border-transparent hover:bg-slate-800"
+                                : "bg-card-secondary/50 text-text-muted border border-transparent hover:bg-row"
                             )}
                           >
-                            {time} sec
+                            {time >= 60 ? `${time / 60} MIN` : `${time} sec`}
                           </button>
                         ))}
                       </div>
@@ -749,16 +762,16 @@ export default function ResultsEntry() {
           )}
 
           {/* ADD NEW RESULTS SECTION */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6 mt-8">
-            <h3 className="text-xl font-black text-slate-800 tracking-wider">ADD NEW RESULTS</h3>
+          <div className="bg-card rounded-xl shadow-sm border border-border-card p-6 space-y-6 mt-8">
+            <h3 className="text-xl font-black text-text-primary tracking-wider">ADD NEW RESULTS</h3>
             
             <div className="space-y-4">
               {newResultRows.map((row) => (
-                <div key={row.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 items-start">
+                <div key={row.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-card-secondary p-4 rounded-xl border border-border-card items-start">
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Position</label>
+                    <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Position</label>
                     <select 
-                      className="w-full border-slate-300 rounded-md shadow-sm p-3 border font-semibold text-lg" 
+                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-semibold text-lg" 
                       value={row.position} 
                       onChange={(e) => updateRow(row.id, 'position', parseInt(e.target.value))}
                     >
@@ -768,19 +781,19 @@ export default function ResultsEntry() {
                     </select>
                   </div>
                   <div className="md:col-span-4">
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Student Name</label>
+                    <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Student Name</label>
                     <input 
                       type="text" 
-                      className="w-full border-slate-300 rounded-md shadow-sm p-3 border font-semibold" 
+                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-semibold" 
                       value={row.studentName} 
                       onChange={(e) => updateRow(row.id, 'studentName', e.target.value)} 
                       placeholder="Full Name" 
                     />
                   </div>
                   <div className="md:col-span-3">
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Team</label>
+                    <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Team</label>
                     <select 
-                      className="w-full border-slate-300 rounded-md shadow-sm p-3 border font-semibold" 
+                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-semibold" 
                       value={row.teamId} 
                       onChange={(e) => updateRow(row.id, 'teamId', e.target.value)}
                     >
@@ -789,10 +802,10 @@ export default function ResultsEntry() {
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase">Points</label>
+                    <label className="block text-xs font-bold text-text-muted mb-1 uppercase">Points</label>
                     <input 
                       type="number" 
-                      className="w-full border-slate-300 rounded-md shadow-sm p-3 border font-bold text-lg" 
+                      className="w-full border-border-card rounded-md shadow-sm p-3 border font-bold text-lg" 
                       value={row.points} 
                       onChange={(e) => updateRow(row.id, 'points', parseInt(e.target.value) || 0)} 
                     />
@@ -800,7 +813,7 @@ export default function ResultsEntry() {
                   <div className="md:col-span-1 flex justify-end md:justify-center pt-6">
                     <button 
                       onClick={() => handleRemoveRow(row.id)}
-                      className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                      className="p-3 text-text-muted hover:text-red-500 hover:bg-red-500/10 border border-red-500/20 rounded-lg transition"
                       title="Remove Row"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -812,7 +825,7 @@ export default function ResultsEntry() {
 
             <button
               onClick={handleAddRow}
-              className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-800 font-bold px-4 py-2 border-2 border-dashed border-indigo-300 hover:border-indigo-500 rounded-xl transition"
+              className="flex items-center space-x-2 text-primary-indigo hover:text-indigo-800 font-bold px-4 py-2 border-2 border-dashed border-indigo-300 hover:border-indigo-500 rounded-xl transition"
             >
               <Plus className="w-5 h-5" />
               <span>ADD RESULT ROW</span>
@@ -821,18 +834,18 @@ export default function ResultsEntry() {
             {saveStatus && (
               <div className={clsx(
                 "p-4 rounded-lg flex items-center space-x-2 mt-4",
-                saveStatus.type === 'error' ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                saveStatus.type === 'error' ? "bg-red-500/10 border border-red-500/20 text-red-700 border border-red-200" : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 border border-emerald-200"
               )}>
                 {saveStatus.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                 <span className="font-medium">{saveStatus.message}</span>
               </div>
             )}
 
-            <div className="border-t border-slate-200 pt-6 mt-6">
+            <div className="border-t border-border-card pt-6 mt-6">
               <button
                 onClick={handleSaveNewResults}
                 disabled={isSaving || newResultRows.length === 0}
-                className="w-full px-6 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg tracking-widest hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-lg"
+                className="w-full px-6 py-4 bg-primary-indigo text-white text-white rounded-xl font-bold text-lg tracking-widest hover:bg-primary-purple text-white disabled:opacity-50 transition-colors shadow-lg"
               >
                 {isSaving ? 'SAVING...' : 'SAVE NEW RESULTS'}
               </button>
@@ -843,11 +856,11 @@ export default function ResultsEntry() {
 
       {/* Recent Results */}
       <div className="pt-8">
-        <h3 className="text-lg font-bold text-slate-800 mb-4 uppercase tracking-wider">Recent Results</h3>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <h3 className="text-lg font-bold text-text-primary mb-4 uppercase tracking-wider">Recent Results</h3>
+        <div className="bg-card rounded-xl shadow-sm border border-border-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+              <thead className="bg-card-secondary text-text-muted uppercase font-semibold border-b border-border-card">
                 <tr>
                   <th className="px-6 py-4">Program</th>
                   <th className="px-6 py-4">Winner</th>
@@ -857,22 +870,22 @@ export default function ResultsEntry() {
                   <th className="px-6 py-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border-card">
                 {recentResults.length === 0 ? (
-                  <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500">No results found.</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-text-muted">No results found.</td></tr>
                 ) : (
                   recentResults.map(r => (
-                    <tr key={String(r._id)} className="hover:bg-slate-50">
-                      <td className="px-6 py-4 font-medium text-slate-700">{((r.programId as unknown) as {name: string})?.name}</td>
-                      <td className="px-6 py-4 font-bold text-slate-900">{r.studentName}</td>
+                    <tr key={String(r._id)} className="hover:bg-card-secondary">
+                      <td className="px-6 py-4 font-medium text-text-primary">{((r.programId as unknown) as {name: string})?.name}</td>
+                      <td className="px-6 py-4 font-bold text-white">{r.studentName}</td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center space-x-2">
                           <span className="w-2 h-2 rounded-full" style={{backgroundColor: ((r.teamId as unknown) as {color: string})?.color}}></span>
-                          <span className="font-semibold text-slate-600">{((r.teamId as unknown) as {name: string})?.name}</span>
+                          <span className="font-semibold text-text-secondary">{((r.teamId as unknown) as {name: string})?.name}</span>
                         </span>
                       </td>
                       <td className="px-6 py-4 text-lg">{r.position === 1 ? '🥇' : r.position === 2 ? '🥈' : '🥉'}</td>
-                      <td className="px-6 py-4 font-bold text-slate-600">{r.points}</td>
+                      <td className="px-6 py-4 font-bold text-text-secondary">{r.points}</td>
                       <td className="px-6 py-4">
                         <span className={clsx("px-2 py-1 rounded text-xs font-bold uppercase", r.revealed ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>
                           {r.revealed ? '✓ Revealed' : 'Ready'}
@@ -889,13 +902,13 @@ export default function ResultsEntry() {
 
       {/* Poster Modal */}
       {isPosterModalOpen && selectedProgramId && (
-        <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[100] overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden border border-slate-200 mt-10 md:mt-0">
+        <div className="fixed inset-0 bg-card-secondary/80 flex items-center justify-center p-4 z-[100] overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden border border-border-card mt-10 md:mt-0">
             
-            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center min-h-[600px] border-r border-slate-200 relative">
+            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center min-h-[600px] border-r border-border-card relative">
               {generatedPosterUrl ? (
                 <div className="w-full max-w-[400px] flex flex-col items-center relative group">
-                  <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                  <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/200 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
                     ✓ POSTER GENERATED
                   </div>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -903,7 +916,7 @@ export default function ResultsEntry() {
                 </div>
               ) : (
                 <div className="w-full relative flex flex-col items-center group">
-                  <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                  <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/200 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
                     PREVIEW (16:9)
                   </div>
                   <div className="w-full overflow-hidden flex items-center justify-center shadow-2xl rounded-sm" style={{ aspectRatio: '16/9' }}>
@@ -936,13 +949,13 @@ export default function ResultsEntry() {
               )}
             </div>
 
-            <div className="w-full md:w-1/2 bg-white p-8 flex flex-col">
+            <div className="w-full md:w-1/2 bg-card p-8 flex flex-col">
               <div className="flex justify-between items-start mb-8">
                 <div>
-                  <h3 className="text-2xl font-black text-slate-800 tracking-tight">POSTER SETTINGS</h3>
-                  <p className="text-slate-500 mt-1">Select the winner to create a poster.</p>
+                  <h3 className="text-2xl font-black text-text-primary tracking-tight">POSTER SETTINGS</h3>
+                  <p className="text-text-muted mt-1">Select the winner to create a poster.</p>
                 </div>
-                <button onClick={() => setIsPosterModalOpen(false)} className="text-slate-400 hover:text-slate-700 font-bold text-xl px-2">✕</button>
+                <button onClick={() => setIsPosterModalOpen(false)} className="text-text-muted hover:text-text-primary font-bold text-xl px-2">✕</button>
               </div>
 
               <div className="space-y-3 mb-8 flex-1 overflow-y-auto max-h-[400px] pr-2">
@@ -950,8 +963,8 @@ export default function ResultsEntry() {
                 {savedResultData.map((res: any) => {
                   const isActive = posterResultId === String(res._id);
                   const medal = res.position === 1 ? '🥇 1ST PLACE' : res.position === 2 ? '🥈 2ND PLACE' : '🥉 3RD PLACE';
-                  const activeClass = res.position === 1 ? 'border-amber-400 bg-amber-50 text-amber-800' : 
-                                      res.position === 2 ? 'border-slate-400 bg-slate-100 text-slate-700' : 
+                  const activeClass = res.position === 1 ? 'border-amber-400 bg-amber-500/10 border border-amber-500/20 text-amber-800' : 
+                                      res.position === 2 ? 'border-slate-400 bg-row text-text-primary' : 
                                       'border-orange-400 bg-orange-50 text-orange-800';
                   const dotClass = res.position === 1 ? 'bg-amber-400' : res.position === 2 ? 'bg-slate-400' : 'bg-orange-400';
                   const t = res.teamId as ITeam;
@@ -962,12 +975,12 @@ export default function ResultsEntry() {
                       onClick={() => { setPosterResultId(String(res._id)); setGeneratedPosterUrl(null); }}
                       className={clsx(
                         "w-full text-left px-5 py-4 rounded-xl border-2 font-bold text-lg transition-colors flex items-center justify-between",
-                        isActive ? activeClass : "border-slate-100 bg-white text-slate-600 hover:border-slate-200"
+                        isActive ? activeClass : "border-border-subtle bg-card text-text-secondary hover:border-border-card"
                       )}
                     >
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold">{medal}</span>
-                        <span className="text-lg">{res.studentName} <span className="text-sm font-medium text-slate-500">({t.name})</span></span>
+                        <span className="text-lg">{res.studentName} <span className="text-sm font-medium text-text-muted">({t.name})</span></span>
                       </div>
                       {isActive && <span className={`w-3 h-3 rounded-full ${dotClass}`} />}
                     </button>
@@ -975,12 +988,12 @@ export default function ResultsEntry() {
                 })}
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-slate-100 mt-auto">
+              <div className="space-y-4 pt-6 border-t border-border-subtle mt-auto">
                 {!generatedPosterUrl ? (
                   <button
                     onClick={generatePoster}
                     disabled={isGeneratingPoster || !posterResultId}
-                    className="w-full px-6 py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
+                    className="w-full px-6 py-4 bg-card-secondary text-white rounded-xl font-bold text-lg hover:bg-row transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
                   >
                     <ImageIcon className="w-5 h-5" />
                     <span>{isGeneratingPoster ? 'GENERATING...' : 'GENERATE POSTER'}</span>
@@ -989,7 +1002,7 @@ export default function ResultsEntry() {
                   <>
                     <button
                       onClick={showPosterOnTV}
-                      className="w-full px-6 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20"
+                      className="w-full px-6 py-4 bg-primary-indigo text-white text-white rounded-xl font-bold text-lg hover:bg-primary-purple text-white transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20"
                     >
                       <MonitorPlay className="w-5 h-5" />
                       <span>SHOW POSTER ON TV (15s)</span>
@@ -998,14 +1011,14 @@ export default function ResultsEntry() {
                       <a
                         href={generatedPosterUrl}
                         download={`poster.jpg`}
-                        className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
+                        className="flex-1 px-4 py-3 bg-row text-text-primary rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
                       >
                         <Download className="w-4 h-4" />
                         <span>DOWNLOAD</span>
                       </a>
                       <button
                         onClick={() => setIsPosterModalOpen(false)}
-                        className="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors"
+                        className="flex-1 px-4 py-3 bg-card border border-border-card text-text-secondary rounded-xl font-bold text-sm hover:bg-card-secondary transition-colors"
                       >
                         CLOSE
                       </button>
@@ -1021,12 +1034,12 @@ export default function ResultsEntry() {
 
     {/* All-Winners Poster Modal */}
       {isAllWinnersPosterModalOpen && selectedProgramId && (
-        <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[100] overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden border border-slate-200 mt-10 md:mt-0">
+        <div className="fixed inset-0 bg-card-secondary/80 flex items-center justify-center p-4 z-[100] overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden border border-border-card mt-10 md:mt-0">
             
-            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center min-h-[600px] border-r border-slate-200 relative">
+            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center min-h-[600px] border-r border-border-card relative">
               <div className="w-full relative flex flex-col items-center group">
-                <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/200 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
                   PREVIEW (16:9)
                 </div>
                 <div className="w-full overflow-hidden flex items-center justify-center shadow-2xl rounded-sm" style={{ aspectRatio: '16/9', contain: 'strict' }}>
@@ -1074,13 +1087,13 @@ export default function ResultsEntry() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-white p-8 flex flex-col justify-center">
+            <div className="w-full md:w-1/2 bg-card p-8 flex flex-col justify-center">
               <div className="mb-8">
-                <h3 className="text-2xl font-black text-slate-800 tracking-tight uppercase">ALL WINNERS POSTER</h3>
-                <p className="text-slate-500 mt-2">Create a single combined poster featuring all 1st, 2nd, and 3rd place winners for this program.</p>
+                <h3 className="text-2xl font-black text-text-primary tracking-tight uppercase">ALL WINNERS POSTER</h3>
+                <p className="text-text-muted mt-2">Create a single combined poster featuring all 1st, 2nd, and 3rd place winners for this program.</p>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-slate-100">
+              <div className="space-y-4 pt-6 border-t border-border-subtle">
                 <button
                   onClick={async () => {
                     try {
@@ -1134,16 +1147,16 @@ export default function ResultsEntry() {
                     }
                   }}
                   disabled={savedResultData.length === 0}
-                  className="w-full px-6 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                  className="w-full px-6 py-4 bg-primary-indigo text-white text-white rounded-xl font-bold text-lg hover:bg-primary-purple text-white transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
                 >
                   <MonitorPlay className="w-5 h-5" />
                   <span>SHOW POSTER ON TV</span>
                 </button>
               </div>
-              <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+              <div className="mt-8 pt-6 border-t border-border-subtle text-center">
                 <button
                   onClick={() => setIsAllWinnersPosterModalOpen(false)}
-                  className="text-slate-400 hover:text-slate-700 font-bold transition-colors"
+                  className="text-text-muted hover:text-text-primary font-bold transition-colors"
                 >
                   CANCEL
                 </button>

@@ -9,7 +9,7 @@ import { requireAdmin } from '@/lib/auth';
 export const POST = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
-    const { programId, position, duration } = await req.json();
+    const { programId, position, duration, revealStage } = await req.json();
     
     if (!programId) {
       return NextResponse.json({ error: 'Program ID is required' }, { status: 400 });
@@ -42,7 +42,9 @@ export const POST = requireAdmin(async (req: NextRequest) => {
     const displayDuration = duration || 15;
     const startedAt = new Date();
     const expiresAt = new Date(startedAt.getTime() + displayDuration * 1000);
-    const presentationId = crypto.randomUUID();
+    // Use a stable presentationId for the same result so that moving from PLACE to WINNER stage
+    // does not cause the TV React component tree to completely unmount and remount.
+    const presentationId = `reveal-${programId}-${position}`;
 
     const state = await TVState.findOneAndUpdate(
       {},
@@ -50,7 +52,7 @@ export const POST = requireAdmin(async (req: NextRequest) => {
         $set: {
           presentationId,
           presentationType: 'RESULT_REVEAL',
-          presentationData: { programId, position, results: allPositionResults },
+          presentationData: { programId, position, results: allPositionResults, revealStage: revealStage || 'WINNER' },
           presentationStartedAt: startedAt,
           presentationExpiresAt: expiresAt,
           presentationDuration: displayDuration

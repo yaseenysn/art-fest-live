@@ -3,10 +3,12 @@
 import { motion } from "motion/react";
 import { IResult } from "@/types";
 
-export default function ResultsDesign3({
+export default function ResultsDesign2({
   results,
+  revealStage = 'WINNER'
 }: {
   results: IResult[];
+  revealStage?: 'PLACE' | 'WINNER';
 }) {
   if (!results || results.length === 0) return null;
 
@@ -215,57 +217,59 @@ export default function ResultsDesign3({
             WINNER NAME
         ===================================================== */}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 35,
-            filter: "blur(12px)",
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-          }}
-          transition={{
-            delay: 0.65,
-            duration: 1,
-          }}
-          className="
-            mt-8
-            max-w-[80%]
-            text-center
-          "
-        >
-          <h1
+        {revealStage === 'WINNER' && (
+          <motion.div
+            key="winner-name"
+            initial={{
+              opacity: 0,
+              y: 35,
+              filter: "blur(12px)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            }}
+            transition={{
+              duration: 1,
+            }}
             className="
-              text-[clamp(55px,7vw,120px)]
-              font-light
-              uppercase
-              leading-tight
-              tracking-[0.08em]
-              text-white
-              drop-shadow-[0_0_25px_rgba(255,255,255,0.18)]
-              break-words
+              mt-8
+              max-w-[80%]
+              text-center
             "
           >
-            {result.studentName}
-          </h1>
-
-          {teamName && (
-            <div
+            <h1
               className="
-                mt-5
-                text-xl
-                font-medium
+                text-[clamp(55px,7vw,120px)]
+                font-light
                 uppercase
-                tracking-[0.35em]
-                text-blue-300
+                leading-tight
+                tracking-[0.08em]
+                text-white
+                drop-shadow-[0_0_25px_rgba(255,255,255,0.18)]
+                break-words
               "
             >
-              {teamName}
-            </div>
-          )}
-        </motion.div>
+              {result.studentName}
+            </h1>
+
+            {teamName && (
+              <div
+                className="
+                  mt-5
+                  text-xl
+                  font-medium
+                  uppercase
+                  tracking-[0.35em]
+                  text-blue-300
+                "
+              >
+                {teamName}
+              </div>
+            )}
+          </motion.div>
+        )}
 
 
 

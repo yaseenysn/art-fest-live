@@ -296,7 +296,7 @@ export default function ProgramsPage() {
       <div className="flex h-[80vh] items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
-          <div className="text-slate-400 font-medium">Loading Programs...</div>
+          <div className="text-text-muted font-medium">Loading Programs...</div>
         </div>
       </div>
     );
@@ -308,12 +308,12 @@ export default function ProgramsPage() {
       {/* HEADER & SUMMARY */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">PROGRAMS</h1>
-          <p className="text-slate-500 mt-1">Manage all competition programs</p>
+          <h1 className="text-3xl font-bold text-text-primary">PROGRAMS</h1>
+          <p className="text-text-muted mt-1">Manage all competition programs</p>
         </div>
         <button
           onClick={openAddModal}
-          className="flex items-center space-x-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+          className="flex items-center space-x-2 bg-primary-indigo text-white text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary-purple text-white transition-colors shadow-sm"
         >
           <Plus className="w-4 h-4" />
           <span>ADD PROGRAM</span>
@@ -321,24 +321,24 @@ export default function ProgramsPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div className="text-sm font-semibold text-slate-500 uppercase">Total Programs</div>
-          <div className="text-3xl font-black text-slate-800 mt-1">{programs.length}</div>
+        <div className="bg-card p-5 rounded-2xl shadow-sm border border-border-card">
+          <div className="text-sm font-semibold text-text-muted uppercase">Total Programs</div>
+          <div className="text-3xl font-black text-text-primary mt-1">{programs.length}</div>
         </div>
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div className="text-sm font-semibold text-slate-500 uppercase">Completed</div>
-          <div className="text-3xl font-black text-indigo-600 mt-1">{programs.filter(p => p.status === 'completed').length}</div>
+        <div className="bg-card p-5 rounded-2xl shadow-sm border border-border-card">
+          <div className="text-sm font-semibold text-text-muted uppercase">Completed</div>
+          <div className="text-3xl font-black text-primary-indigo mt-1">{programs.filter(p => p.status === 'completed').length}</div>
         </div>
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div className="text-sm font-semibold text-slate-500 uppercase">Live</div>
-          <div className="text-3xl font-black text-red-600 mt-1 flex items-center">
+        <div className="bg-card p-5 rounded-2xl shadow-sm border border-border-card">
+          <div className="text-sm font-semibold text-text-muted uppercase">Live</div>
+          <div className="text-3xl font-black text-red-400 mt-1 flex items-center">
             {livePrograms.length > 0 && <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse mr-2" />}
             {livePrograms.length}
           </div>
         </div>
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div className="text-sm font-semibold text-slate-500 uppercase">Upcoming</div>
-          <div className="text-3xl font-black text-amber-600 mt-1">{programs.filter(p => p.status === 'upcoming').length}</div>
+        <div className="bg-card p-5 rounded-2xl shadow-sm border border-border-card">
+          <div className="text-sm font-semibold text-text-muted uppercase">Upcoming</div>
+          <div className="text-3xl font-black text-amber-400 mt-1">{programs.filter(p => p.status === 'upcoming').length}</div>
         </div>
       </div>
 
@@ -346,11 +346,11 @@ export default function ProgramsPage() {
       {livePrograms.length > 0 ? (
         <div className="space-y-4">
           {livePrograms.map(liveProgram => (
-            <div key={liveProgram._id as string} className="bg-white rounded-2xl shadow-sm border-2 border-red-200 overflow-hidden relative">
+            <div key={liveProgram._id as string} className="bg-card rounded-2xl shadow-sm border-2 border-red-200 overflow-hidden relative">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-600" />
               <div className="p-6 md:p-8">
                 <div className="flex items-center space-x-2 mb-4">
-                  <span className="flex items-center text-red-600 bg-red-50 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest border border-red-100">
+                  <span className="flex items-center text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest border border-red-100">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-600 mr-2 animate-pulse"></span>
                     LIVE NOW
                   </span>
@@ -358,8 +358,8 @@ export default function ProgramsPage() {
                 
                 <div className="flex flex-col md:flex-row justify-between md:items-end gap-6">
                   <div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">{liveProgram.name}</h2>
-                    <div className="flex items-center space-x-2 text-sm font-medium text-slate-500 mt-2">
+                    <h2 className="text-3xl font-black text-white tracking-tight">{liveProgram.name}</h2>
+                    <div className="flex items-center space-x-2 text-sm font-medium text-text-muted mt-2">
                       <span>{liveProgram.language || 'Other'} • {liveProgram.category}</span>
                       <span>•</span>
                       <span>{liveProgram.type || 'Individual'}</span>
@@ -367,9 +367,9 @@ export default function ProgramsPage() {
                       <span>Maximum {liveProgram.maxPoints || 10} Points</span>
                     </div>
                     
-                    <div className="mt-4 inline-flex items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                      <span className="text-sm font-semibold text-slate-600 mr-2">Result:</span>
-                      <span className="text-sm font-bold text-slate-800">
+                    <div className="mt-4 inline-flex items-center bg-card-secondary px-3 py-1.5 rounded-lg border border-border-card">
+                      <span className="text-sm font-semibold text-text-secondary mr-2">Result:</span>
+                      <span className="text-sm font-bold text-text-primary">
                         {getProgramResultStatus(results.filter(r => (r.programId as { _id: string })._id === liveProgram._id || r.programId === liveProgram._id))}
                       </span>
                     </div>
@@ -378,7 +378,7 @@ export default function ProgramsPage() {
                   <div className="flex items-center space-x-3 shrink-0">
                     <Link
                       href="/admin/results"
-                      className="flex items-center space-x-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition-colors shadow-sm"
+                      className="flex items-center space-x-2 bg-card-secondary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-row transition-colors shadow-sm"
                     >
                       <Award className="w-4 h-4" />
                       <span>ENTER RESULT</span>
@@ -386,7 +386,7 @@ export default function ProgramsPage() {
                     <Link
                       href="/tv"
                       target="_blank"
-                      className="flex items-center space-x-2 bg-white text-indigo-600 border border-indigo-200 px-5 py-2.5 rounded-lg font-semibold hover:bg-indigo-50 transition-colors shadow-sm"
+                      className="flex items-center space-x-2 bg-card text-primary-indigo border border-indigo-200 px-5 py-2.5 rounded-lg font-semibold hover:bg-primary-purple/10 border border-primary-purple/20 transition-colors shadow-sm"
                     >
                       <MonitorPlay className="w-4 h-4" />
                       <span>VIEW ON TV</span>
@@ -399,46 +399,46 @@ export default function ProgramsPage() {
 
           {/* NEXT PROGRAM BANNER */}
           {nextProgram ? (
-            <div className="bg-slate-50 px-8 py-3 border border-slate-200 rounded-2xl flex items-center justify-between">
+            <div className="bg-card-secondary px-8 py-3 border border-border-card rounded-2xl flex items-center justify-between">
               <div className="flex items-center text-sm">
-                <span className="font-bold text-slate-400 uppercase tracking-widest mr-3 text-xs">NEXT PROGRAM</span>
-                <span className="font-semibold text-slate-700">{nextProgram.name}</span>
+                <span className="font-bold text-text-muted uppercase tracking-widest mr-3 text-xs">NEXT PROGRAM</span>
+                <span className="font-semibold text-text-primary">{nextProgram.name}</span>
               </div>
             </div>
           ) : (
-            <div className="bg-slate-50 px-8 py-3 border border-slate-200 rounded-2xl flex items-center justify-between">
+            <div className="bg-card-secondary px-8 py-3 border border-border-card rounded-2xl flex items-center justify-between">
               <div className="flex items-center text-sm">
-                <span className="font-bold text-slate-400 uppercase tracking-widest mr-3 text-xs">NEXT PROGRAM</span>
-                <span className="font-semibold text-slate-500 italic">Final Program</span>
+                <span className="font-bold text-text-muted uppercase tracking-widest mr-3 text-xs">NEXT PROGRAM</span>
+                <span className="font-semibold text-text-muted italic">Final Program</span>
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div className="bg-slate-50 border border-slate-200 border-dashed rounded-2xl p-8 text-center">
-          <div className="text-slate-500 font-medium">No program is currently live.</div>
+        <div className="bg-card-secondary border border-border-card border-dashed rounded-2xl p-8 text-center">
+          <div className="text-text-muted font-medium">No program is currently live.</div>
         </div>
       )}
 
       {/* SEARCH AND FILTER */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
+      <div className="bg-card p-4 rounded-xl shadow-sm border border-border-card flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted" />
           <input
             type="text"
             placeholder="Search programs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
         <div className="flex gap-4">
           <div className="relative">
-            <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+            <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-white font-medium text-slate-700"
+              className="pl-10 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
             >
               <option value="All">All Status</option>
               <option value="Upcoming">Upcoming</option>
@@ -450,7 +450,7 @@ export default function ProgramsPage() {
             <select
               value={languageFilter}
               onChange={(e) => setLanguageFilter(e.target.value)}
-              className="px-4 pr-8 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-white font-medium text-slate-700"
+              className="px-4 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
             >
               <option value="All">All Languages</option>
               {allLanguageOptions.map(lang => (
@@ -462,7 +462,7 @@ export default function ProgramsPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 pr-8 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-white font-medium text-slate-700"
+              className="px-4 pr-8 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none bg-card font-medium text-text-primary"
             >
               <option value="All">All Age Groups</option>
               {allCategoryOptions.map(cat => (
@@ -474,16 +474,16 @@ export default function ProgramsPage() {
       </div>
 
       {/* ALL PROGRAMS TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-widest">ALL PROGRAMS</h2>
+      <div className="bg-card rounded-2xl shadow-sm border border-border-card overflow-hidden">
+        <div className="px-6 py-5 border-b border-border-subtle flex items-center justify-between bg-card-secondary">
+          <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">ALL PROGRAMS</h2>
         </div>
         
         {filteredPrograms.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-slate-100">
+                <tr className="bg-card text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle">
                   <th className="px-6 py-4">#</th>
                   <th className="px-6 py-4">PROGRAM</th>
                   <th className="px-6 py-4">LANGUAGE</th>
@@ -496,51 +496,51 @@ export default function ProgramsPage() {
                   <th className="px-6 py-4 text-right">ACTIONS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border-card">
                 {filteredPrograms.map((program) => {
                   const programResults = results.filter(r => (r.programId as { _id: string })._id === program._id || r.programId === program._id);
                   const resultStatus = getProgramResultStatus(programResults);
                   const orderNum = program.programOrder || 0;
                   
                   return (
-                    <tr key={program._id as string} className="hover:bg-slate-50/50 transition-colors group">
-                      <td className="px-6 py-4 text-slate-400 font-medium">
+                    <tr key={program._id as string} className="hover:bg-card-secondary/50 transition-colors group">
+                      <td className="px-6 py-4 text-text-muted font-medium">
                         {orderNum.toString().padStart(2, '0')}
                       </td>
                       <td className="px-6 py-4">
                         <div 
-                          className="font-bold text-slate-800 cursor-pointer hover:text-indigo-600"
+                          className="font-bold text-text-primary cursor-pointer hover:text-primary-indigo"
                           onClick={() => { setSelectedProgram(program); setIsDetailsModalOpen(true); }}
                         >
                           {program.name}
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-medium text-slate-500">{program.language || 'Other'}</td>
-                      <td className="px-6 py-4 font-medium text-slate-500">{program.category}</td>
-                      <td className="px-6 py-4 text-slate-600">{program.type || 'Individual'}</td>
-                      <td className="px-6 py-4 text-center font-bold text-slate-700">{program.maxPoints || 10}</td>
+                      <td className="px-6 py-4 font-medium text-text-muted">{program.language || 'Other'}</td>
+                      <td className="px-6 py-4 font-medium text-text-muted">{program.category}</td>
+                      <td className="px-6 py-4 text-text-secondary">{program.type || 'Individual'}</td>
+                      <td className="px-6 py-4 text-center font-bold text-text-primary">{program.maxPoints || 10}</td>
                       <td className="px-6 py-4">
                         {program.status === 'live' ? (
-                          <span className="text-red-600 font-bold text-xs uppercase flex items-center">
+                          <span className="text-red-400 font-bold text-xs uppercase flex items-center">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-600 mr-1.5 animate-pulse"></span>
                             LIVE
                           </span>
                         ) : program.status === 'completed' ? (
-                          <span className="text-indigo-600 font-bold text-xs uppercase flex items-center">
+                          <span className="text-primary-indigo font-bold text-xs uppercase flex items-center">
                             ✓ COMPLETED
                           </span>
                         ) : (
-                          <span className="text-slate-400 font-bold text-xs uppercase flex items-center">
+                          <span className="text-text-muted font-bold text-xs uppercase flex items-center">
                             ○ UPCOMING
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`font-semibold text-xs uppercase px-2 py-1 rounded-md ${
-                          resultStatus === 'REVEALED' ? 'bg-indigo-50 text-indigo-700' :
-                          resultStatus === 'READY' ? 'bg-emerald-50 text-emerald-700' :
-                          resultStatus === 'DRAFT' ? 'bg-amber-50 text-amber-700' :
-                          'text-slate-400'
+                          resultStatus === 'REVEALED' ? 'bg-primary-purple/10 border border-primary-purple/20 text-indigo-700' :
+                          resultStatus === 'READY' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-700' :
+                          resultStatus === 'DRAFT' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-700' :
+                          'text-text-muted'
                         }`}>
                           {resultStatus === 'NOT_STARTED' ? '—' : resultStatus}
                         </span>
@@ -548,11 +548,11 @@ export default function ProgramsPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col space-y-1">
                           {program.posterCreated ? (
-                            <span className="text-emerald-600 font-bold text-[10px] uppercase bg-emerald-50 px-2 py-1 rounded inline-block w-max">
+                            <span className="text-emerald-400 font-bold text-[10px] uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded inline-block w-max">
                               INDV: {program.posterCount && program.posterCount > 1 ? `${program.posterCount} CREATED` : '✓ CREATED'}
                             </span>
                           ) : (
-                            <span className="text-slate-400 font-bold text-[10px] uppercase bg-slate-50 px-2 py-1 rounded inline-block w-max">INDV: NOT CREATED</span>
+                            <span className="text-text-muted font-bold text-[10px] uppercase bg-card-secondary px-2 py-1 rounded inline-block w-max">INDV: NOT CREATED</span>
                           )}
                           
                           {program.allWinnersPosterCount ? (
@@ -560,7 +560,7 @@ export default function ProgramsPage() {
                               ALL: {program.allWinnersPosterCount > 1 ? `${program.allWinnersPosterCount} CREATED` : '✓ CREATED'}
                             </span>
                           ) : (
-                            <span className="text-slate-400 font-bold text-[10px] uppercase bg-slate-50 px-2 py-1 rounded inline-block w-max">ALL: NOT CREATED</span>
+                            <span className="text-text-muted font-bold text-[10px] uppercase bg-card-secondary px-2 py-1 rounded inline-block w-max">ALL: NOT CREATED</span>
                           )}
                         </div>
                       </td>
@@ -569,7 +569,7 @@ export default function ProgramsPage() {
                           {program.status === 'upcoming' && (
                             <button 
                               onClick={() => updateProgramStatus(program, 'live')}
-                              className="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded hover:bg-slate-800 transition-colors flex items-center"
+                              className="text-xs font-bold bg-card-secondary text-white px-3 py-1.5 rounded hover:bg-row transition-colors flex items-center"
                             >
                               <PlayCircle className="w-3.5 h-3.5 mr-1" /> START
                             </button>
@@ -579,13 +579,13 @@ export default function ProgramsPage() {
                             <>
                               <Link 
                                 href="/admin/results"
-                                className="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded hover:bg-slate-800 transition-colors flex items-center"
+                                className="text-xs font-bold bg-card-secondary text-white px-3 py-1.5 rounded hover:bg-row transition-colors flex items-center"
                               >
                                 ENTER RESULT
                               </Link>
                               <button 
                                 onClick={() => updateProgramStatus(program, 'completed')}
-                                className="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded hover:bg-red-100 transition-colors flex items-center"
+                                className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded hover:bg-red-500/20 transition-colors flex items-center"
                               >
                                 <StopCircle className="w-3.5 h-3.5 mr-1" /> END
                               </button>
@@ -595,7 +595,7 @@ export default function ProgramsPage() {
                           {program.status === 'completed' && (
                             <Link 
                               href="/admin/results"
-                              className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded hover:bg-indigo-100 transition-colors flex items-center"
+                              className="text-xs font-bold text-primary-indigo bg-primary-purple/10 border border-primary-purple/20 px-3 py-1.5 rounded hover:bg-primary-purple/20 transition-colors flex items-center"
                             >
                               <Eye className="w-3.5 h-3.5 mr-1" /> RESULT
                             </Link>
@@ -608,14 +608,14 @@ export default function ProgramsPage() {
                               setFormData({ name: program.name, language: program.language || 'Other', category: program.category, type: program.type || 'Individual', maxPoints: program.maxPoints || 10, description: program.description || '', programOrder: program.programOrder || 0 });
                               setIsEditModalOpen(true);
                             }}
-                            className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded hover:bg-slate-200 transition-colors flex items-center"
+                            className="text-xs font-bold text-text-muted bg-row px-3 py-1.5 rounded hover:bg-slate-200 transition-colors flex items-center"
                           >
                             <Edit2 className="w-3.5 h-3.5 mr-1" /> EDIT
                           </button>
                           
                           <button 
                             onClick={() => confirmDelete(program)}
-                            className="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded hover:bg-red-100 transition-colors flex items-center"
+                            className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded hover:bg-red-500/20 transition-colors flex items-center"
                           >
                             <Trash2 className="w-3.5 h-3.5 mr-1" /> DELETE
                           </button>
@@ -628,7 +628,7 @@ export default function ProgramsPage() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-slate-500 font-medium">
+          <div className="p-12 text-center text-text-muted font-medium">
             No competition programs found.
           </div>
         )}
@@ -636,34 +636,34 @@ export default function ProgramsPage() {
 
       {/* ADD/EDIT MODAL */}
       {(isAddModalOpen || isEditModalOpen) && (
-        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-800">
+        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-card rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div className="px-6 py-5 border-b border-border-subtle flex justify-between items-center">
+              <h3 className="text-lg font-bold text-text-primary">
                 {isEditModalOpen ? 'EDIT PROGRAM' : 'ADD PROGRAM'}
               </h3>
             </div>
             
             <form onSubmit={handleSaveProgram} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Program Name *</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">Program Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Language *</label>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Language *</label>
                   <select
                     required
                     value={formData.language}
                     onChange={e => setFormData({ ...formData, language: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
                   >
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {isEditModalOpen && formData.language && !PROGRAM_LANGUAGES.includes(formData.language as any) && (
@@ -675,12 +675,12 @@ export default function ProgramsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Age Group *</label>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Age Group *</label>
                   <select
                     required
                     value={formData.category}
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
                   >
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {isEditModalOpen && formData.category && !PROGRAM_CATEGORIES.includes(formData.category as any) && (
@@ -695,46 +695,46 @@ export default function ProgramsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Competition Type *</label>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Competition Type *</label>
                   <select
                     value={formData.type}
                     onChange={e => setFormData({ ...formData, type: e.target.value as 'Individual' | 'Team' })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-card"
                   >
                     <option value="Individual">Individual</option>
                     <option value="Team">Team</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Maximum Points *</label>
+                  <label className="block text-sm font-semibold text-text-primary mb-1">Maximum Points *</label>
                   <input
                     type="number"
                     required
                     min="1"
                     value={formData.maxPoints}
                     onChange={e => setFormData({ ...formData, maxPoints: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Program Order</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">Program Order</label>
                 <input
                   type="number"
                   min="0"
                   value={formData.programOrder}
                   onChange={e => setFormData({ ...formData, programOrder: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Description (Optional)</label>
+                <label className="block text-sm font-semibold text-text-primary mb-1">Description (Optional)</label>
                 <textarea
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   rows={3}
                 />
               </div>
@@ -743,13 +743,13 @@ export default function ProgramsPage() {
                 <button
                   type="button"
                   onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }}
-                  className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-text-secondary hover:bg-row rounded-lg transition-colors"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-bold bg-primary-indigo text-white text-white hover:bg-primary-purple text-white rounded-lg transition-colors"
                 >
                   {isEditModalOpen ? 'SAVE CHANGES' : 'CREATE PROGRAM'}
                 </button>
@@ -761,17 +761,17 @@ export default function ProgramsPage() {
 
       {/* DETAILS / DELETE MODAL */}
       {isDetailsModalOpen && selectedProgram && (
-        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
+        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-card rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
             
             {isDeleteModalOpen ? (
               <div className="p-6 text-center">
-                <div className="flex items-center justify-center space-x-3 mb-4 text-red-600">
+                <div className="flex items-center justify-center space-x-3 mb-4 text-red-400">
                   <AlertCircle className="w-8 h-8" />
                   <h2 className="text-2xl font-black uppercase tracking-widest">DELETE PROGRAM?</h2>
                 </div>
                 
-                <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200 text-left">
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl border border-red-200 text-left">
                   <p className="font-bold mb-2">Program: {selectedProgram.name}</p>
                   <p className="text-sm font-medium">
                     WARNING: This will permanently delete this program and ALL competition results associated with it, including 1st, 2nd and 3rd place results. This action cannot be undone.
@@ -784,15 +784,15 @@ export default function ProgramsPage() {
                 </div>
 
                 <div className="mb-6 text-left">
-                  <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">
-                    Type <span className="font-black text-slate-900 select-all">{selectedProgram.name}</span> to confirm
+                  <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">
+                    Type <span className="font-black text-white select-all">{selectedProgram.name}</span> to confirm
                   </label>
                   <input
                     type="text"
                     value={deleteConfirmationText}
                     onChange={(e) => setDeleteConfirmationText(e.target.value)}
                     placeholder={selectedProgram.name}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all font-medium text-slate-900"
+                    className="w-full px-4 py-3 rounded-xl border border-border-card bg-card-secondary focus:bg-card focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all font-medium text-white"
                     disabled={isDeleting}
                   />
                 </div>
@@ -801,7 +801,7 @@ export default function ProgramsPage() {
                   <button
                     onClick={() => setIsDeleteModalOpen(false)}
                     disabled={isDeleting}
-                    className="flex-1 px-5 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50 uppercase tracking-wider"
+                    className="flex-1 px-5 py-3 text-sm font-bold text-text-secondary bg-row hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50 uppercase tracking-wider"
                   >
                     CANCEL
                   </button>
@@ -818,24 +818,24 @@ export default function ProgramsPage() {
               </div>
             ) : (
               <>
-                <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                  <h3 className="text-lg font-black text-slate-800 tracking-tight">{selectedProgram.name}</h3>
+                <div className="px-6 py-5 border-b border-border-subtle flex justify-between items-center bg-card-secondary">
+                  <h3 className="text-lg font-black text-text-primary tracking-tight">{selectedProgram.name}</h3>
                   <div className="flex space-x-2">
                     <button 
                       onClick={() => { setIsDetailsModalOpen(false); setFormData({ name: selectedProgram.name, language: selectedProgram.language || 'Other', category: selectedProgram.category, type: selectedProgram.type || 'Individual', maxPoints: selectedProgram.maxPoints || 10, description: selectedProgram.description || '', programOrder: selectedProgram.programOrder || 0 }); setIsEditModalOpen(true); }}
-                      className="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded transition-colors flex items-center"
+                      className="text-xs font-bold text-text-secondary bg-row hover:bg-slate-200 px-3 py-1.5 rounded transition-colors flex items-center"
                     >
                       <Edit2 className="w-3.5 h-3.5 mr-1" /> EDIT PROGRAM
                     </button>
                     <button 
                       onClick={() => confirmDelete(selectedProgram)}
-                      className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition-colors flex items-center"
+                      className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 px-3 py-1.5 rounded transition-colors flex items-center"
                     >
                       <Trash2 className="w-3.5 h-3.5 mr-1" /> DELETE PROGRAM
                     </button>
                     <button 
                       onClick={() => setIsDetailsModalOpen(false)}
-                      className="text-slate-400 hover:text-slate-800 ml-2"
+                      className="text-text-muted hover:text-text-primary ml-2"
                     >
                       ✕
                     </button>
@@ -845,42 +845,42 @@ export default function ProgramsPage() {
                 <div className="p-6">
                   <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm mb-6">
                     <div>
-                      <span className="block text-slate-400 font-semibold mb-1">Language • Age Group</span>
-                      <span className="font-medium text-slate-800">{selectedProgram.language || 'Other'} • {selectedProgram.category}</span>
+                      <span className="block text-text-muted font-semibold mb-1">Language • Age Group</span>
+                      <span className="font-medium text-text-primary">{selectedProgram.language || 'Other'} • {selectedProgram.category}</span>
                     </div>
                     <div>
-                      <span className="block text-slate-400 font-semibold mb-1">Type</span>
-                      <span className="font-medium text-slate-800">{selectedProgram.type || 'Individual'}</span>
+                      <span className="block text-text-muted font-semibold mb-1">Type</span>
+                      <span className="font-medium text-text-primary">{selectedProgram.type || 'Individual'}</span>
                     </div>
                     <div>
-                      <span className="block text-slate-400 font-semibold mb-1">Maximum Points</span>
-                      <span className="font-medium text-slate-800">{selectedProgram.maxPoints || 10}</span>
+                      <span className="block text-text-muted font-semibold mb-1">Maximum Points</span>
+                      <span className="font-medium text-text-primary">{selectedProgram.maxPoints || 10}</span>
                     </div>
                     <div>
-                      <span className="block text-slate-400 font-semibold mb-1">Program Order</span>
-                      <span className="font-medium text-slate-800">{selectedProgram.programOrder || 0}</span>
+                      <span className="block text-text-muted font-semibold mb-1">Program Order</span>
+                      <span className="font-medium text-text-primary">{selectedProgram.programOrder || 0}</span>
                     </div>
                     {selectedProgram.description && (
                       <div className="col-span-2">
-                        <span className="block text-slate-400 font-semibold mb-1">Description</span>
-                        <span className="font-medium text-slate-800">{selectedProgram.description}</span>
+                        <span className="block text-text-muted font-semibold mb-1">Description</span>
+                        <span className="font-medium text-text-primary">{selectedProgram.description}</span>
                       </div>
                     )}
                     <div>
-                      <span className="block text-slate-400 font-semibold mb-1">Congratulations Poster</span>
-                      <span className={selectedProgram.posterCreated ? "font-bold text-emerald-600" : "font-medium text-slate-500"}>
+                      <span className="block text-text-muted font-semibold mb-1">Congratulations Poster</span>
+                      <span className={selectedProgram.posterCreated ? "font-bold text-emerald-400" : "font-medium text-text-muted"}>
                         {selectedProgram.posterCreated ? 'Created' : 'Not Created'}
                       </span>
                     </div>
                     {selectedProgram.posterCreated && (
                       <>
                         <div>
-                          <span className="block text-slate-400 font-semibold mb-1">Posters Created</span>
-                          <span className="font-medium text-slate-800">{selectedProgram.posterCount || 1}</span>
+                          <span className="block text-text-muted font-semibold mb-1">Posters Created</span>
+                          <span className="font-medium text-text-primary">{selectedProgram.posterCount || 1}</span>
                         </div>
                         <div>
-                          <span className="block text-slate-400 font-semibold mb-1">Last Poster Created At</span>
-                          <span className="font-medium text-slate-800">
+                          <span className="block text-text-muted font-semibold mb-1">Last Poster Created At</span>
+                          <span className="font-medium text-text-primary">
                             {selectedProgram.posterCreatedAt ? new Date(selectedProgram.posterCreatedAt).toLocaleString() : 'N/A'}
                           </span>
                         </div>
@@ -888,13 +888,13 @@ export default function ProgramsPage() {
                     )}
                   </div>
 
-                  <div className="border-t border-slate-100 pt-6">
-                    <h4 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-4">Results</h4>
+                  <div className="border-t border-border-subtle pt-6">
+                    <h4 className="text-sm font-bold text-text-primary uppercase tracking-widest mb-4">Results</h4>
                     
                     {(() => {
                       const progResults = results.filter(r => (r.programId as { _id: string })._id === selectedProgram._id || r.programId === selectedProgram._id);
                       if (progResults.length === 0) {
-                        return <div className="text-slate-500 italic text-sm">No results recorded yet.</div>;
+                        return <div className="text-text-muted italic text-sm">No results recorded yet.</div>;
                       }
 
                       // Sort results by position
@@ -906,20 +906,20 @@ export default function ProgramsPage() {
                             const studentName = r.studentName;
                             const team = r.teamId as { name: string, color: string };
                             return (
-                              <div key={r._id as string} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                              <div key={r._id as string} className="flex items-center justify-between p-3 bg-card-secondary rounded-lg border border-border-subtle">
                                 <div className="flex items-center space-x-3">
                                   <span className="text-xl">
                                     {r.position === 1 ? '🥇' : r.position === 2 ? '🥈' : '🥉'}
                                   </span>
                                   <div>
-                                    <div className="font-bold text-slate-800 text-sm">{studentName || 'Unknown'}</div>
+                                    <div className="font-bold text-text-primary text-sm">{studentName || 'Unknown'}</div>
                                     <div className="flex items-center space-x-1 mt-0.5">
                                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: team?.color }}></div>
-                                      <span className="text-xs font-semibold text-slate-500">{team?.name || 'Unknown'}</span>
+                                      <span className="text-xs font-semibold text-text-muted">{team?.name || 'Unknown'}</span>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="font-bold text-indigo-600 text-sm bg-indigo-50 px-2 py-1 rounded">
+                                <div className="font-bold text-primary-indigo text-sm bg-primary-purple/10 border border-primary-purple/20 px-2 py-1 rounded">
                                   {r.points} pts
                                 </div>
                               </div>
@@ -933,7 +933,7 @@ export default function ProgramsPage() {
                   <div className="mt-8 flex justify-end space-x-3">
                     <Link
                       href="/admin/results"
-                      className="px-4 py-2 text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-lg transition-colors"
+                      className="px-4 py-2 text-sm font-bold bg-card-secondary text-white hover:bg-row rounded-lg transition-colors"
                     >
                       GO TO RESULTS
                     </Link>

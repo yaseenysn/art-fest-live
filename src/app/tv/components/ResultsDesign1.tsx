@@ -65,7 +65,7 @@ interface Theme {
   shadow: string;
 }
 
-export default function ResultsDesign1({ results }: { results: IResult[] }) {
+export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { results: IResult[], revealStage?: 'PLACE' | 'WINNER' }) {
   if (!results || results.length === 0) return null;
 
   const firstResult = results[0];
@@ -140,24 +140,29 @@ export default function ResultsDesign1({ results }: { results: IResult[] }) {
             </motion.div>
 
             {/* Right: Winner Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.8, type: "spring", stiffness: 80 }}
-              className="flex-[1.2] w-full min-w-0"
-            >
-              <WinnerCard
-                result={firstResult}
-                teamColor={(firstResult.teamId as { color?: string })?.color}
-                teamName={(firstResult.teamId as { name?: string })?.name}
-                programName={programName}
-                programLanguage={programLanguage}
-                category={program?.category}
-                points={points}
-                theme={theme}
-                isLarge
-              />
-            </motion.div>
+            <div className="flex-[1.2] w-full min-w-0 flex items-center justify-center">
+              {revealStage === 'WINNER' && (
+                <motion.div
+                  key="single-winner"
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
+                  className="w-full h-full"
+                >
+                  <WinnerCard
+                    result={firstResult}
+                    teamColor={(firstResult.teamId as { color?: string })?.color}
+                    teamName={(firstResult.teamId as { name?: string })?.name}
+                    programName={programName}
+                    programLanguage={programLanguage}
+                    category={program?.category}
+                    points={points}
+                    theme={theme}
+                    isLarge
+                  />
+                </motion.div>
+              )}
+            </div>
           </div>
         ) : (
           /* Multiple Winners Layout: Medal top, Cards below */
@@ -187,37 +192,39 @@ export default function ResultsDesign1({ results }: { results: IResult[] }) {
               </div>
             </motion.div>
 
-            <motion.div
-              className={`grid ${gridClass} justify-center items-stretch w-full`}
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: { transition: { staggerChildren: 0.15, delayChildren: 0.6 } }
-              }}
-            >
-              {results.map((result, idx) => (
-                <motion.div
-                  key={String(result._id || idx)}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
-                  }}
-                  className="w-full flex"
-                >
-                  <WinnerCard
-                    result={result}
-                    teamColor={(result.teamId as { color?: string })?.color}
-                    teamName={(result.teamId as { name?: string })?.name}
-                    programName={programName}
-                    programLanguage={programLanguage}
-                    category={program?.category}
-                    points={points}
-                    theme={theme}
-                    isLarge={false}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
+            {revealStage === 'WINNER' && (
+              <motion.div
+                className={`grid ${gridClass} justify-center items-stretch w-full`}
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: { transition: { staggerChildren: 0.15 } }
+                }}
+              >
+                {results.map((result, idx) => (
+                  <motion.div
+                    key={String(result._id || idx)}
+                    variants={{
+                      hidden: { opacity: 0, y: 30 },
+                      visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+                    }}
+                    className="w-full flex"
+                  >
+                    <WinnerCard
+                      result={result}
+                      teamColor={(result.teamId as { color?: string })?.color}
+                      teamName={(result.teamId as { name?: string })?.name}
+                      programName={programName}
+                      programLanguage={programLanguage}
+                      category={program?.category}
+                      points={points}
+                      theme={theme}
+                      isLarge={false}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
           </div>
         )}
       </div>

@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-app: #080A12;
+  --bg-sidebar: #0D0F1E;
+  --bg-card: #1E1B2E;
+  --bg-card-secondary: #13111C;
+  --bg-row: #131629;
+  --bg-row-hover: #161830;
+  --bg-input: #0F1120;
+  
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-card: #2D283E;
+  --border-accent: rgba(168, 85, 247, 0.3);
+
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+
+  --primary-purple: #A855F7;
+  --primary-indigo: #6366F1;
+  --primary-pink: #EC4899;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-app: var(--bg-app);
+  --color-sidebar: var(--bg-sidebar);
+  --color-card: var(--bg-card);
+  --color-card-secondary: var(--bg-card-secondary);
+  --color-row: var(--bg-row);
+  --color-row-hover: var(--bg-row-hover);
+  --color-input: var(--bg-input);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-card: var(--border-card);
+  --color-border-accent: var(--border-accent);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-primary-purple: var(--primary-purple);
+  --color-primary-indigo: var(--primary-indigo);
+  --color-primary-pink: var(--primary-pink);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+::-webkit-scrollbar-thumb {
+  background: #2D283E;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3956;
+}
+
+/* Hide scrollbar for mobile elements but allow scroll */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
