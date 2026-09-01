@@ -245,9 +245,7 @@ interface WinnerCardProps {
 }
 
 function WinnerCard({ result, teamColor, teamName, programName, programLanguage, category, points, theme, isLarge }: WinnerCardProps) {
-  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
   const tColor = teamColor || '#3b82f6';
-  const teamArabic = isArabic(teamName);
 
   return (
     <div
@@ -263,22 +261,15 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
 
       {/* Winner Name */}
       <h2
-        dir={isArabic(result.studentName) ? "rtl" : "ltr"}
-        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''} ${isLarge ? 'text-[clamp(36px,5vw,72px)] mb-6' : 'text-[clamp(28px,4vw,56px)] mb-4'}`}
+        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isLarge ? 'text-[clamp(32px,5vw,72px)] mb-6' : 'text-[clamp(24px,4vw,48px)] mb-4'}`}
       >
         {result.studentName}
       </h2>
 
       {/* Team Info */}
-      <div className={`flex items-start ${teamArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-4 md:space-x-5 mb-8 w-full`}>
-        <div 
-          className={`flex-shrink-0 mt-3 md:mt-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] ${isLarge ? 'w-6 h-6 md:w-8 md:h-8' : 'w-5 h-5 md:w-6 md:h-6'}`} 
-          style={{ backgroundColor: tColor }} 
-        />
-        <span 
-          dir={teamArabic ? "rtl" : "ltr"}
-          className={`font-bold uppercase text-slate-200 break-words max-w-[90%] leading-[1.2] ${teamArabic ? 'font-ge-ss-two' : 'tracking-wider'} ${isLarge ? 'text-[clamp(32px,4vw,64px)]' : 'text-[clamp(24px,3vw,52px)]'}`}
-        >
+      <div className="flex items-center space-x-3 md:space-x-4 mb-6">
+        <div className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)] ${isLarge ? 'w-5 h-5 md:w-6 md:h-6' : 'w-4 h-4 md:w-5 md:h-5'}`} style={{ backgroundColor: tColor }} />
+        <span className={`font-bold uppercase tracking-widest text-slate-200 ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
           {teamName || 'TEAM'}
         </span>
       </div>

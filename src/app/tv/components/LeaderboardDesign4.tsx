@@ -109,14 +109,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
                     style={{ backgroundColor: tColor }}
                   />
 
-                  <h2 
-                    dir={isArabic(row.name) ? "rtl" : "ltr"}
-                    className={`
-                      font-black text-white uppercase break-words max-w-[95%] leading-[1.1] mb-2 
-                      ${isArabic(row.name) ? 'font-ge-ss-two' : 'tracking-wider'} 
-                      text-[clamp(28px,3vw,50px)]
-                    `}
-                  >
+                  <h2 className={`text-2xl lg:text-4xl font-black text-white uppercase tracking-wider mb-2 truncate ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}>
                     {row.name}
                   </h2>
                   <div className="flex items-end space-x-2">

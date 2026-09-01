@@ -14,7 +14,6 @@ export default function WinnerDesign4({
 }: AllWinnersConfig) {
 
   const positions = [1, 2, 3] as const;
-  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
   return (
     <div
@@ -88,20 +87,12 @@ export default function WinnerDesign4({
                     0{pos}
                   </div>
                   <div className="flex flex-col">
-                    <h3 
-                      dir={isArabic(names) ? "rtl" : "ltr"}
-                      className={`uppercase tracking-wide leading-none mb-3 break-words max-w-full ${isArabic(names) ? 'font-ge-ss-two' : ''} ${isFirst ? 'font-black text-[clamp(32px,4vw,52px)]' : 'font-bold text-[clamp(24px,3vw,40px)] text-white/90'}`}
-                    >
+                    <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
                       {names}
                     </h3>
-                    <div 
-                      dir={isArabic(teamStr) ? "rtl" : "ltr"}
-                      className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-4`}
-                    >
-                      <div className="w-3 h-3 md:w-4 md:h-4 mt-2 md:mt-3 rounded-full shrink-0" style={{ backgroundColor: tColor, boxShadow: `0 0 10px ${tColor}` }} />
-                      <span 
-                        className={`uppercase font-bold break-words max-w-[95%] leading-[1.2] text-white/80 ${isArabic(teamStr) ? 'font-ge-ss-two' : 'tracking-widest'} ${isFirst ? 'text-[clamp(28px,3vw,46px)]' : 'text-[clamp(22px,2vw,36px)]'}`}
-                      >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tColor }} />
+                      <span className="text-white/50 tracking-widest text-[18px] uppercase font-semibold">
                         {teamStr}
                       </span>
                     </div>

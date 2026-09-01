@@ -32,8 +32,6 @@ const WinnerNode = ({
 }) => {
   if (!winner.exists) return null;
 
-  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
-
   return (
     <motion.div
       initial={{ x: -40, opacity: 0 }}
@@ -109,22 +107,19 @@ const WinnerNode = ({
       </div>
 
       {/* WINNER DETAILS */}
-      <div className="min-w-0 flex flex-col justify-center py-1">
+      <div className="min-w-0 flex flex-col justify-center">
         {/* WINNER NAME */}
         <h2
-          dir={isArabic(winner.names) ? "rtl" : "ltr"}
           className={`
             font-black
             uppercase
             text-white
-            leading-[1]
+            leading-[0.95]
             tracking-tight
             break-words
-            max-w-full
-            ${isArabic(winner.names) ? 'font-ge-ss-two' : ''}
             ${isFirst
-              ? "text-[clamp(28px,3.5vw,56px)]"
-              : "text-[clamp(24px,2.8vw,44px)]"
+              ? "text-[clamp(24px,3vw,52px)]"
+              : "text-[clamp(20px,2.35vw,40px)]"
             }
           `}
         >
@@ -133,28 +128,7 @@ const WinnerNode = ({
             : winner.teamName}
         </h2>
 
-        {/* TEAM NAME */}
-        <div
-          dir={isArabic(winner.teamName) ? "rtl" : "ltr"}
-          className={`
-            uppercase
-            font-bold
-            break-words
-            max-w-[95%]
-            leading-[1.1]
-            text-[#a855f7]
-            mt-[clamp(6px,0.8vw,12px)]
-            ${isArabic(winner.teamName) ? 'font-ge-ss-two' : 'tracking-wide'}
-            ${isFirst
-              ? "text-[clamp(24px,2.8vw,48px)]"
-              : "text-[clamp(20px,2.2vw,38px)]"
-            }
-          `}
-        >
-          {winner.teamName || "TEAM"}
-        </div>
-
-        {/* PROGRAM */}
+        {/* TEAM + PROGRAM */}
         <div
           className={`
             flex
@@ -163,15 +137,24 @@ const WinnerNode = ({
             uppercase
             font-bold
             tracking-wide
-            text-white/65
-            mt-[clamp(4px,0.6vw,10px)]
+            mt-[clamp(5px,0.5vw,10px)]
             ${isFirst
               ? "text-[clamp(12px,1.15vw,21px)]"
               : "text-[clamp(10px,0.95vw,17px)]"
             }
           `}
         >
-          {winner.programName}
+          <span className="text-[#a855f7]">
+            {winner.teamName || "TEAM"}
+          </span>
+
+          <span className="text-white/30 mx-2">
+            •
+          </span>
+
+          <span className="text-white/65">
+            {winner.programName}
+          </span>
         </div>
       </div>
 

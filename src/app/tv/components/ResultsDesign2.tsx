@@ -10,8 +10,6 @@ export default function ResultsDesign2({
   results: IResult[];
   revealStage?: 'PLACE' | 'WINNER';
 }) {
-  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
-
   if (!results || results.length === 0) return null;
 
   const result = results[0];
@@ -237,16 +235,13 @@ export default function ResultsDesign2({
             }}
             className="
               mt-8
-              max-w-[85%]
+              max-w-[80%]
               text-center
-              flex flex-col
-              items-center
             "
           >
             <h1
-              dir={isArabic(result.studentName) ? "rtl" : "ltr"}
-              className={`
-                text-[clamp(45px,6vw,100px)]
+              className="
+                text-[clamp(55px,7vw,120px)]
                 font-light
                 uppercase
                 leading-tight
@@ -254,27 +249,21 @@ export default function ResultsDesign2({
                 text-white
                 drop-shadow-[0_0_25px_rgba(255,255,255,0.18)]
                 break-words
-                max-w-full
-                ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''}
-              `}
+              "
             >
               {result.studentName}
             </h1>
 
             {teamName && (
               <div
-                dir={isArabic(teamName) ? "rtl" : "ltr"}
-                className={`
-                  mt-6
-                  font-bold
+                className="
+                  mt-5
+                  text-xl
+                  font-medium
                   uppercase
-                  text-blue-200
-                  drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]
-                  break-words
-                  max-w-[90%]
-                  leading-[1.2]
-                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(32px,5vw,72px)]' : 'tracking-[0.2em] text-[clamp(28px,4vw,64px)]'}
-                `}
+                  tracking-[0.35em]
+                  text-blue-300
+                "
               >
                 {teamName}
               </div>

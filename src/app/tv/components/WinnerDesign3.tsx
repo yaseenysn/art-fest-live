@@ -36,8 +36,6 @@ const WinnerCard = ({
 }) => {
   if (!winner.exists) return null;
 
-  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
-
   const isFirst = position === 1;
   const isSecond = position === 2;
   const isThird = position === 3;
@@ -161,22 +159,16 @@ const WinnerCard = ({
       {/* TEAM NAME */}
       {winner.teamName && (
         <div
-          dir={isArabic(winner.teamName) ? "rtl" : "ltr"}
           className={`
             relative z-10
             uppercase
-            font-bold
-            break-words
-            max-w-[95%]
-            text-center
-            leading-[1.1]
-            mt-3
-            ${isArabic(winner.teamName) ? 'font-ge-ss-two' : 'tracking-wide'}
+            font-semibold
+            tracking-[0.12em]
             ${isFirst
-              ? "text-[clamp(20px,2vw,36px)] text-[#d4af37]"
+              ? "text-[15px] text-[#d4af37]"
               : isSecond
-                ? "text-[clamp(16px,1.6vw,28px)] text-white/70"
-                : "text-[clamp(14px,1.4vw,24px)] text-white/60"
+                ? "text-[13px] text-white/55"
+                : "text-[12px] text-white/45"
             }
           `}
         >

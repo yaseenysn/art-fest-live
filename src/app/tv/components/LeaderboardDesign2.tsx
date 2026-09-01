@@ -121,10 +121,7 @@ export default function LeaderboardDesign2({
         font-sans
       "
     >
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.05] blur-[2px] saturate-[0.8]"
-        style={{ backgroundImage: `url('/images/leaderboard_bg.jpg')` }}
-      />
+
       <BackgroundTexture />
 
       {/* =====================================================
