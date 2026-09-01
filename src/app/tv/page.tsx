@@ -563,7 +563,7 @@ export default function TVPage() {
     <div
       className="
         w-screen
-        h-[100dvh]
+        h-screen
         bg-[#050B14]
         text-white
         overflow-hidden

@@ -70,7 +70,7 @@ export default function ResultsDesign1({
 
   return (
     <div
-      className="relative w-full h-[100dvh] min-h-0 overflow-hidden bg-black text-white"
+      className="relative w-full h-full min-h-0 overflow-hidden bg-black text-white"
       style={{
         fontFamily:
           "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -533,17 +533,14 @@ export default function ResultsDesign1({
                 font-light
                 uppercase
                 break-words
-                whitespace-normal
-                max-w-[95%]
-                text-center
               "
               style={{
                 fontSize:
                   studentName.length > 24
-                    ? "clamp(2rem, 7vw, 7rem)"
+                    ? "clamp(3rem, 7vw, 7rem)"
                     : studentName.length > 16
-                      ? "clamp(2.5rem, 8vw, 8rem)"
-                      : "clamp(3rem, 10vw, 10rem)",
+                      ? "clamp(3.5rem, 8vw, 8rem)"
+                      : "clamp(4.5rem, 10vw, 10rem)",
 
                 lineHeight: 0.92,
 
@@ -734,11 +731,9 @@ export default function ResultsDesign1({
                   font-bold
                   uppercase
                   break-words
-                  whitespace-normal
                   max-w-[95%]
-                  min-w-0
                   leading-[1.15]
-                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(28px,6vw,90px)]' : 'tracking-[0.25em] text-[clamp(20px,4vw,72px)]'}
+                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(40px,6vw,90px)]' : 'tracking-[0.25em] text-[clamp(32px,4vw,72px)]'}
                 `}
                 style={{
                   color: "#e2e8f0",

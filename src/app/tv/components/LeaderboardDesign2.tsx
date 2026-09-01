@@ -113,7 +113,7 @@ export default function LeaderboardDesign2({
     <div
       className="
         w-screen
-        h-[100dvh]
+        h-screen
         relative
         overflow-hidden
         bg-[#0b0c0f]
@@ -303,7 +303,7 @@ export default function LeaderboardDesign2({
                 className="
                   relative
 
-                  py-[10px]
+                  py-[13px]
                   md:py-[16px]
                   lg:py-[18px]
 
@@ -312,8 +312,7 @@ export default function LeaderboardDesign2({
 
                   last:border-b
 
-                  shrink
-                  min-h-0
+                  shrink-0
                 "
               >
 
@@ -451,17 +450,20 @@ export default function LeaderboardDesign2({
 
                         <span
                           className="
-                            text-white/40
+                            text-white/35
+
                             text-[8px]
                             md:text-[10px]
-                            font-bold
+                            lg:text-[11px]
+
+                            font-semibold
+
                             uppercase
-                            tracking-[0.2em]
-                            min-w-0
-                            truncate
+
+                            tracking-[0.16em]
                           "
                         >
-                          Team Color
+                          TEAM
                         </span>
 
                       </motion.div>
