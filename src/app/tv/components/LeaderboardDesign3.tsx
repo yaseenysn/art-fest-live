@@ -123,16 +123,18 @@ export default function LeaderboardDesign3({
       >
         <div
           className="
-      text-white/80
-      text-[20px]
-      md:text-[24px]
-      lg:text-[28px]
-      font-medium
+      text-white
+      drop-shadow-lg
+      text-[46px]
+      md:text-[56px]
+      lg:text-[68px]
+      font-black
       tracking-[0.08em]
       uppercase
+      font-ge-ss-two
     "
         >
-          AL MAHSAN
+          المحسن
         </div>
       </motion.div>
 

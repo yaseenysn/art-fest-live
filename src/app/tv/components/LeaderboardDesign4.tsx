@@ -48,9 +48,9 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
         </span>
         <motion.h1
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-black text-white uppercase tracking-widest drop-shadow-md"
+          className="text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-widest drop-shadow-md font-ge-ss-two"
         >
-          AL MAHSAN
+          المحسن
         </motion.h1>
       </div>
 

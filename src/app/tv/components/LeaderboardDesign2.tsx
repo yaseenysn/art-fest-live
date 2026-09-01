@@ -180,14 +180,14 @@ export default function LeaderboardDesign2({
               leading-none
               tracking-[-0.055em]
               text-white
-
-              text-[clamp(42px,7vw,110px)]
+              font-ge-ss-two
+              text-[clamp(70px,11vw,160px)]
 
               whitespace-nowrap
               truncate
             "
           >
-            AL MAHSAN
+            المحسن
           </h1>
 
         </motion.div>
