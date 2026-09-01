@@ -136,11 +136,11 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         />
 
         {/* Header */}
-        <div className="flex justify-between items-center w-full px-10 md:px-14 pt-10 pb-2 relative z-20">
+        <div className="flex justify-center items-center w-full px-10 md:px-14 pt-10 pb-2 relative z-20">
           <img 
             src="/logo-al-mahsan.png" 
             alt="Al Mahsan" 
-            className="h-12 md:h-16 lg:h-20 w-auto object-contain drop-shadow-lg"
+            className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
           />
 
         </div>

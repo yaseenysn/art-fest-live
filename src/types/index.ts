@@ -99,3 +99,6 @@ export interface LeaderboardConfig {
   type?: string;
   rows: LeaderboardRow[];
 }
+
+
+

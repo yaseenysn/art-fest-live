@@ -168,6 +168,8 @@ export default function LeaderboardDesign2({
           className="
             shrink-0
             flex
+            w-full
+            justify-center
             items-center
             mt-[15px]
           "
@@ -177,7 +179,7 @@ export default function LeaderboardDesign2({
             <img 
               src="/logo-al-mahsan.png" 
               alt="Al Mahsan" 
-              className="h-14 md:h-20 lg:h-24 w-auto object-contain drop-shadow-lg"
+              className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
             />
           </div>
 

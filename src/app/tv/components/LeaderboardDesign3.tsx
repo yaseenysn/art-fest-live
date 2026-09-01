@@ -115,7 +115,11 @@ export default function LeaderboardDesign3({
         transition={{ duration: 0.7 }}
         className="
     absolute
-    left-[3.5vw]
+    left-0
+    right-0
+    w-full
+    flex
+    justify-center
     top-[2.5vh]
     z-30
     pointer-events-none
@@ -137,7 +141,7 @@ export default function LeaderboardDesign3({
           <img 
             src="/logo-al-mahsan.png" 
             alt="Al Mahsan" 
-            className="h-14 md:h-20 lg:h-24 w-auto object-contain drop-shadow-lg"
+            className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
           />
         </div>
       </motion.div>

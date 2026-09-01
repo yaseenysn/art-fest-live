@@ -27,11 +27,11 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
       {/* Dark Premium Background with Soft Glows */}
       <div className="absolute inset-0 z-0 bg-[#04060C]">
         {/* Photograph Layer */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.15] blur-[4px] saturate-[0.8]"
           style={{ backgroundImage: `url('/images/leaderboard_bg.jpg')` }}
         />
-        
+
         {/* Vignette & Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#04060C]/90 via-transparent to-[#04060C]/90" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#04060C_100%)]" />
@@ -41,19 +41,16 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/20 blur-[120px]" />
       </div>
 
-      {/* Header aligned left */}
-      <div className="w-full flex flex-col items-start text-left relative z-20 mb-16 mt-8 px-10 md:px-20">
-        <span className="text-white/50 font-light tracking-[0.3em] text-sm uppercase mb-2">
-          OVERALL TEAM RANKINGS
-        </span>
+      <div className="w-full flex flex-col items-center text-center relative z-20 mb-16 -mt-8 px-10 md:px-20">
+
         <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
           className="drop-shadow-md"
         >
-          <img 
-            src="/logo-al-mahsan.png" 
-            alt="Al Mahsan" 
-            className="h-14 md:h-20 lg:h-24 w-auto object-contain"
+          <img
+            src="/logo-al-mahsan.png"
+            alt="Al Mahsan"
+            className="h-20 md:h-28 lg:h-36 w-auto object-contain"
           />
         </motion.div>
       </div>
