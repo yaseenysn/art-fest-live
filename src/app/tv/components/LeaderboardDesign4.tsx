@@ -46,12 +46,16 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
         <span className="text-white/50 font-light tracking-[0.3em] text-sm uppercase mb-2">
           OVERALL TEAM RANKINGS
         </span>
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
-          className="text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-widest drop-shadow-md font-ge-ss-two"
+          className="drop-shadow-md"
         >
-          المحسن
-        </motion.h1>
+          <img 
+            src="/logo-al-mahsan.png" 
+            alt="Al Mahsan" 
+            className="h-14 md:h-20 lg:h-24 w-auto object-contain"
+          />
+        </motion.div>
       </div>
 
       {/* 2x2 Grid Container */}

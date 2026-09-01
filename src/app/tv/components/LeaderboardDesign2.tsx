@@ -173,22 +173,13 @@ export default function LeaderboardDesign2({
           "
         >
 
-          <h1
-            className="
-              font-black
-              uppercase
-              leading-none
-              tracking-[-0.055em]
-              text-white
-              font-ge-ss-two
-              text-[clamp(70px,11vw,160px)]
-
-              whitespace-nowrap
-              truncate
-            "
-          >
-            المحسن
-          </h1>
+          <div className="flex items-center space-x-6">
+            <img 
+              src="/logo-al-mahsan.png" 
+              alt="Al Mahsan" 
+              className="h-14 md:h-20 lg:h-24 w-auto object-contain drop-shadow-lg"
+            />
+          </div>
 
         </motion.div>
 

@@ -134,7 +134,11 @@ export default function LeaderboardDesign3({
       font-ge-ss-two
     "
         >
-          المحسن
+          <img 
+            src="/logo-al-mahsan.png" 
+            alt="Al Mahsan" 
+            className="h-14 md:h-20 lg:h-24 w-auto object-contain drop-shadow-lg"
+          />
         </div>
       </motion.div>
 
