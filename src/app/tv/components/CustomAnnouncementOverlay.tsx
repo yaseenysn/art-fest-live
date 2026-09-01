@@ -361,7 +361,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                       dir={isArabic(judge.name) ? "rtl" : "ltr"}
                       className={`
                         max-w-full overflow-visible tracking-wide text-neutral-900 relative z-10
-                        ${isArabic(judge.name) ? 'font-ge-ss-two font-bold' : 'font-medium'}
+                        ${isArabic(judge.name) ? 'font-ge-ss-two font-bold' : 'font-poppins font-bold'}
                       `}
                       style={{
                         fontSize: "clamp(60px, 4.5vw, 140px)",
