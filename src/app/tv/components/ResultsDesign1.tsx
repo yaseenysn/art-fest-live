@@ -118,21 +118,21 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
               transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 80 }}
               className="flex-1 flex items-center justify-center max-w-md"
             >
-              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
+              <div className="relative w-48 h-48 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
                 {/* Ribbon */}
-                <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform -rotate-12 -translate-x-8 origin-bottom-right z-0`} />
-                <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform rotate-12 translate-x-8 origin-bottom-left z-0`} />
+                <div className={`absolute -top-10 md:-top-16 w-10 md:w-16 h-20 md:h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform -rotate-12 -translate-x-6 md:-translate-x-8 origin-bottom-right z-0`} />
+                <div className={`absolute -top-10 md:-top-16 w-10 md:w-16 h-20 md:h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform rotate-12 translate-x-6 md:translate-x-8 origin-bottom-left z-0`} />
 
                 {/* Medal Body */}
                 <div
-                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-[12px] md:border-[16px] ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
+                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-[8px] md:border-[16px] ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
                   style={{ boxShadow: `0 30px 60px ${theme.glow}, inset 0 0 60px rgba(255,255,255,0.5)` }}
                 >
-                  <div className="absolute inset-2 rounded-full border-4 md:border-8 border-white/20" />
-                  <span className="text-[6rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-4">
+                  <div className="absolute inset-2 rounded-full border-2 md:border-8 border-white/20" />
+                  <span className="text-[4rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-2 md:mt-4">
                     {position}
                   </span>
-                  <span className="text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-2">
+                  <span className="text-lg md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1 md:-mt-2">
                     PLACE
                   </span>
                 </div>
@@ -166,26 +166,26 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
           </div>
         ) : (
           /* Multiple Winners Layout: Medal top, Cards below */
-          <div className="flex flex-col items-center justify-center w-full h-full space-y-12">
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-4 md:space-y-12">
             <motion.div
               initial={{ opacity: 0, y: -40, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
               className="flex items-center justify-center mb-8"
             >
-              <div className="relative w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center">
-                <div className={`absolute -top-10 w-10 h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform -rotate-12 -translate-x-5 origin-bottom-right z-0`} />
-                <div className={`absolute -top-10 w-10 h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform rotate-12 translate-x-5 origin-bottom-left z-0`} />
+              <div className="relative w-32 h-32 md:w-56 md:h-56 flex flex-col items-center justify-center">
+                <div className={`absolute -top-6 md:-top-10 w-6 md:w-10 h-12 md:h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform -rotate-12 -translate-x-3 md:-translate-x-5 origin-bottom-right z-0`} />
+                <div className={`absolute -top-6 md:-top-10 w-6 md:w-10 h-12 md:h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform rotate-12 translate-x-3 md:translate-x-5 origin-bottom-left z-0`} />
 
                 <div
-                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-8 ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
+                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-4 md:border-8 ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
                   style={{ boxShadow: `0 20px 40px ${theme.glow}, inset 0 0 30px rgba(255,255,255,0.4)` }}
                 >
-                  <div className="absolute inset-2 rounded-full border-4 border-white/20" />
-                  <span className="text-[4rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-2">
+                  <div className="absolute inset-1 md:inset-2 rounded-full border-2 md:border-4 border-white/20" />
+                  <span className="text-[3rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-1 md:mt-2">
                     {position}
                   </span>
-                  <span className="text-lg md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1">
+                  <span className="text-sm md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1">
                     PLACE
                   </span>
                 </div>
@@ -208,7 +208,7 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
                       hidden: { opacity: 0, y: 30 },
                       visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
                     }}
-                    className="w-full flex"
+                    className="w-full flex min-h-0"
                   >
                     <WinnerCard
                       result={result}
@@ -251,11 +251,11 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
 
   return (
     <div
-      className="flex flex-col w-full h-full bg-white/[0.04] backdrop-blur-[30px] rounded-[32px] md:rounded-[40px] relative overflow-hidden"
+      className="flex flex-col w-full h-full min-h-[100px] bg-white/[0.04] backdrop-blur-[30px] rounded-[1.5rem] md:rounded-[32px] md:rounded-[40px] relative overflow-hidden"
       style={{
         border: '1px solid rgba(255,255,255,0.12)',
         boxShadow: `inset 0 1px 0 rgba(255,255,255,0.2), 0 20px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.02)`,
-        padding: isLarge ? '3rem 3rem' : '2rem 2rem',
+        padding: isLarge ? 'clamp(1rem, 3vh, 3rem) clamp(1rem, 3vw, 3rem)' : 'clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2rem)',
       }}
     >
       {/* Subtle outer reflection */}
@@ -264,37 +264,37 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
       {/* Winner Name */}
       <h2
         dir={isArabic(result.studentName) ? "rtl" : "ltr"}
-        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''} ${isLarge ? 'text-[clamp(36px,5vw,72px)] mb-6' : 'text-[clamp(28px,4vw,56px)] mb-4'}`}
+        className={`font-black text-white uppercase tracking-tight leading-[1.1] drop-shadow-md break-words max-w-full min-w-0 ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''} ${isLarge ? 'text-[clamp(24px,4vw,72px)] mb-2 md:mb-6' : 'text-[clamp(20px,3vw,56px)] mb-2 md:mb-4'}`}
       >
         {result.studentName}
       </h2>
 
       {/* Team Info */}
-      <div className={`flex items-start ${teamArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-4 md:space-x-5 mb-8 w-full`}>
+      <div className={`flex items-start ${teamArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 md:space-x-5 mb-4 md:mb-8 w-full min-w-0`}>
         <div 
-          className={`flex-shrink-0 mt-3 md:mt-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] ${isLarge ? 'w-6 h-6 md:w-8 md:h-8' : 'w-5 h-5 md:w-6 md:h-6'}`} 
+          className={`flex-shrink-0 mt-2 md:mt-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] ${isLarge ? 'w-4 h-4 md:w-8 md:h-8' : 'w-4 h-4 md:w-6 md:h-6'}`} 
           style={{ backgroundColor: tColor }} 
         />
         <span 
           dir={teamArabic ? "rtl" : "ltr"}
-          className={`font-bold uppercase text-slate-200 break-words max-w-[90%] leading-[1.2] ${teamArabic ? 'font-ge-ss-two' : 'tracking-wider'} ${isLarge ? 'text-[clamp(32px,4vw,64px)]' : 'text-[clamp(24px,3vw,52px)]'}`}
+          className={`font-bold uppercase text-slate-200 break-words min-w-0 max-w-full leading-[1.1] ${teamArabic ? 'font-ge-ss-two' : 'tracking-wider'} ${isLarge ? 'text-[clamp(20px,3.5vw,64px)]' : 'text-[clamp(18px,2.5vw,52px)]'}`}
         >
           {teamName || 'TEAM'}
         </span>
       </div>
 
       {/* Points */}
-      <div className="mt-2 mb-6">
-        <span className={`font-black tabular-nums drop-shadow-xl ${theme.textGrad} ${isLarge ? 'text-[4rem] md:text-[5rem] leading-none' : 'text-4xl md:text-5xl leading-none'}`}>
+      <div className="mt-1 md:mt-2 mb-2 md:mb-6 min-w-0">
+        <span className={`font-black tabular-nums drop-shadow-xl ${theme.textGrad} ${isLarge ? 'text-[clamp(2rem,6vw,5rem)] leading-none' : 'text-[clamp(1.5rem,5vw,5rem)] leading-none'}`}>
           {points}
         </span>
-        <span className={`font-semibold text-slate-400 tracking-widest ml-3 ${isLarge ? 'text-2xl' : 'text-xl'}`}>PTS</span>
+        <span className={`font-semibold text-slate-400 tracking-widest ml-2 md:ml-3 ${isLarge ? 'text-lg md:text-2xl' : 'text-sm md:text-xl'}`}>PTS</span>
       </div>
 
       <div className="flex-grow" />
 
       {/* Divider */}
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent my-6 md:my-8" />
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent my-2 md:my-8" />
 
       {/* Program Info */}
       <div className="flex flex-col space-y-1 relative px-6 md:px-8 py-2 md:py-3 -mx-4 md:-mx-6 bg-white/[0.02] rounded-2xl border border-white/[0.05]">

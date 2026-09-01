@@ -56,7 +56,7 @@ export default function LeaderboardDesign3({
       className="
         relative
         w-screen
-        h-screen
+        h-[100dvh]
         overflow-hidden
         bg-[#111111]
         text-white
@@ -400,8 +400,8 @@ export default function LeaderboardDesign3({
               absolute
               left-[4%]
               right-[4%]
-              bottom-[75px]
-              top-[100px]
+              bottom-[65px] md:bottom-[75px]
+              top-[130px] md:top-[100px]
 
               flex
               items-end
@@ -509,9 +509,7 @@ export default function LeaderboardDesign3({
 
                     <span
                       className="
-                        text-[32px]
-                        md:text-[40px]
-                        lg:text-[48px]
+                        text-[clamp(24px,5vw,48px)]
                         font-black
                         leading-none
                         tracking-[-0.05em]
@@ -720,23 +718,25 @@ export default function LeaderboardDesign3({
                     className="
                       absolute
                       top-full
-                      mt-6
+                      mt-3 md:mt-6
 
                       flex
                       flex-col
                       items-center
 
-                      whitespace-nowrap
+                      w-[250%]
+                      left-1/2
+                      -translate-x-1/2
+                      text-center
                     "
                   >
 
                     {/* Team name */}
 
                     <span
+                      dir={isArabic(row.name) ? "rtl" : "ltr"}
                       className={`
-                        text-[18px]
-                        md:text-[22px]
-                        lg:text-[27px]
+                        text-[clamp(14px,3vw,27px)]
 
                         font-bold
 
@@ -745,6 +745,10 @@ export default function LeaderboardDesign3({
                         tracking-[0.02em]
 
                         text-white/90
+                        break-words
+                        whitespace-normal
+                        min-w-0
+                        max-w-full
                         ${isArabic(row.name) ? 'font-ge-ss-two' : ''}
                       `}
                     >

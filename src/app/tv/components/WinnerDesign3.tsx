@@ -69,20 +69,20 @@ const WinnerCard = ({
 
         ${isFirst
           ? `
-              w-[430px] h-[470px]
+              w-[clamp(280px,80vw,430px)] h-[clamp(150px,28vh,470px)]
               border-[2px] border-[#d4af37]
               bg-gradient-to-b from-[#211d11] via-[#15130e] to-[#090909]
               shadow-[0_0_45px_rgba(212,175,55,0.30)]
             `
           : isSecond
             ? `
-              w-[340px] h-[375px]
+              w-[clamp(260px,75vw,340px)] h-[clamp(130px,25vh,375px)]
               border border-white/[0.13]
               bg-gradient-to-b from-[#202020] to-[#090909]
               shadow-[0_20px_50px_rgba(0,0,0,0.45)]
             `
             : `
-              w-[315px] h-[350px]
+              w-[clamp(240px,70vw,315px)] h-[clamp(120px,22vh,350px)]
               border border-white/[0.10]
               bg-gradient-to-b from-[#1b1b1b] to-[#080808]
               shadow-[0_15px_40px_rgba(0,0,0,0.4)]
@@ -111,12 +111,12 @@ const WinnerCard = ({
           relative z-10
           w-[90%]
           px-4
-          flex flex-col items-center justify-center
+          flex flex-col items-center justify-center min-h-0 shrink
           ${isFirst
-            ? "min-h-[130px] gap-2"
+            ? "flex-1 md:min-h-[130px] gap-1 md:gap-2"
             : isSecond
-              ? "min-h-[100px] gap-1.5"
-              : "min-h-[90px] gap-1"
+              ? "flex-1 md:min-h-[100px] gap-1 md:gap-1.5"
+              : "flex-1 md:min-h-[90px] gap-1"
           }
         `}
       >
@@ -131,9 +131,10 @@ const WinnerCard = ({
                 break-words
                 whitespace-normal
                 text-center
+                min-w-0
                 ${winner.names.length >= 2 
-                  ? (isFirst ? "text-[clamp(22px,2.2vw,34px)]" : isSecond ? "text-[clamp(18px,1.8vw,26px)]" : "text-[clamp(16px,1.6vw,22px)]")
-                  : (isFirst ? "text-[clamp(30px,3vw,48px)]" : isSecond ? "text-[clamp(24px,2.2vw,36px)]" : "text-[clamp(22px,2vw,32px)]")
+                  ? (isFirst ? "text-[clamp(20px,2.2vw,34px)]" : isSecond ? "text-[clamp(16px,1.8vw,26px)]" : "text-[clamp(14px,1.6vw,22px)]")
+                  : (isFirst ? "text-[clamp(24px,3vw,48px)]" : isSecond ? "text-[clamp(20px,2.2vw,36px)]" : "text-[clamp(18px,2vw,32px)]")
                 }
                 ${isFirst ? "text-[#d9ad28]" : isSecond ? "text-white" : "text-white/95"}
               `}
@@ -187,12 +188,12 @@ const WinnerCard = ({
       {/* SEPARATOR */}
       <div
         className={`
-          mt-5
+          mt-2 md:mt-5
           ${isFirst
-            ? "w-[180px]"
+            ? "w-[120px] md:w-[180px]"
             : isSecond
-              ? "w-[130px]"
-              : "w-[110px]"
+              ? "w-[90px] md:w-[130px]"
+              : "w-[70px] md:w-[110px]"
           }
           h-px
           ${isFirst
@@ -276,12 +277,15 @@ export default function WinnerDesign3({
     <div
       id={id}
       className="
-        fixed inset-0
-        w-full h-full
+        fixed
+        inset-0
+        w-full
+        h-[100dvh]
         overflow-hidden
         select-none
         bg-[#050505]
         text-white
+        font-sans
       "
     >
       {/* ================= BACKGROUND ================= */}
@@ -373,14 +377,14 @@ export default function WinnerDesign3({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           className="
-            mt-[40px]
+            mt-[60px] md:mt-[40px]
             max-w-[85vw]
             text-center
             uppercase
             font-black
             tracking-tight
-            leading-none
-            text-[clamp(30px,5vw,76px)]
+            leading-[1.1]
+            text-[clamp(24px,5vw,76px)]
             text-[#d7ae31]
             break-words
           "
@@ -414,21 +418,22 @@ export default function WinnerDesign3({
         className="
           absolute
           left-0 right-0
-          top-[32%]
-          bottom-[5%]
+          top-[35%] md:top-[32%]
+          bottom-[2%] md:bottom-[5%]
           z-10
           flex
           items-center
           justify-center
-          px-6
+          px-2 md:px-6
         "
       >
         <div
           className="
             flex
+            flex-col md:flex-row
             items-center
             justify-center
-            gap-[55px]
+            gap-4
             md:gap-[75px]
             lg:gap-[90px]
             w-full
@@ -443,7 +448,7 @@ export default function WinnerDesign3({
               justify-center
               flex-1
               min-w-0
-              order-1
+              order-3 md:order-1
             "
           >
             <WinnerCard
@@ -460,7 +465,7 @@ export default function WinnerDesign3({
               justify-center
               flex-1
               min-w-0
-              order-2
+              order-1 md:order-2
             "
           >
             <WinnerCard
@@ -477,7 +482,7 @@ export default function WinnerDesign3({
               justify-center
               flex-1
               min-w-0
-              order-3
+              order-2 md:order-3
             "
           >
             <WinnerCard

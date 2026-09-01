@@ -95,7 +95,7 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
   const tColor = (firstResult.teamId as { color?: string })?.color || theme.glow;
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center z-10 px-8 py-10 relative overflow-hidden bg-[#050A18]">
+    <div className="h-[100dvh] w-full flex flex-col justify-center items-center z-10 px-4 md:px-8 py-10 relative overflow-hidden bg-[#050A18]">
 
       {/* Background Atmosphere */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -112,7 +112,7 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
         {numWinners === 1 ? (
           /* Single Winner Layout: Side by side */
-          <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-[95%] md:max-w-[85%] mx-auto space-y-8 md:space-y-0 md:space-x-20">
+          <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-full md:max-w-[85%] mx-auto space-y-4 md:space-y-0 md:space-x-20">
             {/* Left: Medal */}
             <motion.div
               initial={{ opacity: 0, x: -40, scale: 0.9 }}
@@ -120,7 +120,7 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
               transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 80 }}
               className="flex-1 flex items-center justify-center max-w-md"
             >
-              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
+              <div className="relative w-48 h-48 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
                 {/* Ribbon */}
                 <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform -rotate-12 -translate-x-8 origin-bottom-right z-0`} />
                 <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform rotate-12 translate-x-8 origin-bottom-left z-0`} />
@@ -131,10 +131,10 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
                   style={{ boxShadow: `0 30px 60px ${theme.glow}, inset 0 0 60px rgba(255,255,255,0.5)` }}
                 >
                   <div className="absolute inset-2 rounded-full border-4 md:border-8 border-white/20" />
-                  <span className="text-[6rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-4">
+                  <span className="text-[4.5rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-2 md:mt-4">
                     {position}
                   </span>
-                  <span className="text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-2">
+                  <span className="text-sm md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1 md:-mt-2">
                     PLACE
                   </span>
                 </div>
@@ -146,7 +146,7 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.8, type: "spring", stiffness: 80 }}
-              className="flex-[1.2] w-full min-w-0"
+              className="flex-[1.2] w-full min-w-0 flex flex-col items-center text-center max-w-[95%] mx-auto"
             >
               <WinnerCard
                 result={firstResult}
@@ -163,14 +163,14 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
           </div>
         ) : (
           /* Multiple Winners Layout: Medal top, Cards below */
-          <div className="flex flex-col items-center justify-center w-full h-full space-y-12">
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-4 md:space-y-12 min-h-0">
             <motion.div
               initial={{ opacity: 0, y: -40, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
               className="flex items-center justify-center mb-8"
             >
-              <div className="relative w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center">
+              <div className="relative w-32 h-32 md:w-56 md:h-56 flex flex-col items-center justify-center">
                 <div className={`absolute -top-10 w-10 h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform -rotate-12 -translate-x-5 origin-bottom-right z-0`} />
                 <div className={`absolute -top-10 w-10 h-20 bg-gradient-to-b ${theme.ribbonGrad} shadow-lg transform rotate-12 translate-x-5 origin-bottom-left z-0`} />
 
@@ -179,10 +179,10 @@ export default function ResultAnnouncement({ results }: { results: IResult[] }) 
                   style={{ boxShadow: `0 20px 40px ${theme.glow}, inset 0 0 30px rgba(255,255,255,0.4)` }}
                 >
                   <div className="absolute inset-2 rounded-full border-4 border-white/20" />
-                  <span className="text-[4rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-2">
+                  <span className="text-[3rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-1 md:mt-2">
                     {position}
                   </span>
-                  <span className="text-lg md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1">
+                  <span className="text-sm md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-0.5 md:-mt-1">
                     PLACE
                   </span>
                 </div>
@@ -246,11 +246,10 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
 
   return (
     <div
-      className="flex flex-col w-full h-full bg-white/[0.04] backdrop-blur-[30px] rounded-[32px] md:rounded-[40px] relative overflow-hidden"
+      className={`flex flex-col w-full h-full bg-white/[0.04] backdrop-blur-[30px] rounded-[1.5rem] md:rounded-[40px] relative overflow-hidden ${isLarge ? 'p-6 md:p-12' : 'p-4 md:p-8'}`}
       style={{
         border: '1px solid rgba(255,255,255,0.12)',
         boxShadow: `inset 0 1px 0 rgba(255,255,255,0.2), 0 20px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.02)`,
-        padding: isLarge ? '3rem 3rem' : '2rem 2rem',
       }}
     >
       {/* Subtle outer reflection */}
@@ -259,20 +258,20 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
       {/* Winner Name */}
       <h2
         dir={isArabic(result.studentName) ? "rtl" : "ltr"}
-        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''} ${isLarge ? 'text-[clamp(36px,5vw,72px)] mb-6' : 'text-[clamp(28px,4vw,56px)] mb-4'}`}
+        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words min-w-0 max-w-full ${isArabic(result.studentName) ? 'font-ge-ss-two' : ''} ${isLarge ? 'text-[clamp(24px,5vw,72px)] mb-3 md:mb-6' : 'text-[clamp(20px,4vw,56px)] mb-2 md:mb-4'}`}
       >
         {result.studentName}
       </h2>
 
       {/* Team Info */}
-      <div className={`flex items-start ${teamArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-4 md:space-x-5 mb-8 w-full`}>
+      <div className={`flex items-start ${teamArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-2 md:space-x-5 mb-4 md:mb-8 w-full`}>
         <div 
           className={`flex-shrink-0 mt-3 md:mt-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] ${isLarge ? 'w-6 h-6 md:w-8 md:h-8' : 'w-5 h-5 md:w-6 md:h-6'}`} 
           style={{ backgroundColor: tColor }} 
         />
         <span 
           dir={teamArabic ? "rtl" : "ltr"}
-          className={`font-bold uppercase text-slate-200 break-words max-w-[90%] leading-[1.2] ${teamArabic ? 'font-ge-ss-two' : 'tracking-wider'} ${isLarge ? 'text-[clamp(32px,4vw,64px)]' : 'text-[clamp(24px,3vw,52px)]'}`}
+          className={`font-bold uppercase text-slate-200 break-words min-w-0 max-w-full leading-[1.2] ${teamArabic ? 'font-ge-ss-two' : 'tracking-wider'} ${isLarge ? 'text-[clamp(20px,4vw,64px)]' : 'text-[clamp(16px,3vw,52px)]'}`}
         >
           {teamName || 'TEAM'}
         </span>
@@ -280,7 +279,7 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
 
       {/* Points */}
       <div className="mt-2 mb-6">
-        <span className={`font-black tabular-nums drop-shadow-xl ${theme.textGrad} ${isLarge ? 'text-[4rem] md:text-[5rem] leading-none' : 'text-4xl md:text-5xl leading-none'}`}>
+        <span className={`font-black tabular-nums drop-shadow-xl ${theme.textGrad} ${isLarge ? 'text-[3rem] md:text-[5rem] leading-none' : 'text-3xl md:text-5xl leading-none'}`}>
           {points}
         </span>
         <span className={`font-semibold text-slate-400 tracking-widest ml-3 ${isLarge ? 'text-2xl' : 'text-xl'}`}>PTS</span>

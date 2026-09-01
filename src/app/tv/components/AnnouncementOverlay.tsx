@@ -15,7 +15,7 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-50 flex justify-center items-center w-full h-full bg-[#751121] overflow-hidden select-none px-8"
+      className="absolute inset-0 z-50 flex justify-center items-center w-full h-[100dvh] bg-[#751121] overflow-hidden select-none px-4 md:px-8"
       style={{
         backgroundImage: 'repeating-linear-gradient(45deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 3px, transparent 3px, transparent 8px)'
       }}
@@ -25,13 +25,13 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
         initial={{ scale: 0.8, y: 50, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.4, duration: 0.8 }}
-        className="relative w-full max-w-[1200px] min-h-[50vh] bg-[#fdfbf7] rounded-[30px] md:rounded-[50px] shadow-[15px_20px_40px_rgba(0,0,0,0.6),inset_-5px_-5px_15px_rgba(0,0,0,0.05),inset_5px_5px_15px_rgba(255,255,255,1)] p-4 md:p-6 z-10 mt-[-5%]"
+        className="relative w-full max-w-[1200px] h-[80vh] md:h-auto md:min-h-[50vh] bg-[#fdfbf7] rounded-[30px] md:rounded-[50px] shadow-[15px_20px_40px_rgba(0,0,0,0.6),inset_-5px_-5px_15px_rgba(0,0,0,0.05),inset_5px_5px_15px_rgba(255,255,255,1)] p-4 md:p-6 z-10"
       >
         {/* The 3D tail pointing down */}
         <div className="absolute -bottom-6 left-[35%] w-16 h-16 md:w-20 md:h-20 bg-[#fdfbf7] border-b-[6px] border-r-[6px] border-[#e2d1bb] rotate-45 shadow-[15px_15px_30px_rgba(0,0,0,0.4)] -z-10 rounded-br-xl" />
 
         {/* Inner border container with gold/beige accent */}
-        <div className="border-[4px] md:border-[6px] border-[#e2d1bb] rounded-[20px] md:rounded-[35px] p-10 md:p-20 flex flex-col items-center justify-center relative bg-white/50 h-full w-full">
+        <div className="border-[4px] md:border-[6px] border-[#e2d1bb] rounded-[20px] md:rounded-[35px] p-6 md:p-20 flex flex-col items-center justify-center relative bg-white/50 h-full w-full">
 
           {/* Quote top-left */}
           <div className="absolute top-6 left-6 md:top-10 md:left-12 text-[#751121] opacity-90 drop-shadow-sm">
@@ -58,7 +58,7 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
             </h1>
 
             {/* Announcement Message */}
-            <p className="text-[clamp(28px,5vw,50px)] text-[#111827] font-extrabold leading-snug md:leading-[1.4] px-4 md:px-16 whitespace-pre-wrap break-words drop-shadow-sm">
+            <p className="text-[clamp(18px,4.5vw,50px)] text-[#111827] font-extrabold leading-tight md:leading-[1.4] px-2 md:px-16 whitespace-pre-wrap break-words drop-shadow-sm line-clamp-6 md:line-clamp-none overflow-hidden">
               {announcement.message}
             </p>
           </motion.div>
@@ -89,7 +89,7 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
           <img
             src="/megaphone.jpg"
             alt="Megaphone"
-            className="w-[200px] md:w-[350px] mix-blend-multiply contrast-125 saturate-150 relative z-20"
+            className="w-[120px] md:w-[350px] mix-blend-multiply contrast-125 saturate-150 relative z-20"
           />
         </div>
       </motion.div>

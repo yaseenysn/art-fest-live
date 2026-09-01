@@ -177,8 +177,8 @@ export default function FinalTeamReveal({
         fixed
         inset-0
         z-[9999]
-        w-screen
-        h-screen
+        w-full
+        h-[100dvh]
         overflow-hidden
         select-none
       "
@@ -322,7 +322,7 @@ export default function FinalTeamReveal({
                   leading-[0.9]
                   tracking-[-0.04em]
                   break-words
-                  text-[clamp(60px,13vw,220px)]
+                  text-[clamp(36px,10vw,220px)]
                 "
                 style={{
                   background: "linear-gradient(180deg, #fbb86b 0%, #eb5b36 100%)",

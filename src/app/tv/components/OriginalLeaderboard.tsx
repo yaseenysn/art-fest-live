@@ -97,7 +97,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
 
   return (
     <div
-      className="w-screen h-screen flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-4 md:p-8"
+      className="w-screen h-[100dvh] flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-4 md:p-8"
       onMouseLeave={handleMouseLeave}
     >
       <MemoizedBackgroundTexture />
@@ -263,27 +263,18 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
           </div>
 
           {/* Right Ranking List — LARGE BACKGROUND BOX REMOVED */}
-          <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col relative">
+          <div className="w-full h-full min-h-0 md:w-[45%] lg:w-[40%] flex flex-col relative">
 
-            <div className="flex-1 overflow-hidden p-6 md:p-10 flex flex-col justify-center">
+            <div className="flex-1 min-h-0 overflow-hidden p-3 md:p-10 flex flex-col justify-center">
 
               <AnimatePresence mode="wait">
                 <motion.div
                   key={page}
-                  initial={{
-                    opacity: 0,
-                    x: 20
-                  }}
-                  animate={{
-                    opacity: 1,
-                    x: 0
-                  }}
-                  exit={{
-                    opacity: 0,
-                    x: -20
-                  }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
-                  className="space-y-4"
+                  className="space-y-2 md:space-y-4 flex flex-col h-full justify-evenly"
                 >
 
                   {visibleRows.map((row) => {
@@ -299,10 +290,10 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                         animate={{
                           backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.02)',
                           borderColor: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
-                          scale: isActive ? 1.05 : 1
+                        scale: isActive ? 1.05 : 1
                         }}
                         transition={{ duration: 0.5 }}
-                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-5 md:p-6 rounded-2xl border`}
+                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-3 md:p-6 rounded-2xl border min-h-0`}
                       >
 
                         {/* GPU-Friendly Shadow (Opacity Fade) */}
@@ -328,10 +319,10 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                           style={{ backgroundColor: rColor }}
                         />
 
-                        <div className="flex items-center space-x-5 md:space-x-6 relative z-10">
+                        <div className="flex items-center space-x-3 md:space-x-6 relative z-10 flex-1 min-w-0 pr-2 md:pr-4">
 
                           <span
-                            className={`text-[clamp(18px,3vw,30px)] md:text-3xl font-black truncate max-w-[150px] md:max-w-[300px] ${isActive
+                            className={`text-[clamp(14px,3vw,30px)] md:text-3xl font-black shrink-0 ${isActive
                               ? 'text-white'
                               : 'text-white/40'
                               }`}
@@ -339,13 +330,16 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                             {String(row.rank).padStart(2, '0')}
                           </span>
 
-                          <div className="flex flex-col">
+                          <div className="flex flex-col flex-1 min-w-0">
 
                             <span
-                              className={`text-xl md:text-2xl font-bold uppercase tracking-wide transition-colors ${isActive
-                                ? 'text-white'
-                                : 'text-white/70 group-hover:text-white'
-                                } ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}
+                              dir={isArabic(row.name) ? "rtl" : "ltr"}
+                              className={`
+                                font-bold uppercase transition-colors break-words max-w-full leading-[1.1]
+                                ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}
+                                ${isArabic(row.name) ? 'font-ge-ss-two' : 'tracking-wide'}
+                                text-[clamp(16px,2.5vw,40px)]
+                              `}
                             >
                               {row.name}
                             </span>
@@ -372,10 +366,10 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                         </div>
 
                         {config.showPoints && (
-                          <div className="text-right relative z-10 flex items-baseline space-x-1">
+                          <div className="text-right relative z-10 flex items-baseline space-x-1 pl-2">
 
                             <span
-                              className={`text-3xl md:text-5xl font-black ${isActive
+                              className={`text-[clamp(20px,4vw,48px)] md:text-5xl font-black ${isActive
                                 ? 'text-white'
                                 : 'text-white/40'
                                 }`}

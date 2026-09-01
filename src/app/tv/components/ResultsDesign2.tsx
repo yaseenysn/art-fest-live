@@ -34,7 +34,7 @@ export default function ResultsDesign2({
     (result.teamId as any)?.name || "";
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#080b13] text-white select-none">
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-[#080b13] text-white select-none">
 
       {/* =========================================================
           BACKGROUND
@@ -163,7 +163,7 @@ export default function ResultsDesign2({
           <div
             className="
               relative
-              text-[clamp(220px,25vw,430px)]
+              text-[clamp(150px,25vw,430px)]
               font-black
               leading-[0.8]
               tracking-[-0.08em]
@@ -246,7 +246,7 @@ export default function ResultsDesign2({
             <h1
               dir={isArabic(result.studentName) ? "rtl" : "ltr"}
               className={`
-                text-[clamp(45px,6vw,100px)]
+                text-[clamp(32px,5vw,100px)]
                 font-light
                 uppercase
                 leading-tight
@@ -265,15 +265,15 @@ export default function ResultsDesign2({
               <div
                 dir={isArabic(teamName) ? "rtl" : "ltr"}
                 className={`
-                  mt-6
+                  mt-4 md:mt-6
                   font-bold
                   uppercase
                   text-blue-200
                   drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]
                   break-words
-                  max-w-[90%]
+                  max-w-full
                   leading-[1.2]
-                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(32px,5vw,72px)]' : 'tracking-[0.2em] text-[clamp(28px,4vw,64px)]'}
+                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(24px,4vw,72px)]' : 'tracking-[0.2em] text-[clamp(20px,3.5vw,64px)]'}
                 `}
               >
                 {teamName}
