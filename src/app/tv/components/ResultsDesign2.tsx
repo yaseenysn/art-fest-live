@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { IResult } from "@/types";
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 export default function ResultsDesign2({
   results,
   revealStage = 'WINNER'
@@ -256,14 +258,19 @@ export default function ResultsDesign2({
 
             {teamName && (
               <div
-                className="
-                  mt-5
-                  text-xl
+                dir={isArabic(teamName) ? "rtl" : "ltr"}
+                className={`
+                  mt-6 md:mt-10
                   font-medium
                   uppercase
-                  tracking-[0.35em]
                   text-blue-300
-                "
+                  break-words
+                  min-w-0
+                  max-w-full
+                  leading-[1.2]
+                  text-[clamp(32px,4vw,60px)]
+                  ${isArabic(teamName) ? 'font-ge-ss-two' : 'tracking-[0.35em]'}
+                `}
               >
                 {teamName}
               </div>

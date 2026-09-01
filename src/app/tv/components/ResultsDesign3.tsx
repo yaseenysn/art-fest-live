@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { IResult } from "@/types";
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 const getPositionTheme = (position: number) => {
   switch (position) {
     case 1:
@@ -61,6 +63,9 @@ export default function ResultsDesign1({
 
   const position = result.position || 1;
   const studentName = result.studentName || "WINNER";
+  const team = result.teamId as any;
+  const teamName = team?.name || "";
+  const teamColor = team?.color || "#3b82f6";
 
   const theme = getPositionTheme(position);
   const positionLabel = getPositionLabel(position);
@@ -571,6 +576,63 @@ export default function ResultsDesign1({
               }}
             >
               {studentName}
+            </motion.div>
+          )}
+
+          {/* =====================================================
+              TEAM NAME
+          ====================================================== */}
+
+          {revealStage === 'WINNER' && teamName && (
+            <motion.div
+              dir={isArabic(teamName) ? 'rtl' : 'ltr'}
+              className={`
+                mt-6 md:mt-10
+                flex
+                items-center
+                justify-center
+                gap-3 md:gap-5
+                min-w-0
+                max-w-full
+                break-words
+                leading-[1.2]
+              `}
+              initial={{
+                opacity: 0,
+                y: 30,
+                filter: "blur(10px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
+              transition={{
+                duration: 1.2,
+                delay: 0.3,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <div 
+                className="w-4 h-4 md:w-6 md:h-6 rounded-full shrink-0" 
+                style={{ 
+                  backgroundColor: teamColor, 
+                  boxShadow: `0 0 20px ${teamColor}, inset 0 0 10px rgba(255,255,255,0.5)` 
+                }} 
+              />
+              <div
+                className={`
+                  uppercase
+                  text-[clamp(28px,4vw,56px)]
+                  text-blue-100
+                  ${isArabic(teamName) ? 'font-ge-ss-two font-bold' : 'tracking-[0.25em] font-semibold'}
+                `}
+                style={{
+                  textShadow: `0 0 15px rgba(173,211,255,0.3)`
+                }}
+              >
+                {teamName}
+              </div>
             </motion.div>
           )}
 

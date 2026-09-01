@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "motion/react";
 import { AllWinnersConfig } from "./AllWinnersRouter";
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 type WinnerItem = {
   studentName?: string;
   name?: string;
@@ -157,18 +159,23 @@ const WinnerCard = ({
       </div>
 
       {/* TEAM NAME */}
-      {winner.teamName && (
+      {winner.teamName && winner.names && winner.names.length > 0 && (
         <div
+          dir={isArabic(winner.teamName) ? 'rtl' : 'ltr'}
           className={`
             relative z-10
             uppercase
-            font-semibold
-            tracking-[0.12em]
+            mt-2
+            min-w-0
+            max-w-full
+            break-words
+            leading-[1.2]
+            ${isArabic(winner.teamName) ? 'font-ge-ss-two font-bold' : 'font-semibold tracking-[0.12em]'}
             ${isFirst
-              ? "text-[15px] text-[#d4af37]"
+              ? "text-[clamp(24px,3vw,44px)] text-[#d4af37]"
               : isSecond
-                ? "text-[13px] text-white/55"
-                : "text-[12px] text-white/45"
+                ? "text-[clamp(20px,2.2vw,34px)] text-white/70"
+                : "text-[clamp(18px,1.8vw,28px)] text-white/60"
             }
           `}
         >

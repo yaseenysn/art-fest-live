@@ -3,6 +3,8 @@
 import { motion } from 'motion/react';
 import { IResult } from '@/types';
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { results: IResult[], revealStage?: 'PLACE' | 'WINNER' }) {
   if (!results || results.length === 0) return null;
   const program = results[0]?.programId as any;
@@ -46,12 +48,22 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
                 <h3 className="text-4xl xl:text-5xl font-black uppercase text-white mb-3 leading-tight break-words whitespace-pre-wrap">
                   {res.studentName ? res.studentName.replace(/\s*,\s*/g, ', ') : ''}
                 </h3>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-xl font-bold tracking-widest text-slate-400 uppercase truncate">
-                    {(res.teamId as any)?.name || 'TEAM'}
-                  </span>
-                </div>
+                
+                {(() => {
+                  const teamName = (res.teamId as any)?.name || 'TEAM';
+                  const hasArabic = isArabic(teamName);
+                  return (
+                    <div 
+                      dir={hasArabic ? 'rtl' : 'ltr'}
+                      className={`flex items-start ${hasArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-4 mt-2`}
+                    >
+                      <div className="w-4 h-4 md:w-5 md:h-5 mt-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                      <span className={`font-bold uppercase text-emerald-100 min-w-0 max-w-full break-words leading-[1.2] ${hasArabic ? 'font-ge-ss-two text-[clamp(28px,3vw,48px)]' : 'tracking-widest text-[clamp(24px,3vw,44px)]'}`}>
+                        {teamName}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
               
               <div className="text-right flex flex-col justify-center">

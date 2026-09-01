@@ -244,6 +244,8 @@ interface WinnerCardProps {
   isLarge: boolean;
 }
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 function WinnerCard({ result, teamColor, teamName, programName, programLanguage, category, points, theme, isLarge }: WinnerCardProps) {
   const tColor = teamColor || '#3b82f6';
 
@@ -267,9 +269,14 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
       </h2>
 
       {/* Team Info */}
-      <div className="flex items-center space-x-3 md:space-x-4 mb-6">
-        <div className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)] ${isLarge ? 'w-5 h-5 md:w-6 md:h-6' : 'w-4 h-4 md:w-5 md:h-5'}`} style={{ backgroundColor: tColor }} />
-        <span className={`font-bold uppercase tracking-widest text-slate-200 ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
+      <div 
+        dir={isArabic(teamName) ? 'rtl' : 'ltr'}
+        className={`flex items-start ${isArabic(teamName) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 md:space-x-4 mb-6`}
+      >
+        <div className={`mt-2 shrink-0 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)] ${isLarge ? 'w-5 h-5 md:w-6 md:h-6' : 'w-4 h-4 md:w-5 md:h-5'}`} style={{ backgroundColor: tColor }} />
+        <span 
+          className={`font-bold uppercase break-words min-w-0 max-w-full leading-[1.2] text-slate-200 ${isArabic(teamName) ? 'font-ge-ss-two' : 'tracking-widest'} ${isLarge ? 'text-[clamp(32px,4vw,60px)]' : 'text-[clamp(24px,3vw,40px)]'}`}
+        >
           {teamName || 'TEAM'}
         </span>
       </div>

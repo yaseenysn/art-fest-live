@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "motion/react";
 import { AllWinnersConfig } from "./AllWinnersRouter";
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 type WinnerItem = {
   studentName?: string;
   name?: string;
@@ -128,33 +130,42 @@ const WinnerNode = ({
             : winner.teamName}
         </h2>
 
-        {/* TEAM + PROGRAM */}
+        {/* TEAM NAME */}
         <div
+          dir={isArabic(winner.teamName) ? 'rtl' : 'ltr'}
           className={`
-            flex
-            items-center
-            flex-wrap
             uppercase
-            font-bold
-            tracking-wide
-            mt-[clamp(5px,0.5vw,10px)]
+            break-words
+            min-w-0
+            max-w-full
+            mt-[clamp(8px,1vw,16px)]
+            leading-[1.2]
+            text-[#a855f7]
+            ${isArabic(winner.teamName) ? 'font-ge-ss-two font-bold' : 'tracking-wide font-bold'}
             ${isFirst
-              ? "text-[clamp(12px,1.15vw,21px)]"
-              : "text-[clamp(10px,0.95vw,17px)]"
+              ? "text-[clamp(20px,3vw,36px)]"
+              : "text-[clamp(16px,2vw,28px)]"
             }
           `}
         >
-          <span className="text-[#a855f7]">
-            {winner.teamName || "TEAM"}
-          </span>
+          {winner.teamName || "TEAM"}
+        </div>
 
-          <span className="text-white/30 mx-2">
-            •
-          </span>
-
-          <span className="text-white/65">
-            {winner.programName}
-          </span>
+        {/* PROGRAM NAME */}
+        <div
+          className={`
+            uppercase
+            font-medium
+            tracking-wide
+            mt-[clamp(4px,0.5vw,8px)]
+            text-white/65
+            ${isFirst
+              ? "text-[clamp(12px,1vw,18px)]"
+              : "text-[clamp(10px,0.8vw,14px)]"
+            }
+          `}
+        >
+          {winner.programName}
         </div>
       </div>
 
