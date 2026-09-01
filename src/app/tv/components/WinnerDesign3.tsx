@@ -17,8 +17,7 @@ type WinnerItem = {
 
 type PositionWinner = {
   position: 1 | 2 | 3;
-  names: string[];
-  teamName?: string;
+  winners: WinnerItem[];
   programName?: string;
   exists: boolean;
 };
@@ -105,7 +104,7 @@ const WinnerCard = ({
         `}
       />
 
-      {/* WINNER NAME */}
+      {/* WINNERS LIST */}
       <div
         className={`
           relative z-10
@@ -120,27 +119,59 @@ const WinnerCard = ({
           }
         `}
       >
-        {winner.names.length > 0 ? (
-          winner.names.map((name, index) => (
-            <h2
-              key={index}
-              className={`
-                font-black
-                uppercase
-                leading-[1.05]
-                break-words
-                whitespace-normal
-                text-center
-                ${winner.names.length >= 2 
-                  ? (isFirst ? "text-[clamp(22px,2.2vw,34px)]" : isSecond ? "text-[clamp(18px,1.8vw,26px)]" : "text-[clamp(16px,1.6vw,22px)]")
-                  : (isFirst ? "text-[clamp(30px,3vw,48px)]" : isSecond ? "text-[clamp(24px,2.2vw,36px)]" : "text-[clamp(22px,2vw,32px)]")
-                }
-                ${isFirst ? "text-[#d9ad28]" : isSecond ? "text-white" : "text-white/95"}
-              `}
-            >
-              {name}
-            </h2>
-          ))
+        {winner.winners.length > 0 ? (
+          winner.winners.map((w, index) => {
+            const studentName = w.studentName || w.name || "—";
+            const teamName = w.teamName || w.team || "";
+            return (
+              <div key={index} className="flex flex-col items-center justify-center w-full mb-4 last:mb-0">
+                {/* WINNER NAME */}
+                <h2
+                  className={`
+                    font-black
+                    uppercase
+                    leading-[1.05]
+                    break-words
+                    whitespace-normal
+                    text-center
+                    ${winner.winners.length >= 2 
+                      ? (isFirst ? "text-[clamp(22px,2.2vw,34px)]" : isSecond ? "text-[clamp(18px,1.8vw,26px)]" : "text-[clamp(16px,1.6vw,22px)]")
+                      : (isFirst ? "text-[clamp(30px,3vw,48px)]" : isSecond ? "text-[clamp(24px,2.2vw,36px)]" : "text-[clamp(22px,2vw,32px)]")
+                    }
+                    ${isFirst ? "text-[#d9ad28]" : isSecond ? "text-white" : "text-white/95"}
+                  `}
+                >
+                  {studentName}
+                </h2>
+
+                {/* TEAM NAME */}
+                {teamName && (
+                  <div
+                    dir={isArabic(teamName) ? 'rtl' : 'ltr'}
+                    className={`
+                      relative z-10
+                      uppercase
+                      mt-2
+                      min-w-0
+                      max-w-full
+                      break-words
+                      leading-[1.2]
+                      text-center
+                      ${isArabic(teamName) ? 'font-ge-ss-two font-bold' : 'font-semibold tracking-[0.12em]'}
+                      ${isFirst
+                        ? "text-[clamp(18px,2vw,30px)] text-[#d4af37]"
+                        : isSecond
+                          ? "text-[clamp(16px,1.8vw,26px)] text-white/70"
+                          : "text-[clamp(14px,1.6vw,24px)] text-white/60"
+                      }
+                    `}
+                  >
+                    {teamName}
+                  </div>
+                )}
+              </div>
+            );
+          })
         ) : (
           <h2
             className={`
@@ -153,35 +184,10 @@ const WinnerCard = ({
               ${isFirst ? "text-[clamp(30px,3vw,48px)] text-[#d9ad28]" : isSecond ? "text-[clamp(24px,2.2vw,36px)] text-white" : "text-[clamp(22px,2vw,32px)] text-white/95"}
             `}
           >
-            {winner.teamName || "—"}
+            —
           </h2>
         )}
       </div>
-
-      {/* TEAM NAME */}
-      {winner.teamName && winner.names && winner.names.length > 0 && (
-        <div
-          dir={isArabic(winner.teamName) ? 'rtl' : 'ltr'}
-          className={`
-            relative z-10
-            uppercase
-            mt-2
-            min-w-0
-            max-w-full
-            break-words
-            leading-[1.2]
-            ${isArabic(winner.teamName) ? 'font-ge-ss-two font-bold' : 'font-semibold tracking-[0.12em]'}
-            ${isFirst
-              ? "text-[clamp(24px,3vw,44px)] text-[#d4af37]"
-              : isSecond
-                ? "text-[clamp(20px,2.2vw,34px)] text-white/70"
-                : "text-[clamp(18px,1.8vw,28px)] text-white/60"
-            }
-          `}
-        >
-          {winner.teamName}
-        </div>
-      )}
 
       {/* SEPARATOR */}
       <div
@@ -247,21 +253,9 @@ export default function WinnerDesign3({
     const winners =
       (winnersByPosition?.[position] || []) as WinnerItem[];
 
-    const names = winners
-      .map(
-        (winner) =>
-          winner.studentName ||
-          winner.name ||
-          ""
-      )
-      .filter(Boolean);
-
     return {
       position,
-      names,
-      teamName:
-        winners[0]?.teamName ||
-        winners[0]?.team,
+      winners,
       programName,
       exists: winners.length > 0,
     };
@@ -326,8 +320,8 @@ export default function WinnerDesign3({
         className="
           relative z-20
           w-full
-          flex flex-col items-center
-          pt-[35px] md:pt-[48px]
+          flex flex-col items-center justify-center text-center
+          pt-[25px] md:pt-[35px]
           px-6
         "
       >
@@ -335,7 +329,7 @@ export default function WinnerDesign3({
         <div
           className="
             absolute
-            top-[35px] md:top-[55px]
+            top-[25px] md:top-[35px]
             left-[5%]
             text-left
           "
@@ -351,51 +345,56 @@ export default function WinnerDesign3({
           >
             {eventName} {eventYear}
           </div>
-
-          <div
-            className="
-              mt-2
-              uppercase
-              font-bold
-              tracking-[0.3em]
-              text-white/45
-              text-[10px] md:text-[14px]
-            "
-          >
-            ALL WINNERS
-          </div>
         </div>
 
+        {/* CONGRATULATIONS WINNERS */}
+        <h1
+          className="text-white/90 font-black uppercase text-center leading-tight mt-6"
+          style={{
+            fontSize: "clamp(20px, 1.8vw, 32px)",
+            letterSpacing: "0.2em",
+            textShadow: "0 4px 20px rgba(255,255,255,0.2)"
+          }}
+        >
+          CONGRATULATIONS<br/>WINNERS
+        </h1>
+
         {/* PROGRAM NAME */}
-        <motion.h1
+        <motion.h2
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="
-            mt-[40px]
+          dir={isArabic(programName) ? "rtl" : "ltr"}
+          className={`
+            mt-3
             max-w-[85vw]
             text-center
             uppercase
             font-black
             tracking-tight
             leading-none
-            text-[clamp(30px,5vw,76px)]
+            text-[clamp(36px,4.5vw,72px)]
             text-[#d7ae31]
             break-words
-          "
+            ${isArabic(programName) ? 'font-ge-ss-two' : ''}
+          `}
+          style={{
+            letterSpacing: isArabic(programName) ? "normal" : "clamp(0.08em, 0.15vw, 0.15em)",
+            textShadow: "0 4px 30px rgba(215,174,49,0.3)"
+          }}
         >
           {programName}
-        </motion.h1>
+        </motion.h2>
 
         {/* CATEGORY */}
         <div
           className="
-            mt-5
+            mt-4
             uppercase
             font-bold
             tracking-[0.38em]
-            text-white/65
-            text-[10px] md:text-[15px]
+            text-white/80
+            text-[clamp(14px,1.2vw,22px)]
           "
         >
           {language || "OTHER"}

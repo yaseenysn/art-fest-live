@@ -524,243 +524,138 @@ export default function ResultsDesign1({
           />
 
           {/* =====================================================
-              WINNER NAME
+              WINNERS LIST
           ====================================================== */}
+          <div className="flex flex-row flex-wrap justify-center items-end w-full max-w-[95%] mx-auto gap-8 md:gap-12 relative z-10 mt-12">
+            {results.map((result, idx) => {
+              const position = result.position || 1;
+              const studentName = result.studentName || "WINNER";
+              const team = result.teamId as any;
+              const teamName = team?.name || "";
+              const teamColor = team?.color || "#3b82f6";
+              const positionLabel = getPositionLabel(position);
+              const theme = getPositionTheme(position);
+              const isMultiple = results.length > 1;
 
-          {revealStage === 'WINNER' && (
-            <motion.div
-              key="winner-name-3"
-              className="
-                relative
-                font-light
-                uppercase
-                break-words
-              "
-              style={{
-                fontSize:
-                  studentName.length > 24
-                    ? "clamp(3rem, 7vw, 7rem)"
-                    : studentName.length > 16
-                      ? "clamp(3.5rem, 8vw, 8rem)"
-                      : "clamp(4.5rem, 10vw, 10rem)",
+              return (
+                <div key={`${studentName}-${idx}`} className="flex flex-col items-center flex-1 min-w-0 max-w-full">
+                  {/* WINNER NAME */}
+                  {revealStage === 'WINNER' && (
+                    <motion.div
+                      className="relative font-light uppercase break-words text-center"
+                      style={{
+                        fontSize: isMultiple
+                          ? "clamp(32px, 4.5vw, 65px)"
+                          : studentName.length > 24
+                            ? "clamp(3rem, 7vw, 7rem)"
+                            : studentName.length > 16
+                              ? "clamp(3.5rem, 8vw, 8rem)"
+                              : "clamp(4.5rem, 10vw, 10rem)",
+                        lineHeight: 0.92,
+                        letterSpacing: "-0.045em",
+                        color: theme.text,
+                        fontWeight: 300,
+                        textShadow: `
+                          0 0 10px rgba(173,211,255,0.24),
+                          0 0 30px rgba(90,145,220,0.22),
+                          0 8px 35px rgba(0,0,0,0.80)
+                        `,
+                      }}
+                      initial={{ opacity: 0, y: 45, filter: "blur(18px)", letterSpacing: "0.08em" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)", letterSpacing: "-0.045em" }}
+                      transition={{ duration: 1.4, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {studentName}
+                    </motion.div>
+                  )}
 
-                lineHeight: 0.92,
+                  {/* TEAM NAME */}
+                  {revealStage === 'WINNER' && teamName && (
+                    <motion.div
+                      dir={isArabic(teamName) ? 'rtl' : 'ltr'}
+                      className={`
+                        flex items-center justify-center gap-3 md:gap-5 min-w-0 max-w-full break-words leading-[1.2]
+                        ${isMultiple ? "mt-4 md:mt-6" : "mt-6 md:mt-10"}
+                      `}
+                      initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      transition={{ duration: 1.2, delay: 0.3 + idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div
+                        className={`rounded-full shrink-0 ${isMultiple ? "w-3 h-3 md:w-4 md:h-4" : "w-4 h-4 md:w-6 md:h-6"}`}
+                        style={{
+                          backgroundColor: teamColor,
+                          boxShadow: `0 0 20px ${teamColor}, inset 0 0 10px rgba(255,255,255,0.5)`
+                        }}
+                      />
+                      <div
+                        className={`
+                          uppercase text-blue-100 text-center
+                          ${isMultiple ? "text-[clamp(20px,2.5vw,36px)]" : "text-[clamp(28px,4vw,56px)]"}
+                          ${isArabic(teamName) ? 'font-ge-ss-two font-bold' : 'tracking-[0.25em] font-semibold'}
+                        `}
+                        style={{ textShadow: `0 0 15px rgba(173,211,255,0.3)` }}
+                      >
+                        {teamName}
+                      </div>
+                    </motion.div>
+                  )}
 
-                letterSpacing: "-0.045em",
+                  {/* POSITION LABEL */}
+                  <motion.div
+                    className="relative mt-7 text-center"
+                    initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.9, delay: 0.5 + idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div
+                      className="font-light uppercase"
+                      style={{
+                        fontSize: isMultiple ? "clamp(1.2rem, 2vw, 2.2rem)" : "clamp(1.7rem, 3vw, 3.2rem)",
+                        lineHeight: 1,
+                        letterSpacing: "0.13em",
+                        color: theme.text,
+                        fontWeight: 300,
+                        textShadow: `0 0 12px rgba(173,211,255,0.20), 0 0 28px rgba(90,145,220,0.18)`,
+                      }}
+                    >
+                      {positionLabel}
+                    </div>
+                  </motion.div>
 
-                color: theme.text,
-
-                fontWeight: 300,
-
-                textShadow: `
-                  0 0 10px rgba(173,211,255,0.24),
-                  0 0 30px rgba(90,145,220,0.22),
-                  0 8px 35px rgba(0,0,0,0.80)
-                `,
-              }}
-              initial={{
-                opacity: 0,
-                y: 45,
-                filter: "blur(18px)",
-                letterSpacing: "0.08em",
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                letterSpacing: "-0.045em",
-              }}
-              transition={{
-                duration: 1.4,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-              {studentName}
-            </motion.div>
-          )}
-
-          {/* =====================================================
-              TEAM NAME
-          ====================================================== */}
-
-          {revealStage === 'WINNER' && teamName && (
-            <motion.div
-              dir={isArabic(teamName) ? 'rtl' : 'ltr'}
-              className={`
-                mt-6 md:mt-10
-                flex
-                items-center
-                justify-center
-                gap-3 md:gap-5
-                min-w-0
-                max-w-full
-                break-words
-                leading-[1.2]
-              `}
-              initial={{
-                opacity: 0,
-                y: 30,
-                filter: "blur(10px)",
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-              }}
-              transition={{
-                duration: 1.2,
-                delay: 0.3,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-              <div 
-                className="w-4 h-4 md:w-6 md:h-6 rounded-full shrink-0" 
-                style={{ 
-                  backgroundColor: teamColor, 
-                  boxShadow: `0 0 20px ${teamColor}, inset 0 0 10px rgba(255,255,255,0.5)` 
-                }} 
-              />
-              <div
-                className={`
-                  uppercase
-                  text-[clamp(28px,4vw,56px)]
-                  text-blue-100
-                  ${isArabic(teamName) ? 'font-ge-ss-two font-bold' : 'tracking-[0.25em] font-semibold'}
-                `}
-                style={{
-                  textShadow: `0 0 15px rgba(173,211,255,0.3)`
-                }}
-              >
-                {teamName}
-              </div>
-            </motion.div>
-          )}
-
-          {/* =====================================================
-              POSITION
-          ====================================================== */}
-
-          <motion.div
-            className="relative mt-7 text-center"
-            initial={{
-              opacity: 0,
-              y: 20,
-              filter: "blur(10px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-            }}
-            transition={{
-              duration: 0.9,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            <div
-              className="
-                font-light
-                uppercase
-              "
-              style={{
-                fontSize:
-                  "clamp(1.7rem, 3vw, 3.2rem)",
-
-                lineHeight: 1,
-
-                letterSpacing: "0.13em",
-
-                color: theme.text,
-
-                fontWeight: 300,
-
-                textShadow: `
-                  0 0 12px rgba(173,211,255,0.20),
-                  0 0 28px rgba(90,145,220,0.18)
-                `,
-              }}
-            >
-              {positionLabel}
-            </div>
-          </motion.div>
-
-          {/* =====================================================
-              GLOWING LINE UNDER POSITION
-          ====================================================== */}
-
-          <motion.div
-            className="mx-auto mt-8"
-            style={{
-              width:
-                "clamp(220px, 24vw, 460px)",
-
-              height: "1px",
-
-              background: `
-                linear-gradient(
-                  90deg,
-                  transparent,
-                  rgba(147,193,247,0.82),
-                  transparent
-                )
-              `,
-
-              boxShadow:
-                "0 0 18px rgba(92,150,230,0.65)",
-            }}
-            initial={{
-              opacity: 0,
-              scaleX: 0,
-            }}
-            animate={{
-              opacity: 1,
-              scaleX: 1,
-            }}
-            transition={{
-              duration: 1,
-              delay: 1.25,
-              ease: "easeOut",
-            }}
-          />
-
-          {/* =====================================================
-              SMALL LIGHT POINT
-          ====================================================== */}
-
-          <motion.div
-            className="
-              absolute
-              left-1/2
-              -translate-x-1/2
-              pointer-events-none
-            "
-            style={{
-              bottom: "-35px",
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-
-              background:
-                "rgba(190,220,255,0.95)",
-
-              boxShadow: `
-                0 0 12px rgba(145,195,255,0.9),
-                0 0 30px rgba(80,145,230,0.65)
-              `,
-            }}
-            initial={{
-              opacity: 0,
-              scale: 0,
-            }}
-            animate={{
-              opacity: [0, 1, 0.7],
-              scale: [0, 1.15, 1],
-            }}
-            transition={{
-              duration: 1.2,
-              delay: 1.35,
-            }}
-          />
+                  {/* GLOWING LINE */}
+                  <motion.div
+                    className="mx-auto mt-8 relative"
+                    style={{
+                      width: isMultiple ? "clamp(120px, 15vw, 260px)" : "clamp(220px, 24vw, 460px)",
+                      height: "1px",
+                      background: `linear-gradient(90deg, transparent, rgba(147,193,247,0.82), transparent)`,
+                      boxShadow: "0 0 18px rgba(92,150,230,0.65)",
+                    }}
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ duration: 1, delay: 1.25 + idx * 0.1, ease: "easeOut" }}
+                  >
+                    {/* SMALL LIGHT POINT */}
+                    <motion.div
+                      className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+                      style={{
+                        bottom: "-4px",
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "rgba(190,220,255,0.95)",
+                        boxShadow: `0 0 12px rgba(145,195,255,0.9), 0 0 30px rgba(80,145,230,0.65)`,
+                      }}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: [0, 1, 0.7], scale: [0, 1.15, 1] }}
+                      transition={{ duration: 1.2, delay: 1.35 + idx * 0.1 }}
+                    />
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
       </div>
 

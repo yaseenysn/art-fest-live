@@ -126,159 +126,88 @@ export default function ResultsDesign2({
         </motion.div>
 
         {/* =====================================================
-            BIG POSITION NUMBER
+            WINNERS LIST
         ===================================================== */}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            scale: 0.7,
-            y: 40,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-            y: 0,
-          }}
-          transition={{
-            duration: 1,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          className="relative mt-4"
-        >
+        <div className="flex flex-row flex-wrap justify-center items-center w-full max-w-[95%] mt-12 gap-8 md:gap-12">
+          {results.map((result, idx) => {
+            const position = result.position || 1;
+            const suffix =
+              position === 1 ? "ST" : position === 2 ? "ND" : position === 3 ? "RD" : "TH";
+            const teamName = (result.teamId as any)?.name || "";
+            const isMultiple = results.length > 1;
 
-          {/* Glow behind number */}
-          <div
-            className="
-              absolute
-              inset-0
-              scale-75
-              rounded-full
-              bg-blue-500/20
-              blur-[80px]
-            "
-          />
+            return (
+              <div key={`${result.studentName}-${idx}`} className="flex flex-col items-center flex-1 min-w-0 max-w-full">
+                {/* BIG POSITION NUMBER */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.7, y: 40 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 1, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative mt-4"
+                >
+                  <div className="absolute inset-0 scale-75 rounded-full bg-blue-500/20 blur-[80px]" />
+                  <div
+                    className={`
+                      relative font-black leading-[0.8] tracking-[-0.08em] text-transparent
+                      [-webkit-text-stroke:3px_rgba(96,165,250,0.95)] drop-shadow-[0_0_25px_rgba(59,130,246,0.7)]
+                      ${isMultiple ? "text-[clamp(100px,14vw,220px)]" : "text-[clamp(220px,25vw,430px)]"}
+                    `}
+                  >
+                    {position}
+                    <span className="text-[0.4em] tracking-normal relative -top-[0.4em] ml-1 [-webkit-text-stroke:2px_rgba(96,165,250,0.95)] text-transparent">
+                      {suffix}
+                    </span>
+                  </div>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-300/20 via-transparent to-fuchsia-500/20 bg-clip-text" />
+                </motion.div>
 
-          {/* Number */}
-          <div
-            className="
-              relative
-              text-[clamp(220px,25vw,430px)]
-              font-black
-              leading-[0.8]
-              tracking-[-0.08em]
-              text-transparent
-              [-webkit-text-stroke:3px_rgba(96,165,250,0.95)]
-              drop-shadow-[0_0_25px_rgba(59,130,246,0.7)]
-            "
-          >
-            {position}
-            <span className="text-[0.4em] tracking-normal relative -top-[0.4em] ml-1 [-webkit-text-stroke:2px_rgba(96,165,250,0.95)] text-transparent">
-              {suffix}
-            </span>
-          </div>
+                {/* POSITION LINE */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 + idx * 0.15, duration: 0.7 }}
+                  className="mt-[-10px] text-center w-full"
+                >
+                  <div className="mx-auto mt-7 h-px w-full max-w-[288px] bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_15px_rgba(96,165,250,0.9)]" />
+                </motion.div>
 
-          {/* Inner blue highlight */}
-          <div
-            className="
-              pointer-events-none
-              absolute
-              inset-0
-              bg-gradient-to-b
-              from-blue-300/20
-              via-transparent
-              to-fuchsia-500/20
-              bg-clip-text
-            "
-          />
-        </motion.div>
+                {/* WINNER NAME & TEAM */}
+                {revealStage === 'WINNER' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 35, filter: "blur(12px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 1, delay: idx * 0.15 }}
+                    className="mt-8 max-w-[95%] text-center"
+                  >
+                    <h1
+                      className={`
+                        font-light uppercase leading-tight tracking-[0.08em] text-white
+                        drop-shadow-[0_0_25px_rgba(255,255,255,0.18)] break-words
+                        ${isMultiple ? "text-[clamp(32px,5vw,75px)]" : "text-[clamp(55px,7vw,120px)]"}
+                      `}
+                    >
+                      {result.studentName || "WINNER"}
+                    </h1>
 
-        {/* =====================================================
-            POSITION
-        ===================================================== */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.35,
-            duration: 0.7,
-          }}
-          className="
-            mt-[-10px]
-            text-center
-          "
-        >
-
-
-          {/* Thin glowing line */}
-          <div className="mx-auto mt-7 h-px w-72 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_15px_rgba(96,165,250,0.9)]" />
-        </motion.div>
-
-        {/* =====================================================
-            WINNER NAME
-        ===================================================== */}
-
-        {revealStage === 'WINNER' && (
-          <motion.div
-            key="winner-name"
-            initial={{
-              opacity: 0,
-              y: 35,
-              filter: "blur(12px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-            }}
-            transition={{
-              duration: 1,
-            }}
-            className="
-              mt-8
-              max-w-[80%]
-              text-center
-            "
-          >
-            <h1
-              className="
-                text-[clamp(55px,7vw,120px)]
-                font-light
-                uppercase
-                leading-tight
-                tracking-[0.08em]
-                text-white
-                drop-shadow-[0_0_25px_rgba(255,255,255,0.18)]
-                break-words
-              "
-            >
-              {result.studentName}
-            </h1>
-
-            {teamName && (
-              <div
-                dir={isArabic(teamName) ? "rtl" : "ltr"}
-                className={`
-                  mt-6 md:mt-10
-                  font-medium
-                  uppercase
-                  text-blue-300
-                  break-words
-                  min-w-0
-                  max-w-full
-                  leading-[1.2]
-                  text-[clamp(32px,4vw,60px)]
-                  ${isArabic(teamName) ? 'font-ge-ss-two' : 'tracking-[0.35em]'}
-                `}
-              >
-                {teamName}
+                    {teamName && (
+                      <div
+                        dir={isArabic(teamName) ? "rtl" : "ltr"}
+                        className={`
+                          font-medium uppercase text-blue-300 break-words min-w-0 max-w-full leading-[1.2]
+                          ${isArabic(teamName) ? 'font-ge-ss-two' : 'tracking-[0.35em]'}
+                          ${isMultiple ? "mt-4 md:mt-5 text-[clamp(20px,2.5vw,40px)]" : "mt-6 md:mt-10 text-[clamp(32px,4vw,60px)]"}
+                        `}
+                      >
+                        {teamName}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
               </div>
-            )}
-          </motion.div>
-        )}
-
-
+            );
+          })}
+        </div>
 
       </div>
 

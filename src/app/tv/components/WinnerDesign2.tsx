@@ -217,12 +217,16 @@ export default function WinnerDesign2({
       .filter(Boolean)
       .join(" • ");
 
+    const teamNames = Array.from(
+      new Set(
+        winners.map(w => w.teamName || w.team || "").filter(Boolean)
+      )
+    ).join(" • ");
+
     return {
       position,
       names: names || "—",
-      teamName:
-        winners[0]?.teamName ||
-        winners[0]?.team,
+      teamName: teamNames || "TEAM",
       programName,
       exists: winners.length > 0,
     };
@@ -383,133 +387,47 @@ export default function WinnerDesign2({
           transition={{
             duration: 0.8,
           }}
-          className="w-full"
+          className="w-full flex flex-col items-center justify-center text-center relative"
         >
-          {/* TOP ROW */}
-
-          <div
-            className="
-              flex
-              justify-between
-              items-start
-              w-full
-            "
-          >
-            {/* EVENT INFO */}
-
-            <div className="text-left">
-              <div
-                className="
-                  text-white/75
-                  font-bold
-                  uppercase
-                  tracking-[0.35em]
-                  text-[clamp(11px,1vw,19px)]
-                "
-              >
-                {eventName} {eventYear}
-              </div>
-
-              <div
-                className="
-                  text-purple-400
-                  font-bold
-                  uppercase
-                  tracking-[0.3em]
-                  mt-1
-                  text-[clamp(9px,0.8vw,15px)]
-                "
-              >
-                ALL WINNERS
-              </div>
-            </div>
-
-            {/* LIVE STATUS */}
-
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-                px-4
-                py-2
-                rounded-full
-                border
-                border-white/10
-                bg-black/30
-                backdrop-blur-xl
-              "
-            >
-              <span
-                className="
-                  w-2
-                  h-2
-                  rounded-full
-                  bg-emerald-400
-                  shadow-[0_0_12px_rgba(16,185,129,0.9)]
-                "
-              />
-
-              <span
-                className="
-                  text-white
-                  font-bold
-                  uppercase
-                  tracking-[0.15em]
-                  text-[10px]
-                  md:text-xs
-                "
-              >
-                LIVE
-              </span>
+          {/* ABSOLUTE TOP LEFT INFO */}
+          <div className="absolute top-0 left-0 text-left">
+            <div className="text-white/75 font-bold uppercase tracking-[0.35em] text-[clamp(11px,1vw,19px)]">
+              {eventName} {eventYear}
             </div>
           </div>
 
-          {/* PROGRAM NAME */}
+          {/* ABSOLUTE TOP RIGHT LIVE STATUS */}
+          <div className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-black/30 backdrop-blur-xl">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.9)]" />
+            <span className="text-white font-bold uppercase tracking-[0.15em] text-[10px] md:text-xs">LIVE</span>
+          </div>
 
-          <div
-            className="
-              text-center
-              mt-[clamp(22px,3vh,38px)]
-            "
+          {/* MAIN CENTERED HEADER */}
+          <h1
+            className="text-white/90 font-black uppercase text-center leading-tight mt-6"
+            style={{
+              fontSize: "clamp(20px, 1.8vw, 32px)",
+              letterSpacing: "0.2em",
+              textShadow: "0 4px 20px rgba(255,255,255,0.2)"
+            }}
           >
-            <h1
-              className="
-                text-white
-                font-black
-                uppercase
-                tracking-tight
-                leading-none
-                break-words
-                text-[clamp(32px,4.5vw,72px)]
-              "
-            >
-              {programName}
-            </h1>
+            CONGRATULATIONS<br />WINNERS
+          </h1>
 
-            <div
-              className="
-                mt-3
-                text-white/50
-                font-bold
-                uppercase
-                tracking-[0.35em]
-                text-[clamp(9px,0.8vw,15px)]
-              "
-            >
-              {language || "OTHER"}
+          <h2
+            dir={isArabic(programName) ? "rtl" : "ltr"}
+            className={`text-white font-black uppercase tracking-tight leading-none mt-3 max-w-[85vw] break-words ${isArabic(programName) ? 'font-ge-ss-two' : ''}`}
+            style={{
+              fontSize: "clamp(36px, 4.5vw, 72px)",
+              letterSpacing: isArabic(programName) ? "normal" : "clamp(0.08em, 0.15vw, 0.15em)",
+              textShadow: "0 4px 30px rgba(255,255,255,0.4)"
+            }}
+          >
+            {programName}
+          </h2>
 
-              <span
-                className="
-                  mx-3
-                  text-purple-400/50
-                "
-              >
-                •
-              </span>
-
-              {category || "GENERAL"}
-            </div>
+          <div className="mt-4 text-purple-300 font-bold uppercase tracking-[0.3em] text-[clamp(14px,1.2vw,22px)]">
+            {language || "OTHER"} <span className="mx-3 text-purple-400/50">•</span> {category || "GENERAL"}
           </div>
         </motion.div>
       </div>

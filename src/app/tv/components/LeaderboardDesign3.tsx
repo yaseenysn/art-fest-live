@@ -138,9 +138,9 @@ export default function LeaderboardDesign3({
       font-ge-ss-two
     "
         >
-          <img 
-            src="/logo-al-mahsan.png" 
-            alt="Al Mahsan" 
+          <img
+            src="/logo-al-mahsan.png"
+            alt="Al Mahsan"
             className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
           />
         </div>

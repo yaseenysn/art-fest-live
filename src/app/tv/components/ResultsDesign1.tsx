@@ -131,6 +131,10 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
                   <div className="absolute inset-2 rounded-full border-4 md:border-8 border-white/20" />
                   <span className="text-[6rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-4">
                     {position}
+                    {position === 1 && <span className="text-[0.45em] align-top">ST</span>}
+                    {position === 2 && <span className="text-[0.45em] align-top">ND</span>}
+                    {position === 3 && <span className="text-[0.45em] align-top">RD</span>}
+                    {position > 3 && <span className="text-[0.45em] align-top">TH</span>}
                   </span>
                   <span className="text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-2">
                     PLACE
@@ -184,6 +188,10 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
                   <div className="absolute inset-2 rounded-full border-4 border-white/20" />
                   <span className="text-[4rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-2">
                     {position}
+                    {position === 1 && <span className="text-[0.45em] align-top">ST</span>}
+                    {position === 2 && <span className="text-[0.45em] align-top">ND</span>}
+                    {position === 3 && <span className="text-[0.45em] align-top">RD</span>}
+                    {position > 3 && <span className="text-[0.45em] align-top">TH</span>}
                   </span>
                   <span className="text-lg md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1">
                     PLACE

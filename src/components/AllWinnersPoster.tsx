@@ -169,7 +169,7 @@ export default function AllWinnersPoster({
         "
         style={{
           padding:
-            "clamp(22px, 3.2vh, 42px) clamp(28px, 4.2vw, 82px)",
+            "clamp(16px, 2.5vh, 36px) clamp(28px, 4.2vw, 82px)",
           boxSizing: "border-box",
         }}
       >
@@ -185,15 +185,15 @@ export default function AllWinnersPoster({
             shrink-0
             flex
             items-start
-            justify-between
+            justify-center
           "
           style={{
-            minHeight: "clamp(105px, 16vh, 170px)",
+            minHeight: "clamp(100px, 14vh, 160px)",
           }}
         >
           {/* LEFT BRANDING */}
 
-          <div className="flex flex-col min-w-0">
+          <div className="absolute left-0 top-0 pointer-events-none">
             <p
               className="
                 text-white/70
@@ -208,20 +208,36 @@ export default function AllWinnersPoster({
             >
               {eventName} {eventYear}
             </p>
+          </div>
 
+          {/* CENTER TEXT */}
+
+          <div className="flex flex-col items-center justify-center text-center w-full max-w-[75vw] z-10 pt-1">
+            <h1
+              className="text-white font-black uppercase text-center"
+              style={{
+                fontSize: "clamp(18px, 1.8vw, 32px)",
+                letterSpacing: "0.2em",
+                textShadow: "0 4px 20px rgba(255,255,255,0.3)"
+              }}
+            >
+              CONGRATULATIONS WINNERS
+            </h1>
+            
             <h2
-              className="
+              dir={isArabic(programName) ? "rtl" : "ltr"}
+              className={`
                 text-white
                 font-black
                 uppercase
-                leading-none
-                truncate
-              "
+                leading-tight
+                break-words
+                mt-2
+                ${isArabic(programName) ? 'font-ge-ss-two' : ''}
+              `}
               style={{
-                marginTop: "clamp(12px, 1.4vh, 20px)",
-                fontSize: "clamp(27px, 2.2vw, 43px)",
-                letterSpacing: "clamp(0.08em, 0.16vw, 0.16em)",
-                maxWidth: "55vw",
+                fontSize: "clamp(28px, 3.2vw, 52px)",
+                letterSpacing: isArabic(programName) ? "normal" : "clamp(0.08em, 0.16vw, 0.16em)",
               }}
             >
               {programName}
@@ -229,34 +245,19 @@ export default function AllWinnersPoster({
 
             <p
               className="
-                text-white/60
+                text-white/80
                 font-bold
                 uppercase
                 leading-none
+                mt-2
               "
               style={{
-                marginTop: "clamp(9px, 1vh, 14px)",
-                fontSize: "clamp(12px, 0.9vw, 18px)",
-                letterSpacing: "clamp(0.10em, 0.20vw, 0.20em)",
+                fontSize: "clamp(14px, 1.1vw, 20px)",
+                letterSpacing: "clamp(0.15em, 0.25vw, 0.25em)",
               }}
             >
-              {language || "OTHER"} • {category || "GENERAL"}
+              {language || "OTHER"} <span className="mx-2 text-white/40">•</span> {category || "GENERAL"}
             </p>
-          </div>
-
-          {/* CENTER TEXT */}
-
-          <div className="absolute left-1/2 -translate-x-1/2 pt-2 pointer-events-none">
-            <h1
-              className="text-white font-black uppercase text-center"
-              style={{
-                fontSize: "clamp(24px, 2.5vw, 40px)",
-                letterSpacing: "0.2em",
-                textShadow: "0 4px 20px rgba(255,255,255,0.3)"
-              }}
-            >
-              CONGRAGULATION WINNERS
-            </h1>
           </div>
         </header>
 
@@ -311,7 +312,7 @@ export default function AllWinnersPoster({
               min-h-0
             "
             style={{
-              gap: "clamp(14px, 2.2vh, 30px)",
+              gap: "clamp(8px, 1.5vh, 24px)",
             }}
           >
             {positions.map((posNum) => {
@@ -387,7 +388,7 @@ export default function AllWinnersPoster({
                     <h1
                       className="
                         text-white/90
-                        leading-none
+                        leading-tight
                       "
                       style={{
                         fontFamily:
@@ -411,7 +412,7 @@ export default function AllWinnersPoster({
                       "
                       style={{
                         marginTop:
-                          "clamp(3px, 0.5vh, 7px)",
+                          "clamp(1px, 0.2vh, 4px)",
                         fontSize:
                           "clamp(29px, 2.65vw, 52px)",
                       }}
@@ -428,7 +429,7 @@ export default function AllWinnersPoster({
                     className="relative z-10 w-full"
                     style={{
                       marginTop:
-                        "clamp(9px, 1.2vh, 17px)",
+                        "clamp(4px, 0.8vh, 12px)",
                     }}
                   >
                     <div
@@ -539,7 +540,7 @@ export default function AllWinnersPoster({
                             {names}
                           </h3>
 
-                          <div 
+                          <div
                             dir={isArabic(teamStr) ? "rtl" : "ltr"}
                             className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 mt-2 md:mt-3 w-full`}
                           >

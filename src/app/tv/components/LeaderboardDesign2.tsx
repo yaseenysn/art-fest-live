@@ -176,9 +176,9 @@ export default function LeaderboardDesign2({
         >
 
           <div className="flex items-center space-x-6">
-            <img 
-              src="/logo-al-mahsan.png" 
-              alt="Al Mahsan" 
+            <img
+              src="/logo-al-mahsan.png"
+              alt="Al Mahsan"
               className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
             />
           </div>

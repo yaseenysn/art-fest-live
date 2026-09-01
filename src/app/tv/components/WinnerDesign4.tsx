@@ -92,7 +92,7 @@ export default function WinnerDesign4({
                     <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
                       {names}
                     </h3>
-                    <div 
+                    <div
                       dir={isArabic(teamStr) ? 'rtl' : 'ltr'}
                       className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 mt-1 md:mt-2`}
                     >
