@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { LeaderboardConfig } from '@/types';
 
 export default function LeaderboardDesign4({ config }: { config: LeaderboardConfig }) {
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
   const rows = config.rows.slice(0, 4);
 
   // We want a standard 2x2 grid. 
@@ -24,9 +25,20 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
     <div className="w-screen h-screen flex flex-col items-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-12">
 
       {/* Dark Premium Background with Soft Glows */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/10 blur-[120px]" />
+      <div className="absolute inset-0 z-0 bg-[#04060C]">
+        {/* Photograph Layer */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.15] blur-[4px] saturate-[0.8]"
+          style={{ backgroundImage: `url('/images/leaderboard_bg.jpg')` }}
+        />
+        
+        {/* Vignette & Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#04060C]/90 via-transparent to-[#04060C]/90" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#04060C_100%)]" />
+
+        {/* Soft Glows */}
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/20 blur-[120px]" />
       </div>
 
       {/* Header aligned left */}
@@ -97,7 +109,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
                     style={{ backgroundColor: tColor }}
                   />
 
-                  <h2 className="text-2xl lg:text-4xl font-black text-white uppercase tracking-wider mb-2 truncate">
+                  <h2 className={`text-2xl lg:text-4xl font-black text-white uppercase tracking-wider mb-2 truncate ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}>
                     {row.name}
                   </h2>
                   <div className="flex items-end space-x-2">

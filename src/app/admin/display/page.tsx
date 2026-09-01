@@ -437,14 +437,14 @@ export default function DisplayControl() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="w-full space-y-8">
       <div>
         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">DISPLAY CONTROL</h1>
         <p className="text-text-muted mt-1">Send custom announcements to the live TV</p>
       </div>
 
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-8">
-        <h2 className="text-xl font-semibold mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-6 flex items-center justify-between">
           Leaderboard Control
           {tvState?.isActive && (
             <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-4 py-1 rounded-full text-sm font-bold border border-emerald-200">
@@ -463,7 +463,7 @@ export default function DisplayControl() {
           <div>
             <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">LEADERBOARD DESIGN</label>
             <Select
-              wrapperClassName="w-full text-lg font-semibold"
+              wrapperClassName="w-full"
               value={selectedLeaderboard}
               onChange={(e: any) => handleLeaderboardChange(e.target.value)}
             >
@@ -523,7 +523,7 @@ export default function DisplayControl() {
             <button
               onClick={handleShowLeaderboard}
               disabled={pushingLeaderboard || !previewConfig}
-              className="flex-1 flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-4 font-bold text-lg hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
+              className="flex-1 flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-2.5 font-bold text-sm hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
             >
               <MonitorPlay className="w-6 h-6" />
               <span>SHOW ON TV</span>
@@ -531,7 +531,7 @@ export default function DisplayControl() {
             <button
               onClick={handleHideLeaderboard}
               disabled={pushingLeaderboard || !tvState?.isActive}
-              className="flex-1 flex items-center justify-center space-x-2 bg-row text-white rounded-lg py-4 font-bold text-lg hover:bg-slate-700 transition-colors disabled:opacity-50 shadow-md"
+              className="flex-1 flex items-center justify-center space-x-2 bg-row text-white rounded-lg py-2.5 font-bold text-sm hover:bg-slate-700 transition-colors disabled:opacity-50 shadow-md"
             >
               <EyeOff className="w-6 h-6" />
               <span>HIDE LEADERBOARD</span>
@@ -541,7 +541,7 @@ export default function DisplayControl() {
       </div>
 
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-8">
-        <h2 className="text-xl font-semibold mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-6 flex items-center justify-between">
           All Winners Control
           {tvState?.isActive && tvState.type === 'ALL_WINNERS' && (
             <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-4 py-1 rounded-full text-sm font-bold border border-emerald-200">
@@ -556,7 +556,7 @@ export default function DisplayControl() {
             <div>
               <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">SELECT PROGRAM</label>
               <Select
-                wrapperClassName="w-full text-lg font-semibold"
+                wrapperClassName="w-full"
                 value={selectedProgramId}
                 onChange={(e: any) => setSelectedProgramId(e.target.value)}
               >
@@ -569,7 +569,7 @@ export default function DisplayControl() {
             <div>
               <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">POSTER DESIGN</label>
               <Select
-                wrapperClassName="w-full text-lg font-semibold"
+                wrapperClassName="w-full"
                 value={selectedWinnersDesign}
                 onChange={(e: any) => handleWinnersDesignChange(e.target.value)}
               >
@@ -644,7 +644,7 @@ export default function DisplayControl() {
             <button
               onClick={handleShowWinners}
               disabled={pushingWinners || !winnersPreviewConfig}
-              className="flex-1 flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-4 font-bold text-lg hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
+              className="flex-1 flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-2.5 font-bold text-sm hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
             >
               <MonitorPlay className="w-6 h-6" />
               <span>SHOW POSTER ON TV</span>
@@ -652,7 +652,7 @@ export default function DisplayControl() {
             <button
               onClick={handleHideWinners}
               disabled={pushingWinners || !tvState?.isActive}
-              className="flex-1 flex items-center justify-center space-x-2 bg-row text-white rounded-lg py-4 font-bold text-lg hover:bg-slate-700 transition-colors disabled:opacity-50 shadow-md"
+              className="flex-1 flex items-center justify-center space-x-2 bg-row text-white rounded-lg py-2.5 font-bold text-sm hover:bg-slate-700 transition-colors disabled:opacity-50 shadow-md"
             >
               <EyeOff className="w-6 h-6" />
               <span>HIDE POSTER</span>
@@ -662,7 +662,7 @@ export default function DisplayControl() {
       </div>
 
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-8">
-        <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center space-x-2 uppercase tracking-widest">
+        <h2 className="text-lg font-bold text-text-primary mb-6 flex items-center space-x-2 uppercase tracking-widest">
           <MonitorPlay className="w-5 h-5 text-indigo-500" />
           <span>Results Entry Control</span>
         </h2>
@@ -740,7 +740,7 @@ export default function DisplayControl() {
 
       <div className="bg-card-secondary text-white rounded-xl shadow-lg border border-border-card p-8 mb-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-indigo-500/20 to-transparent pointer-events-none" />
-        <h2 className="text-2xl font-black mb-2 uppercase tracking-tight flex items-center">
+        <h2 className="text-xl font-bold mb-2 uppercase tracking-tight flex items-center">
           <MonitorPlay className="mr-3 text-indigo-400" /> FINAL TEAM REVEAL
         </h2>
         <p className="text-text-muted mb-8 max-w-xl">
@@ -749,7 +749,7 @@ export default function DisplayControl() {
         
         <Link 
           href="/admin/final-reveal"
-          className="inline-flex items-center space-x-2 bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+          className="inline-flex items-center space-x-2 bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)]"
         >
           <span>OPEN FINAL TEAM REVEAL</span>
           <ArrowRight className="w-5 h-5" />
@@ -758,7 +758,7 @@ export default function DisplayControl() {
 
       <div className="bg-card-secondary text-white rounded-xl shadow-lg border border-border-card p-8 mb-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-emerald-500/20 to-transparent pointer-events-none" />
-        <h2 className="text-2xl font-black mb-2 uppercase tracking-tight flex items-center">
+        <h2 className="text-xl font-bold mb-2 uppercase tracking-tight flex items-center">
           <MonitorPlay className="mr-3 text-emerald-400" /> MEDIA CONTROL
         </h2>
         <p className="text-text-muted mb-8 max-w-xl">
@@ -767,7 +767,7 @@ export default function DisplayControl() {
         
         <Link 
           href="/admin/media"
-          className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500/10 border border-emerald-500/200 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+          className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500/10 border border-emerald-500/200 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
         >
           <span>OPEN MEDIA CONTROL</span>
           <ArrowRight className="w-5 h-5" />
@@ -775,7 +775,7 @@ export default function DisplayControl() {
       </div>
 
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-8 mb-8">
-        <h2 className="text-xl font-semibold mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-6 flex items-center justify-between">
           Premium Custom Announcements
           {tvState?.isActive && tvState.presentationType === 'CUSTOM_ANNOUNCEMENT' && (
             <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-4 py-1 rounded-full text-sm font-bold border border-emerald-200">
@@ -826,7 +826,7 @@ export default function DisplayControl() {
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Chess Number</label>
                 <input
                   type="text"
-                  className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border text-2xl font-black"
+                  className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-lg font-bold"
                   placeholder="025"
                   value={nextProgChess}
                   onChange={e => setNextProgChess(e.target.value)}
@@ -903,7 +903,7 @@ export default function DisplayControl() {
           <button
             onClick={handlePushCustomAnnouncement}
             disabled={pushingCustomAnn}
-            className="w-full flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-4 font-black text-lg hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md tracking-widest"
+            className="w-full flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-2.5 font-bold text-sm hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md tracking-widest"
           >
             <MonitorPlay className="w-6 h-6" />
             <span>SHOW ON TV</span>
@@ -912,13 +912,13 @@ export default function DisplayControl() {
       </div>
 
       <div className="bg-card rounded-xl shadow-sm border border-border-card p-8">
-        <h2 className="text-xl font-semibold mb-6">Standard Text Announcement</h2>
+        <h2 className="text-lg font-bold mb-6">Standard Text Announcement</h2>
         
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">Message Text</label>
             <textarea
-              className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border text-lg"
+              className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border"
               rows={3}
               placeholder="e.g. Congratulations Muhammad for winning 1st place in Quran Recitation!"
               value={message}
@@ -959,7 +959,7 @@ export default function DisplayControl() {
           <button
             onClick={handleSend}
             disabled={sending}
-            className="w-full flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-4 font-bold text-lg hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
+            className="w-full flex items-center justify-center space-x-2 bg-primary-indigo text-white text-white rounded-lg py-2.5 font-bold text-sm hover:bg-primary-purple text-white transition-colors disabled:opacity-50 shadow-md"
           >
             <Send className="w-6 h-6" />
             <span>SHOW ON TV</span>

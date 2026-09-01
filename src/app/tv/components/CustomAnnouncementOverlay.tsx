@@ -214,16 +214,58 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
     }
 
     return (
-      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden bg-[#FAFAFA] select-none font-sans text-neutral-900">
+      <div
+        className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden select-none font-sans text-neutral-900 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('/images/judges_bg.jpg')` }}
+      >
+
+        {/* CONFETTI BURST (Popper Animation) */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          {[...Array(80)].map((_, i) => {
+            const isLeft = i % 2 === 0;
+            const originX = isLeft ? "15%" : "85%";
+            const colors = ['#FFD700', '#FFA500', '#FF69B4', '#FFFFFF', '#00FFFF', '#FF00FF'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = Math.random() * 10 + 6;
+            const shootDir = isLeft ? 1 : -1;
+            
+            return (
+              <motion.div
+                key={`confetti-${i}`}
+                className="absolute bottom-[-10%]"
+                style={{
+                  width: size + "px",
+                  height: size * (Math.random() > 0.5 ? 2.5 : 1) + "px",
+                  backgroundColor: color,
+                  left: originX,
+                  borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+                  zIndex: 0
+                }}
+                initial={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
+                animate={{
+                  y: [-100, -Math.random() * 600 - 400, 1000],
+                  x: [0, shootDir * (Math.random() * 400 + 100) + (Math.random() - 0.5) * 300],
+                  rotate: [0, Math.random() * 1000 - 500],
+                  opacity: [1, 1, 0]
+                }}
+                transition={{
+                  duration: Math.random() * 2.5 + 2.5,
+                  times: [0, 0.3, 1],
+                  ease: "easeInOut",
+                  delay: Math.random() * 0.2 + 0.1,
+                }}
+              />
+            );
+          })}
+        </div>
 
         {/* OVERSIZED ARABIC WATERMARK */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.025] overflow-hidden mix-blend-multiply">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.035] overflow-hidden mix-blend-multiply">
           <div
             dir="rtl"
-            className="font-extrabold whitespace-nowrap -rotate-[12deg] scale-125 select-none"
+            className="font-extrabold whitespace-nowrap -rotate-[12deg] scale-125 select-none font-ge-ss-two"
             style={{
               fontSize: "clamp(200px, 35vw, 500px)",
-              fontFamily: "'Amiri', 'Noto Naskh Arabic', 'Traditional Arabic', serif",
             }}
           >
             جَزَاكُمُ اللهُ خَيْرًا
@@ -253,10 +295,9 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
             >
               <h1
                 dir="rtl"
-                className="text-[#1a1a1a] tracking-normal leading-tight font-bold"
+                className="text-[#1a1a1a] tracking-normal leading-tight font-bold font-ge-ss-two"
                 style={{
-                  fontSize: "clamp(70px, 13vw, 220px)",
-                  fontFamily: "'Amiri', 'Noto Naskh Arabic', 'Traditional Arabic', 'Dubai', serif",
+                  fontSize: "clamp(40px, 8vw, 130px)",
                 }}
               >
                 جَزَاكُمُ اللهُ خَيْرًا
@@ -266,11 +307,14 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
             {/* JUDGES LIST */}
             {judges.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.4,
-                  duration: 0.8,
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.15, delayChildren: 0.4 }
+                  }
                 }}
                 className={`
                   grid
@@ -284,21 +328,36 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                 `}
               >
                 {judges.map((judge, idx) => (
-                  <div
+                  <motion.div
                     key={idx}
-                    className="flex flex-col items-center justify-center text-center"
+                    variants={{
+                      hidden: { opacity: 0, y: 40, scale: 0.9 },
+                      visible: { 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        transition: { type: "spring", stiffness: 60, damping: 15 }
+                      }
+                    }}
+                    className="flex flex-col items-center justify-center text-center bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] px-8 py-6 relative overflow-hidden group"
                   >
+                    {/* Glass Shimmer Sweep */}
+                    <motion.div
+                      className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-25deg] w-[150%]"
+                      animate={{ x: ["-100%", "200%"] }}
+                      transition={{ duration: 2.5, repeat: Infinity, repeatDelay: Math.random() * 3 + 2, ease: "easeInOut" }}
+                    />
+                    
                     <h3
-                      className="max-w-full overflow-visible font-medium tracking-wide text-neutral-800"
+                      className="max-w-full overflow-visible font-medium tracking-wide text-neutral-900 relative z-10"
                       style={{
-                        fontSize: "clamp(80px, 5vw, 180px)",
+                        fontSize: "clamp(60px, 4.5vw, 140px)",
                       }}
-
                     >
                       {judge.name}
                     </h3>
-                    <div className="mt-[1.5vh] h-[2px] w-[3vw] min-w-[30px] max-w-[60px] bg-neutral-300 rounded-full" />
-                  </div>
+                    <div className="mt-[2vh] h-[3px] w-[4vw] min-w-[40px] max-w-[80px] bg-neutral-800/20 rounded-full relative z-10" />
+                  </motion.div>
                 ))}
               </motion.div>
             )}
@@ -364,7 +423,7 @@ function getGridDimensions(total: number) {
   if (total <= 15) return { cols: 3, rows: Math.ceil(total / 3) };
   if (total <= 16) return { cols: 4, rows: Math.ceil(total / 4) };
   if (total <= 20) return { cols: 4, rows: Math.ceil(total / 4) };
-  
+
   const cols = Math.ceil(total / 5);
   return { cols, rows: Math.ceil(total / cols) };
 }

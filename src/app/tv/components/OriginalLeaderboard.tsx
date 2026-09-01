@@ -6,6 +6,7 @@ import { LeaderboardConfig, EVENT_NAME } from '@/types';
 
 const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: { config?: LeaderboardConfig }) {
   const rows = config?.rows || [];
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
   const [page, setPage] = useState(0);
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -231,7 +232,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                   </span>
                 </div>
 
-                <h2 className="text-[clamp(32px,6vw,96px)] font-black text-white uppercase tracking-tighter leading-tight mb-6 drop-shadow-lg break-words">
+                <h2 className={`text-[clamp(32px,6vw,96px)] font-black text-white uppercase tracking-tighter leading-tight mb-6 drop-shadow-lg break-words ${isArabic(activeRow?.name) ? 'font-ge-ss-two' : ''}`}>
                   {activeRow?.name}
                 </h2>
 
@@ -339,7 +340,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                               className={`text-xl md:text-2xl font-bold uppercase tracking-wide transition-colors ${isActive
                                 ? 'text-white'
                                 : 'text-white/70 group-hover:text-white'
-                                }`}
+                                } ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}
                             >
                               {row.name}
                             </span>

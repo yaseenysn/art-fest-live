@@ -115,7 +115,7 @@ export default function TeamsPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-purple to-primary-pink tracking-tight">Teams</h1>
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">TEAMS</h1>
           <p className="text-text-muted mt-1 font-medium">Manage competition teams and colors.</p>
         </div>
         <Button onClick={openCreateModal} className="mt-4 md:mt-0 uppercase tracking-widest">
@@ -134,17 +134,17 @@ export default function TeamsPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="rounded-2xl border border-border-card bg-card shadow-sm overflow-hidden">
         {teams.length === 0 ? (
-          <CardContent className="p-12 text-center text-text-muted">
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg text-text-primary">No teams found.</p>
+          <CardContent className="p-16 text-center text-text-muted">
+            <Users className="w-12 h-12 mx-auto mb-4 opacity-30" />
+            <p className="text-lg font-bold text-text-primary">No teams found.</p>
             <p className="text-sm mt-1">Create a team to get started.</p>
           </CardContent>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-row border-b border-border-card text-text-muted text-xs uppercase tracking-wider font-bold">
+            <table className="w-full text-left whitespace-nowrap">
+              <thead className="bg-card-secondary border-b border-border-card text-text-muted text-[11px] uppercase tracking-widest font-bold">
                 <tr>
                   <th className="px-6 py-4">Color</th>
                   <th className="px-6 py-4">Name</th>
@@ -154,21 +154,32 @@ export default function TeamsPage() {
               </thead>
               <tbody className="divide-y divide-border-card bg-card">
                 {teams.map(team => (
-                  <tr key={String(team._id)} className="hover:bg-row transition-colors">
+                  <tr key={String(team._id)} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-4">
-                      <div className="w-8 h-8 rounded-full shadow-inner border border-border-card flex items-center justify-center text-[10px] font-bold text-white mix-blend-difference" style={{ backgroundColor: team.color }}>
-                        {team.color}
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full shadow-inner border border-white/10" style={{ backgroundColor: team.color }} />
+                        <span className="text-sm font-medium text-text-muted font-mono">{team.color}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-text-primary">{team.name}</td>
-                    <td className="px-6 py-4 font-medium text-text-muted uppercase">{team.shortName || '-'}</td>
+                    <td className={`px-6 py-4 font-bold text-text-primary text-base ${/[\u0600-\u06FF]/.test(team.name) ? 'font-ge-ss-two' : ''}`}>
+                      {team.name}
+                    </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-end space-x-3">
+                      {team.shortName ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-white/5 text-text-muted uppercase border border-white/10">
+                          {team.shortName}
+                        </span>
+                      ) : (
+                        <span className="text-text-muted/30">—</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end space-x-2 opacity-100 md:opacity-50 md:group-hover:opacity-100 transition-opacity">
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => openEditModal(team)}
-                          className="!p-2 text-primary-indigo hover:text-white"
+                          className="!p-2 text-text-muted hover:text-white hover:bg-white/10 transition-colors rounded-lg"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -176,7 +187,7 @@ export default function TeamsPage() {
                           variant="danger" 
                           size="sm"
                           onClick={() => confirmDelete(team)}
-                          className="!p-2"
+                          className="!p-2 hover:bg-red-600 transition-colors rounded-lg"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

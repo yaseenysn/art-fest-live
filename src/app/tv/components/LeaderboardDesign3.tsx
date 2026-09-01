@@ -8,6 +8,7 @@ export default function LeaderboardDesign3({
 }: {
   config: LeaderboardConfig;
 }) {
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
   /*
    * ============================================================
    * DATA
@@ -726,7 +727,7 @@ export default function LeaderboardDesign3({
                     {/* Team name */}
 
                     <span
-                      className="
+                      className={`
                         text-[18px]
                         md:text-[22px]
                         lg:text-[27px]
@@ -738,7 +739,8 @@ export default function LeaderboardDesign3({
                         tracking-[0.02em]
 
                         text-white/90
-                      "
+                        ${isArabic(row.name) ? 'font-ge-ss-two' : ''}
+                      `}
                     >
                       {row.name}
                     </span>

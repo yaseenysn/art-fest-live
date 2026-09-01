@@ -46,6 +46,7 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-ge-ss-two: "GE SS Two", sans-serif;
 }
 
 body {
@@ -78,4 +79,11 @@ body {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+@font-face {
+  font-family: "GE SS Two";
+  src: url("/fonts/GE-SS-Two.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
 }

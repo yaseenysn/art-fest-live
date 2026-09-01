@@ -60,6 +60,7 @@ export default function LeaderboardDesign2({
 }: {
   config: LeaderboardConfig;
 }) {
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
   /*
    * IMPORTANT
@@ -388,21 +389,16 @@ export default function LeaderboardDesign2({
                           delay: 0.35 + index * 0.12,
                         }}
 
-                        className="
+                        className={`
                           font-black
-
                           uppercase
-
                           leading-none
-
                           tracking-[-0.035em]
-
                           text-white
-
                           truncate
-
                           text-[clamp(24px,4vw,52px)]
-                        "
+                          ${isArabic(row.name) ? 'font-ge-ss-two' : ''}
+                        `}
                       >
                         {row.name}
                       </motion.h2>
