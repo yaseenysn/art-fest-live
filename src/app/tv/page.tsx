@@ -556,14 +556,52 @@ export default function TVPage() {
   const isPresentation = isPresentationActive(tvState?.presentationType, tvState?.presentationExpiresAt);
 
   /* =========================================================
+     SCALE LOGIC (RESPONSIVE CANVAS)
+  ========================================================= */
+
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { clientWidth, clientHeight } = containerRef.current;
+        // The fixed logical size of the TV canvas
+        const logicalWidth = 1920;
+        const logicalHeight = 1080;
+        
+        // Calculate the scale required to fit inside the viewport
+        const scaleX = clientWidth / logicalWidth;
+        const scaleY = clientHeight / logicalHeight;
+        
+        // Use the smaller scale to ensure it fits completely (letterboxed)
+        setScale(Math.min(scaleX, scaleY));
+      }
+    };
+
+    handleResize(); // Initial measurement
+
+    window.addEventListener("resize", handleResize);
+    // Optional: Use ResizeObserver for more robust tracking
+    const observer = new ResizeObserver(() => handleResize());
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
+    };
+  }, []);
+
+  /* =========================================================
      RENDER
   ========================================================= */
 
   return (
     <div
+      ref={containerRef}
       className="
-        w-screen
-        h-screen
+        w-full
+        h-[100dvh]
         bg-[#050B14]
         text-white
         overflow-hidden
@@ -724,55 +762,25 @@ export default function TVPage() {
               </>
             )}
           </div>
-
-          <div
-            className="
-              flex
-              flex-col
-              leading-none
-              tracking-widest
-              uppercase
-            "
-          >
-            <span
-              className="
-                text-[10px]
-                text-slate-400
-                font-bold
-              "
-            >
-              LIVE
-            </span>
-
-            <span
-              className={`text-xs font-black ${connected
-                  ? "text-slate-200"
-                  : "text-rose-400"
-                }`}
-            >
-              {connected
-                ? "CONNECTED"
-                : "DISCONNECTED"}
-            </span>
-          </div>
         </div>
       </div>
 
       {/* =====================================================
-          MAIN CONTENT
+          MAIN CONTENT (SCALED CANVAS)
       ===================================================== */}
 
       <div
-        className="
-          relative
-          z-10
-          w-full
-          h-full
-          flex
-          items-center
-          justify-center
-        "
+        className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none"
       >
+        <div
+          className="relative flex-shrink-0 pointer-events-auto"
+          style={{
+            width: 1920,
+            height: 1080,
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+          }}
+        >
         <AnimatePresence mode="wait">
           {!tvState?.displayEnabled ? (
             <motion.div
@@ -886,6 +894,7 @@ export default function TVPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
     </div>
   );
