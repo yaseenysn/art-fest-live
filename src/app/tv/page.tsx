@@ -93,7 +93,7 @@ export default function TVPage() {
 
   const returnToLeaderboard = async (expiredId: string) => {
     if (!expiredId) return;
-    
+
     // Verify before clearing optimism
     const state = queryClient.getQueryData<any>(["tvState"]);
     if (state && state.presentationId && state.presentationId !== expiredId) {
@@ -102,7 +102,7 @@ export default function TVPage() {
     }
 
     console.log("[TV] Returning to Leaderboard. Clearing presentation ID:", expiredId);
-    
+
     // Optimistic cache update
     queryClient.setQueryData(["tvState"], (old: any) => {
       if (!old) return old;
@@ -142,7 +142,7 @@ export default function TVPage() {
 
   useEffect(() => {
     const state = queryClient.getQueryData<any>(["tvState"]);
-    
+
     if (state && state.presentationType && state.presentationExpiresAt && state.presentationId) {
       const expiresAt = new Date(state.presentationExpiresAt).getTime();
       const now = Date.now();
@@ -160,7 +160,7 @@ export default function TVPage() {
             returnToLeaderboard(state.presentationId);
           }
         }, remaining);
-        
+
         return () => clearTimeout(timeoutId);
       }
     }
@@ -556,14 +556,52 @@ export default function TVPage() {
   const isPresentation = isPresentationActive(tvState?.presentationType, tvState?.presentationExpiresAt);
 
   /* =========================================================
+     SCALE LOGIC (RESPONSIVE CANVAS)
+  ========================================================= */
+
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { clientWidth, clientHeight } = containerRef.current;
+        // The fixed logical size of the TV canvas
+        const logicalWidth = 1920;
+        const logicalHeight = 1080;
+
+        // Calculate the scale required to fit inside the viewport
+        const scaleX = clientWidth / logicalWidth;
+        const scaleY = clientHeight / logicalHeight;
+
+        // Use the smaller scale to ensure it fits completely (letterboxed)
+        setScale(Math.min(scaleX, scaleY));
+      }
+    };
+
+    handleResize(); // Initial measurement
+
+    window.addEventListener("resize", handleResize);
+    // Optional: Use ResizeObserver for more robust tracking
+    const observer = new ResizeObserver(() => handleResize());
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
+    };
+  }, []);
+
+  /* =========================================================
      RENDER
   ========================================================= */
 
   return (
     <div
+      ref={containerRef}
       className="
-        w-screen
-        h-screen
+        w-full
+        h-[100dvh]
         bg-[#050B14]
         text-white
         overflow-hidden
@@ -647,194 +685,247 @@ export default function TVPage() {
       >
         <div
           className="
-            relative
             flex
-            h-3
-            w-3
+            items-center
+            space-x-3
+            bg-white/[0.03]
+            backdrop-blur-xl
+            border
+            border-white/[0.05]
+            shadow-2xl
+            shadow-black/50
+            rounded-full
+            pl-3
+            pr-5
+            py-2
           "
         >
-          {connected ? (
-            <>
-              <span
-                className="
-                  animate-ping
-                  absolute
-                  inline-flex
-                  h-full
-                  w-full
-                  rounded-full
-                  bg-emerald-400
-                  opacity-75
-                "
-              />
-              <span
-                className="
-                  relative
-                  inline-flex
-                  rounded-full
-                  h-3
-                  w-3
-                  bg-emerald-500
-                "
-              />
-            </>
-          ) : (
-            <>
-              <span
-                className="
-                  animate-ping
-                  absolute
-                  inline-flex
-                  h-full
-                  w-full
-                  rounded-full
-                  bg-rose-400
-                  opacity-75
-                "
-              />
-              <span
-                className="
-                  relative
-                  inline-flex
-                  rounded-full
-                  h-3
-                  w-3
-                  bg-rose-500
-                "
-              />
-            </>
-          )}
+          <div
+            className="
+              relative
+              flex
+              h-3
+              w-3
+            "
+          >
+            {connected ? (
+              <>
+                <span
+                  className="
+                    animate-ping
+                    absolute
+                    inline-flex
+                    h-full
+                    w-full
+                    rounded-full
+                    bg-emerald-400
+                    opacity-75
+                  "
+                />
+
+                <span
+                  className="
+                    relative
+                    inline-flex
+                    rounded-full
+                    h-3
+                    w-3
+                    bg-emerald-500
+                  "
+                />
+              </>
+            ) : (
+              <>
+                <span
+                  className="
+                    animate-ping
+                    absolute
+                    inline-flex
+                    h-full
+                    w-full
+                    rounded-full
+                    bg-rose-400
+                    opacity-75
+                  "
+                />
+
+                <span
+                  className="
+                    relative
+                    inline-flex
+                    rounded-full
+                    h-3
+                    w-3
+                    bg-rose-500
+                  "
+                />
+              </>
+            )}
+          </div>
+
+          <div
+            className="
+              flex
+              flex-col
+              leading-none
+              tracking-widest
+              uppercase
+            "
+          >
+            <span
+              className="
+                text-[10px]
+                text-slate-400
+                font-bold
+              "
+            >
+              LIVE
+            </span>
+
+            <span
+              className={`text-xs font-black ${connected
+                ? "text-slate-200"
+                : "text-rose-400"
+                }`}
+            >
+              {connected
+                ? "CONNECTED"
+                : "DISCONNECTED"}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* =====================================================
-          MAIN CONTENT
+          MAIN CONTENT (SCALED CANVAS)
       ===================================================== */}
 
       <div
-        className="
-          relative
-          z-10
-          w-full
-          h-full
-          flex
-          items-center
-          justify-center
-        "
+        className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none"
       >
-        <AnimatePresence mode="wait">
-          {!tvState?.displayEnabled ? (
-            <motion.div
-              key="black_screen"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black z-[2000]"
-            />
-          ) : isPresentation && tvState?.presentationType === "FINAL_TEAM_REVEAL" ? (
-            <motion.div
-              key={`final-reveal-${tvState.presentationId}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 z-[1000] w-full h-full"
-            >
-              <FinalTeamReveal
-                key={tvState.presentationId}
-                teamName={tvState.finalRevealTeamName || "TEAM"}
-                position={tvState.finalRevealPosition || 1}
-                active={true}
-                onComplete={() => { }}
+        <div
+          className="relative flex-shrink-0 pointer-events-auto"
+          style={{
+            width: 1920,
+            height: 1080,
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {!tvState?.displayEnabled ? (
+              <motion.div
+                key="black_screen"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black z-[2000]"
               />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "ALL_WINNERS" ? (
-            <motion.div
-              key={`all_winners-${tvState.presentationId}`}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <AllWinnersRouter config={tvState.presentationData} />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "RESULT_REVEAL" && tvState.presentationData ? (
-            <motion.div
-              key={`result-${tvState.presentationId}`}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <ResultsRouter
-                results={tvState.presentationData.results}
-                design={tvState.presentationData.design || "design1"}
-                revealStage={tvState.presentationData.revealStage || "WINNER"}
-              />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "ANNOUNCEMENT" && tvState.presentationData ? (
-            <motion.div
-              key={`announcement-${tvState.presentationId}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <AnnouncementOverlay announcement={tvState.presentationData} />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "CUSTOM_ANNOUNCEMENT" && tvState.presentationData ? (
-            <motion.div
-              key={`custom-announcement-${tvState.presentationId}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <CustomAnnouncementOverlay data={tvState.presentationData} />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "MEDIA" && tvState.presentationData ? (
-            <motion.div
-              key={`media-${tvState.presentationId}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <MediaPlayer
-                presentationId={tvState.presentationId!}
-                playlist={tvState.presentationData.playlist}
-              />
-            </motion.div>
-          ) : isPresentation && tvState?.presentationType === "POSTER" && tvState.presentationData ? (
-            <motion.div
-              key={`poster-${tvState.presentationId}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 w-[100vw] h-[100vh] z-[100] bg-[#050B14] flex items-center justify-center overflow-hidden"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={tvState.presentationData.url} alt="Congratulations Poster" className="w-[100vw] h-[100vh] object-contain drop-shadow-2xl" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="leaderboard"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <Leaderboard config={tvState?.isActive && tvState.type !== "ALL_WINNERS" ? tvState.config : undefined} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+            ) : isPresentation && tvState?.presentationType === "FINAL_TEAM_REVEAL" ? (
+              <motion.div
+                key={`final-reveal-${tvState.presentationId}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 z-[1000] w-full h-full"
+              >
+                <FinalTeamReveal
+                  key={tvState.presentationId}
+                  teamName={tvState.finalRevealTeamName || "TEAM"}
+                  position={tvState.finalRevealPosition || 1}
+                  active={true}
+                  onComplete={() => { }}
+                />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "ALL_WINNERS" ? (
+              <motion.div
+                key={`all_winners-${tvState.presentationId}`}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <AllWinnersRouter config={tvState.presentationData} />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "RESULT_REVEAL" && tvState.presentationData ? (
+              <motion.div
+                key={`result-${tvState.presentationId}`}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <ResultsRouter
+                  results={tvState.presentationData.results}
+                  design={tvState.presentationData.design || "design1"}
+                  revealStage={tvState.presentationData.revealStage || "WINNER"}
+                />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "ANNOUNCEMENT" && tvState.presentationData ? (
+              <motion.div
+                key={`announcement-${tvState.presentationId}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <AnnouncementOverlay announcement={tvState.presentationData} />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "CUSTOM_ANNOUNCEMENT" && tvState.presentationData ? (
+              <motion.div
+                key={`custom-announcement-${tvState.presentationId}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <CustomAnnouncementOverlay data={tvState.presentationData} />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "MEDIA" && tvState.presentationData ? (
+              <motion.div
+                key={`media-${tvState.presentationId}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <MediaPlayer
+                  presentationId={tvState.presentationId!}
+                  playlist={tvState.presentationData.playlist}
+                />
+              </motion.div>
+            ) : isPresentation && tvState?.presentationType === "POSTER" && tvState.presentationData ? (
+              <motion.div
+                key={`poster-${tvState.presentationId}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 w-[100vw] h-[100vh] z-[100] bg-[#050B14] flex items-center justify-center overflow-hidden"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={tvState.presentationData.url} alt="Congratulations Poster" className="w-[100vw] h-[100vh] object-contain drop-shadow-2xl" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="leaderboard"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <Leaderboard config={tvState?.isActive && tvState.type !== "ALL_WINNERS" ? tvState.config : undefined} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
