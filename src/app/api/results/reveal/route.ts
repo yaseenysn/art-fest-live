@@ -46,13 +46,23 @@ export const POST = requireAdmin(async (req: NextRequest) => {
     // does not cause the TV React component tree to completely unmount and remount.
     const presentationId = `reveal-${programId}-${position}`;
 
+    // Fetch the current state to grab the admin's selected resultsDesign
+    const currentState = await TVState.findOne({});
+    const activeDesign = currentState?.resultsDesign || 'design1';
+
     const state = await TVState.findOneAndUpdate(
       {},
       {
         $set: {
           presentationId,
           presentationType: 'RESULT_REVEAL',
-          presentationData: { programId, position, results: allPositionResults, revealStage: revealStage || 'WINNER' },
+          presentationData: { 
+            programId, 
+            position, 
+            results: allPositionResults, 
+            revealStage: revealStage || 'WINNER',
+            design: activeDesign
+          },
           presentationStartedAt: startedAt,
           presentationExpiresAt: expiresAt,
           presentationDuration: displayDuration

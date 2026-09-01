@@ -35,6 +35,7 @@ export default function AllWinnersPoster({
   winnersByPosition,
   id = "all-winners-poster-node",
 }: AllWinnersPosterProps) {
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
   const positions = [1, 2, 3] as const;
 
   const getPositionStyles = (pos: number, tColor: string) => {
@@ -514,89 +515,61 @@ export default function AllWinnersPoster({
                         </div>
 
                         {/* =================================================
-                            WINNER NAMES
+                            WINNERS & TEAM
                         ================================================= */}
 
-                        <div className="flex-1 min-w-0 pr-3">
+                        <div className="flex-1 flex flex-col min-w-0 pr-3 py-2 justify-center">
                           <h3
-                            className="
+                            dir={isArabic(names) ? "rtl" : "ltr"}
+                            className={`
                               font-bold
                               text-white
                               uppercase
                               drop-shadow-sm
-                              tracking-wide
-                            "
+                              break-words
+                              max-w-full
+                              ${isArabic(names) ? 'font-ge-ss-two' : 'tracking-wide'}
+                            `}
                             style={{
                               fontSize:
-                                "clamp(22px, 1.9vw, 36px)",
-                              lineHeight: 1.05,
-
-                              /*
-                               * Allow multiple names to fit without
-                               * causing horizontal overflow.
-                               */
-                              whiteSpace: "normal",
-                              overflowWrap: "anywhere",
+                                "clamp(26px, 2.5vw, 44px)",
+                              lineHeight: 1.1,
                             }}
                           >
                             {names}
                           </h3>
-                        </div>
 
-                        {/* =================================================
-                            TEAM
-                        ================================================= */}
-
-                        <div
-                          className="
-                            flex
-                            items-center
-                            shrink-0
-                            border-l
-                            border-white/10
-                          "
-                          style={{
-                            gap:
-                              "clamp(7px, 0.6vw, 12px)",
-                            paddingLeft:
-                              "clamp(12px, 1.2vw, 24px)",
-                            maxWidth: "28%",
-                          }}
-                        >
-                          <div
-                            className="
-                              rounded-full
-                              shrink-0
-                              shadow-[0_0_12px_rgba(255,255,255,0.6)]
-                            "
-                            style={{
-                              width:
-                                "clamp(8px, 0.55vw, 13px)",
-                              height:
-                                "clamp(8px, 0.55vw, 13px)",
-                              backgroundColor: tColor,
-                            }}
-                          />
-
-                          <span
-                            className="
-                              font-bold
-                              text-white/90
-                              uppercase
-                              tracking-widest
-                              drop-shadow-md
-                              text-left
-                            "
-                            style={{
-                              fontSize:
-                                "clamp(12px, 1.1vw, 22px)",
-                              lineHeight: 1.1,
-                              whiteSpace: "normal",
-                              overflowWrap: "anywhere",
-                            }}
+                          <div 
+                            dir={isArabic(teamStr) ? "rtl" : "ltr"}
+                            className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 mt-2 md:mt-3 w-full`}
                           >
-                            {teamStr}
-                          </span>
+                            <div
+                              className="rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.6)] mt-[6px] md:mt-[8px]"
+                              style={{
+                                width: "clamp(10px, 0.8vw, 16px)",
+                                height: "clamp(10px, 0.8vw, 16px)",
+                                backgroundColor: tColor,
+                              }}
+                            />
+                            <span
+                              className={`
+                                font-bold
+                                text-white/90
+                                uppercase
+                                drop-shadow-md
+                                break-words
+                                max-w-[95%]
+                                leading-[1.2]
+                                ${isArabic(teamStr) ? 'font-ge-ss-two' : 'tracking-widest'}
+                              `}
+                              style={{
+                                fontSize:
+                                  "clamp(20px, 1.8vw, 34px)",
+                              }}
+                            >
+                              {teamStr}
+                            </span>
+                          </div>
                         </div>
 
                         {/* =================================================

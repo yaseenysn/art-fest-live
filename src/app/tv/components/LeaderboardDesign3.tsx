@@ -69,6 +69,10 @@ export default function LeaderboardDesign3({
       ========================================================== */}
 
       <div className="absolute inset-0 bg-[#111111]" />
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.05] blur-[2px] saturate-[0.8]"
+        style={{ backgroundImage: `url('/images/leaderboard_bg.jpg')` }}
+      />
 
       {/* Soft center glow */}
       <div

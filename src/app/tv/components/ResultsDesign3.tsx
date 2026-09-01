@@ -61,6 +61,9 @@ export default function ResultsDesign1({
 
   const position = result.position || 1;
   const studentName = result.studentName || "WINNER";
+  const teamName = (result.teamId as { name?: string })?.name;
+
+  const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
   const theme = getPositionTheme(position);
   const positionLabel = getPositionLabel(position);
@@ -699,6 +702,51 @@ export default function ResultsDesign1({
               delay: 1.35,
             }}
           />
+
+          {/* =====================================================
+              TEAM NAME
+          ====================================================== */}
+          {revealStage === 'WINNER' && teamName && (
+            <motion.div
+              className="relative mt-[55px] text-center w-full flex justify-center"
+              initial={{
+                opacity: 0,
+                y: 30,
+                filter: "blur(10px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
+              transition={{
+                duration: 1.2,
+                delay: 0.6,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <div
+                dir={isArabic(teamName) ? "rtl" : "ltr"}
+                className={`
+                  font-bold
+                  uppercase
+                  break-words
+                  max-w-[95%]
+                  leading-[1.15]
+                  ${isArabic(teamName) ? 'font-ge-ss-two text-[clamp(40px,6vw,90px)]' : 'tracking-[0.25em] text-[clamp(32px,4vw,72px)]'}
+                `}
+                style={{
+                  color: "#e2e8f0",
+                  textShadow: `
+                    0 0 15px rgba(173,211,255,0.25),
+                    0 0 35px rgba(90,145,220,0.2)
+                  `,
+                }}
+              >
+                {teamName}
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
 

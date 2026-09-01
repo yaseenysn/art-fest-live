@@ -116,6 +116,11 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full h-full md:w-[calc(100vw-80px)] md:h-[calc(100vh-60px)] flex flex-col relative z-10 bg-[#0a1229]/40 backdrop-blur-[50px] rounded-3xl md:rounded-[48px] border border-[#2a4596]/40 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_-80px_120px_-40px_rgba(59,130,246,0.7),inset_0_80px_120px_-40px_rgba(59,130,246,0.5)] overflow-hidden"
       >
+        {/* The actual image inside the glass */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.1] blur-[2px] saturate-[0.8] mix-blend-overlay pointer-events-none"
+          style={{ backgroundImage: `url('/images/leaderboard_bg.jpg')` }}
+        />
 
         {/* Inner subtle grid */}
         <div
@@ -314,7 +319,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                         {/* Active Indicator Bar */}
                         <motion.div
                           initial={false}
-                          animate={{ 
+                          animate={{
                             opacity: isActive ? 1 : 0,
                             scaleY: isActive ? 1 : 0.8
                           }}

@@ -25,6 +25,7 @@ const isPresentationActive = (
 ) => {
   if (!presentationType) return false;
   if (presentationType === "MEDIA") return true; // Media controls its own expiration
+  if (presentationType === "FINAL_TEAM_REVEAL") return true; // Final Reveal is manually ended
   if (!presentationExpiresAt) return false;
   return Date.now() < new Date(presentationExpiresAt).getTime();
 };
@@ -820,7 +821,7 @@ export default function TVPage() {
             >
               <ResultsRouter
                 results={tvState.presentationData.results}
-                design={tvState?.resultsDesign || "design1"}
+                design={tvState.presentationData.design || "design1"}
                 revealStage={tvState.presentationData.revealStage || "WINNER"}
               />
             </motion.div>

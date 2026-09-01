@@ -6,6 +6,7 @@ import { ArrowLeft, MonitorPlay, EyeOff, RotateCcw } from 'lucide-react';
 import FinalTeamReveal from '../../tv/components/FinalTeamReveal';
 import clsx from 'clsx';
 import { Select } from '@/components/ui/Select';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function FinalRevealAdminPage() {
   const [teamName, setTeamName] = useState('AL MAHSAN');
@@ -13,6 +14,18 @@ export default function FinalRevealAdminPage() {
   const [previewActive, setPreviewActive] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: tvState, refetch: refetchTvState } = useQuery<any>({
+    queryKey: ['tvState'],
+    queryFn: async () => {
+      const res = await fetch('/api/tv-state');
+      if (!res.ok) throw new Error('Failed to fetch TV state');
+      return res.json();
+    }
+  });
+
+  const isActiveOnTv = tvState?.presentationType === 'FINAL_TEAM_REVEAL' && tvState?.finalRevealActive === true;
 
   const handlePreview = () => {
     setPreviewActive(false);
@@ -24,7 +37,7 @@ export default function FinalRevealAdminPage() {
   const handleStartReveal = async () => {
     setIsStarting(true);
     try {
-      const duration = 20;
+      const duration = 24 * 60 * 60; // 24 hours (manual control override)
       const startedAt = new Date();
       const expiresAt = new Date(startedAt.getTime() + duration * 1000);
       await fetch('/api/tv-state', {
@@ -41,7 +54,7 @@ export default function FinalRevealAdminPage() {
           presentationDuration: duration
         })
       });
-      alert('Final Team Reveal activated on TV.');
+      await refetchTvState();
     } catch (err) {
       console.error(err);
       alert('Failed to activate reveal.');
@@ -50,20 +63,26 @@ export default function FinalRevealAdminPage() {
     }
   };
 
-  const handleResetReveal = async () => {
+  const handleEndReveal = async () => {
     setIsResetting(true);
     try {
       await fetch('/api/tv-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          finalRevealActive: false
+          finalRevealActive: false,
+          presentationType: null,
+          presentationId: null,
+          presentationExpiresAt: null,
+          presentationStartedAt: null,
+          presentationDuration: null,
+          isActive: false // Force the leaderboard to be hidden
         })
       });
-      alert('Reveal reset. TV returned to normal.');
+      await refetchTvState();
     } catch (err) {
       console.error(err);
-      alert('Failed to reset reveal.');
+      alert('Failed to end reveal.');
     } finally {
       setIsResetting(false);
     }
@@ -98,7 +117,15 @@ export default function FinalRevealAdminPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Controls */}
           <div className="bg-card rounded-2xl shadow-sm border border-border-card p-8 flex flex-col space-y-8">
-            <h2 className="text-xl font-bold text-text-primary uppercase tracking-wide border-b pb-4">Configuration</h2>
+            <h2 className="text-xl font-bold text-text-primary uppercase tracking-wide border-b pb-4 flex items-center justify-between">
+              <span>Configuration</span>
+              {isActiveOnTv && (
+                <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                  <span className="animate-pulse h-2 w-2 bg-emerald-500 rounded-full"></span>
+                  <span>FINAL REVEAL ACTIVE ON TV</span>
+                </div>
+              )}
+            </h2>
             
             <div className="space-y-6">
               <div>
@@ -142,24 +169,24 @@ export default function FinalRevealAdminPage() {
               <button
                 onClick={handleStartReveal}
                 disabled={isStarting}
-                className="w-full flex items-center justify-center space-x-2 bg-emerald-600 text-white rounded-xl py-4 font-black uppercase tracking-widest text-lg hover:bg-emerald-500/10 border border-emerald-500/200 transition-colors shadow-lg shadow-emerald-600/30 disabled:opacity-50"
+                className="w-full flex items-center justify-center space-x-2 bg-emerald-600 text-white rounded-xl py-4 font-black uppercase tracking-widest text-lg hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-600/30 disabled:opacity-50 border border-emerald-500/20"
               >
                 <MonitorPlay className="w-6 h-6" />
-                <span>{isStarting ? 'Starting...' : 'START ON TV'}</span>
+                <span>{isStarting ? 'STARTING...' : 'START FINAL REVEAL'}</span>
               </button>
 
               <button
-                onClick={handleResetReveal}
-                disabled={isResetting}
-                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white rounded-xl py-4 font-black uppercase tracking-widest text-sm hover:bg-red-500/10 border border-red-500/200 transition-colors shadow-md disabled:opacity-50"
+                onClick={handleEndReveal}
+                disabled={isResetting || !isActiveOnTv}
+                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white rounded-xl py-4 font-black uppercase tracking-widest text-sm hover:bg-red-500 transition-colors shadow-md disabled:opacity-50 border border-red-500/20"
               >
                 <RotateCcw className="w-5 h-5" />
-                <span>{isResetting ? 'Resetting...' : 'RESET REVEAL (HIDE)'}</span>
+                <span>{isResetting ? 'ENDING...' : 'END FINAL REVEAL'}</span>
               </button>
             </div>
             
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 p-4 rounded-xl border border-amber-200 text-sm font-medium">
-              <p><strong>Note:</strong> Starting this reveal overrides the TV. Clicking "Reset Reveal" returns the TV exactly to what it was showing before.</p>
+            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 p-4 rounded-xl text-sm font-medium">
+              <p><strong>Note:</strong> Starting this reveal overrides the TV. Clicking "End Final Reveal" immediately returns the TV to the Leaderboard.</p>
             </div>
           </div>
 
