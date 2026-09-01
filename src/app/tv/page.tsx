@@ -646,114 +646,63 @@ export default function TVPage() {
       >
         <div
           className="
+            relative
             flex
-            items-center
-            space-x-3
-            bg-white/[0.03]
-            backdrop-blur-xl
-            border
-            border-white/[0.05]
-            shadow-2xl
-            shadow-black/50
-            rounded-full
-            pl-3
-            pr-5
-            py-2
+            h-3
+            w-3
           "
         >
-          <div
-            className="
-              relative
-              flex
-              h-3
-              w-3
-            "
-          >
-            {connected ? (
-              <>
-                <span
-                  className="
-                    animate-ping
-                    absolute
-                    inline-flex
-                    h-full
-                    w-full
-                    rounded-full
-                    bg-emerald-400
-                    opacity-75
-                  "
-                />
-
-                <span
-                  className="
-                    relative
-                    inline-flex
-                    rounded-full
-                    h-3
-                    w-3
-                    bg-emerald-500
-                  "
-                />
-              </>
-            ) : (
-              <>
-                <span
-                  className="
-                    animate-ping
-                    absolute
-                    inline-flex
-                    h-full
-                    w-full
-                    rounded-full
-                    bg-rose-400
-                    opacity-75
-                  "
-                />
-
-                <span
-                  className="
-                    relative
-                    inline-flex
-                    rounded-full
-                    h-3
-                    w-3
-                    bg-rose-500
-                  "
-                />
-              </>
-            )}
-          </div>
-
-          <div
-            className="
-              flex
-              flex-col
-              leading-none
-              tracking-widest
-              uppercase
-            "
-          >
-            <span
-              className="
-                text-[10px]
-                text-slate-400
-                font-bold
-              "
-            >
-              LIVE
-            </span>
-
-            <span
-              className={`text-xs font-black ${connected
-                  ? "text-slate-200"
-                  : "text-rose-400"
-                }`}
-            >
-              {connected
-                ? "CONNECTED"
-                : "DISCONNECTED"}
-            </span>
-          </div>
+          {connected ? (
+            <>
+              <span
+                className="
+                  animate-ping
+                  absolute
+                  inline-flex
+                  h-full
+                  w-full
+                  rounded-full
+                  bg-emerald-400
+                  opacity-75
+                "
+              />
+              <span
+                className="
+                  relative
+                  inline-flex
+                  rounded-full
+                  h-3
+                  w-3
+                  bg-emerald-500
+                "
+              />
+            </>
+          ) : (
+            <>
+              <span
+                className="
+                  animate-ping
+                  absolute
+                  inline-flex
+                  h-full
+                  w-full
+                  rounded-full
+                  bg-rose-400
+                  opacity-75
+                "
+              />
+              <span
+                className="
+                  relative
+                  inline-flex
+                  rounded-full
+                  h-3
+                  w-3
+                  bg-rose-500
+                "
+              />
+            </>
+          )}
         </div>
       </div>
 
