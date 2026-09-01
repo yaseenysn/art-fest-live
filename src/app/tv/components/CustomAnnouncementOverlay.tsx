@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "motion/react";
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 interface Judge {
   name: string;
 }
@@ -215,9 +217,16 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
 
     return (
       <div
-        className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden select-none font-sans text-neutral-900 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('/images/judges_bg.jpg')` }}
+        className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden select-none font-sans text-neutral-900 bg-white"
       >
+        {/* BACKGROUND IMAGE (BLURRED) */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.85] blur-md scale-105"
+          style={{ backgroundImage: `url('/images/judges_bg.jpg?v=${Date.now()}')` }}
+        />
+
+        {/* SUBTLE GRADIENT OVERLAY FOR READABILITY */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/30 via-transparent to-white/10 pointer-events-none" />
 
         {/* CONFETTI BURST (Popper Animation) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -273,7 +282,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
         </div>
 
         {/* MAIN CONTENT AREA */}
-        <div className="relative z-10 flex flex-1 w-full flex-col items-center justify-center pt-[8vh]">
+        <div className="relative z-10 flex flex-1 w-full flex-col items-center justify-start pt-[15vh]">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -349,7 +358,11 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                     />
                     
                     <h3
-                      className="max-w-full overflow-visible font-medium tracking-wide text-neutral-900 relative z-10"
+                      dir={isArabic(judge.name) ? "rtl" : "ltr"}
+                      className={`
+                        max-w-full overflow-visible tracking-wide text-neutral-900 relative z-10
+                        ${isArabic(judge.name) ? 'font-ge-ss-two font-bold' : 'font-medium'}
+                      `}
                       style={{
                         fontSize: "clamp(60px, 4.5vw, 140px)",
                       }}
