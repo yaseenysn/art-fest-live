@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import { Result } from '../models/Result';
 import { Team } from '../models/Team';
 import { TeamRanking, LeaderboardConfig, LeaderboardRow } from '../types';
+import { TVState } from '../models/TVState';
+import { getIO, SOCKET_EVENTS } from './socket';
 
 export async function getTeamRankings(): Promise<TeamRanking[]> {
   // Aggregate total points from Results
@@ -118,4 +120,21 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
     type: 'overall',
     rows
   };
+}
+
+export async function syncTVLeaderboardState() {
+  const tvState = await TVState.findOne();
+  if (!tvState) return;
+  
+  // Re-generate config using the current design selected
+  const newConfig = await generateLeaderboardConfig(tvState.leaderboardDesign || tvState.type || 'design1');
+  
+  tvState.config = newConfig;
+  await tvState.save();
+  
+  // Broadcast the updated TVState so the TV refreshes its config immediately
+  const io = getIO();
+  if (io) {
+    io.emit(SOCKET_EVENTS.LEADERBOARD_STATE_UPDATED, tvState);
+  }
 }

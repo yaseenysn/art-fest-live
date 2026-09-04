@@ -4,6 +4,7 @@ import { Result } from '@/models/Result';
 import { Program } from '@/models/Program';
 import { TVState } from '@/models/TVState';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
+import { syncTVLeaderboardState, getTeamRankings } from '@/lib/rankings';
 import { requireAdmin } from '@/lib/auth';
 
 export const POST = requireAdmin(async (req: NextRequest) => {
@@ -87,7 +88,11 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       });
       
       if (updateRes.modifiedCount > 0) {
-        io.emit(SOCKET_EVENTS.SCORE_UPDATED); // Tell clients to refetch
+        // Synchronize the TV state with the newly revealed results
+        await syncTVLeaderboardState();
+        // Emit updated rankings to clients
+        const rankings = await getTeamRankings();
+        io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings); // Tell clients to refetch with updated points
       }
       
       if (remainingUnrevealed === 0 && updateRes.modifiedCount > 0) {

@@ -230,15 +230,19 @@ export default function DisplayControl() {
   }, [selectedWinnersDesign, selectedProgramId]);
 
   const handleShowLeaderboard = async () => {
-    if (!previewConfig) return;
-    
-    console.log("[ADMIN] sending presentation:", previewConfig.presentation);
-    
     setPushingLeaderboard(true);
     try {
+      // Always generate a fresh config before pushing to avoid stale data overriding the TV
+      const freshRes = await fetch('/api/leaderboards/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: selectedLeaderboard })
+      });
+      const freshConfig = await freshRes.json();
+
       const payload = {
         type: selectedLeaderboard,
-        config: previewConfig,
+        config: freshConfig,
         isActive: true,
         presentationId: null,
         presentationType: null,

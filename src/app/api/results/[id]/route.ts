@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { Result } from '@/models/Result';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
-import { getTeamRankings } from '@/lib/rankings';
+import { syncTVLeaderboardState, getTeamRankings } from '@/lib/rankings';
 import { requireAdmin } from '@/lib/auth';
 
 export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
@@ -32,6 +32,7 @@ export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: P
     // Emit events
     const io = getIO();
     if (io) {
+      await syncTVLeaderboardState();
       io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
       // We could use RESULT_SAVED for this if it's general
       io.emit(SOCKET_EVENTS.RESULT_SAVED, [result]);
@@ -60,6 +61,7 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
     // Emit events
     const io = getIO();
     if (io) {
+      await syncTVLeaderboardState();
       io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
       io.emit(SOCKET_EVENTS.RESULT_DELETED, { id, programId: result.programId });
     }
