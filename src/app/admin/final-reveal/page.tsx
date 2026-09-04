@@ -72,7 +72,7 @@ export default function FinalRevealAdminPage() {
           presentationStartedAt: startedAt.toISOString(),
           presentationExpiresAt: expiresAt.toISOString(),
           presentationDuration: duration,
-          isActive: true
+          isActive: false // Never activate the leaderboard during/after reveal
         })
       });
       await refetchTvState();
@@ -91,13 +91,16 @@ export default function FinalRevealAdminPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          finalRevealActive: false,
-          presentationType: null,
+          type: tvState?.type || 'design1',
+          config: tvState?.config || null,
+          isActive: false, // EXACT same state used by existing Hide Leaderboard
           presentationId: null,
-          presentationExpiresAt: null,
+          presentationType: null,
           presentationStartedAt: null,
+          presentationExpiresAt: null,
           presentationDuration: null,
-          isActive: false // Force the leaderboard to be hidden
+          presentationData: null,
+          finalRevealActive: false
         })
       });
       await refetchTvState();

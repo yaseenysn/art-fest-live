@@ -105,9 +105,9 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
   }
   
   let presentation: 'design1' | 'design2' | 'design3' | 'design4' = 'design1';
-  if (type === 'Design 2') presentation = 'design2';
-  if (type === 'Design 3') presentation = 'design3';
-  if (type === 'Design 4') presentation = 'design4';
+  if (type?.includes('Design 2')) presentation = 'design2';
+  else if (type?.includes('Design 3')) presentation = 'design3';
+  else if (type?.includes('Design 4')) presentation = 'design4';
 
   return {
     title,

@@ -830,7 +830,13 @@ export default function TVPage() {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0 w-full h-full"
             >
-              <Leaderboard config={tvState?.isActive && tvState.type !== "ALL_WINNERS" ? tvState.config : undefined} />
+              <Leaderboard 
+                config={
+                  tvState?.isActive && tvState.type !== "ALL_WINNERS" && tvState.config
+                    ? { ...tvState.config, presentation: tvState.leaderboardDesign || tvState.config.presentation || 'design1' } 
+                    : undefined
+                } 
+              />
             </motion.div>
           )}
         </AnimatePresence>

@@ -239,7 +239,14 @@ export default function DisplayControl() {
       const payload = {
         type: selectedLeaderboard,
         config: previewConfig,
-        isActive: true
+        isActive: true,
+        presentationId: null,
+        presentationType: null,
+        presentationStartedAt: null,
+        presentationExpiresAt: null,
+        presentationDuration: null,
+        presentationData: null,
+        finalRevealActive: false
       };
       console.log("[ADMIN] full payload to API:", payload);
 
@@ -269,7 +276,14 @@ export default function DisplayControl() {
         body: JSON.stringify({
           type: tvState.type,
           config: tvState.config,
-          isActive: false
+          isActive: false,
+          presentationId: null,
+          presentationType: null,
+          presentationStartedAt: null,
+          presentationExpiresAt: null,
+          presentationDuration: null,
+          presentationData: null,
+          finalRevealActive: false
         })
       });
       if (!res.ok) throw new Error("Failed to hide leaderboard");
