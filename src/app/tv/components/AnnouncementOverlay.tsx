@@ -58,7 +58,7 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
             </h1>
 
             {/* Announcement Message */}
-            <p className="text-[clamp(28px,5vw,50px)] text-[#111827] font-extrabold leading-snug md:leading-[1.4] px-4 md:px-16 whitespace-pre-wrap break-words drop-shadow-sm">
+            <p className="text-[clamp(42px,6vw,72px)] text-[#111827] font-extrabold leading-snug md:leading-[1.4] px-4 md:px-16 whitespace-pre-wrap break-words drop-shadow-sm">
               {announcement.message}
             </p>
           </motion.div>
@@ -78,18 +78,18 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.2, duration: 0.5 }}
-            className="absolute -top-12 -left-12 md:-top-16 md:-left-16 flex flex-col gap-4 md:gap-6 rotate-[25deg] z-10"
+            className="absolute -top-8 -left-8 md:-top-10 md:-left-10 flex flex-col gap-2 md:gap-4 rotate-[25deg] z-10"
           >
-            <div className="w-12 h-3 md:w-20 md:h-4 bg-white/90 rounded-full rotate-[-45deg] shadow-lg" />
-            <div className="w-12 h-3 md:w-20 md:h-4 bg-white/90 rounded-full -mt-4 md:-mt-6 rotate-[-20deg] shadow-lg -translate-x-6 md:-translate-x-8" />
-            <div className="w-12 h-3 md:w-20 md:h-4 bg-white/90 rounded-full -mt-1 md:-mt-2 rotate-[5deg] shadow-lg -translate-x-3 md:-translate-x-4" />
+            <div className="w-8 h-2 md:w-12 md:h-3 bg-white/90 rounded-full rotate-[-45deg] shadow-lg" />
+            <div className="w-8 h-2 md:w-12 md:h-3 bg-white/90 rounded-full -mt-2 md:-mt-4 rotate-[-20deg] shadow-lg -translate-x-4 md:-translate-x-6" />
+            <div className="w-8 h-2 md:w-12 md:h-3 bg-white/90 rounded-full -mt-1 rotate-[5deg] shadow-lg -translate-x-2 md:-translate-x-3" />
           </motion.div>
 
           {/* Megaphone image - Positioned so the white box doesn't overlap the board's white background */}
           <img
             src="/megaphone.jpg"
             alt="Megaphone"
-            className="w-[200px] md:w-[350px] mix-blend-multiply contrast-125 saturate-150 relative z-20"
+            className="w-[140px] md:w-[220px] mix-blend-multiply contrast-125 saturate-150 relative z-20"
           />
         </div>
       </motion.div>

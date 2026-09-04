@@ -97,7 +97,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
 
   return (
     <div
-      className="w-screen h-screen flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-4 md:p-8"
+      className="w-screen h-screen flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-6 md:p-12"
       onMouseLeave={handleMouseLeave}
     >
       <MemoizedBackgroundTexture />
@@ -114,7 +114,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full h-full md:w-[calc(100vw-80px)] md:h-[calc(100vh-60px)] flex flex-col relative z-10 bg-[#0a1229]/40 backdrop-blur-[50px] rounded-3xl md:rounded-[48px] border border-[#2a4596]/40 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_-80px_120px_-40px_rgba(59,130,246,0.7),inset_0_80px_120px_-40px_rgba(59,130,246,0.5)] overflow-hidden"
+        className="w-full h-full flex flex-col relative z-10 bg-[#0a1229]/40 backdrop-blur-[50px] rounded-3xl md:rounded-[48px] border border-[#2a4596]/40 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_-80px_120px_-40px_rgba(59,130,246,0.7),inset_0_80px_120px_-40px_rgba(59,130,246,0.5)] overflow-hidden"
       >
 
         {/* Inner subtle grid */}
@@ -136,13 +136,12 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         />
 
         {/* Header */}
-        <div className="flex justify-center items-center w-full px-10 md:px-14 pt-10 pb-2 relative z-20">
+        <div className="flex justify-center items-center w-full px-10 md:px-14 pt-6 md:pt-8 pb-2 relative z-20">
           <img
             src="/logo-al-mahsan.png"
             alt="Al Mahsan"
-            className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
+            className="h-16 md:h-24 lg:h-28 w-auto object-contain drop-shadow-lg"
           />
-
         </div>
 
         {/* Glowing Wavy Line Chart (Fake Glow via thick stroke) */}
@@ -262,7 +261,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
           {/* Right Ranking List — LARGE BACKGROUND BOX REMOVED */}
           <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col relative">
 
-            <div className="flex-1 overflow-hidden p-6 md:p-10 flex flex-col justify-center">
+            <div className="flex-1 overflow-hidden p-4 md:p-8 flex flex-col justify-center">
 
               <AnimatePresence mode="wait">
                 <motion.div
@@ -280,7 +279,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                     x: -20
                   }}
                   transition={{ duration: 0.4 }}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
 
                   {visibleRows.map((row) => {
@@ -299,7 +298,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                           scale: isActive ? 1.05 : 1
                         }}
                         transition={{ duration: 0.5 }}
-                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-5 md:p-6 rounded-2xl border`}
+                        className={`group cursor-pointer relative overflow-hidden flex items-center justify-between p-4 md:p-5 rounded-2xl border`}
                       >
 
                         {/* GPU-Friendly Shadow (Opacity Fade) */}
