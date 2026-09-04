@@ -14,6 +14,12 @@ import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
 
+const getPositionLabel = (pos: number) => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = pos % 100;
+  return pos + (s[(v - 20) % 10] || s[v] || s[0]) + " Place";
+};
+
 export default function ResultsEntry() {
   const queryClient = useQueryClient();
 
@@ -187,8 +193,26 @@ export default function ResultsEntry() {
 
   // --- ADD NEW RESULTS WORKFLOW ---
 
+  const getNextAvailablePosition = () => {
+    const usedPositions = new Set(newResultRows.map(r => r.position));
+    let pos = 1;
+    while (usedPositions.has(pos)) {
+      pos++;
+    }
+    return pos;
+  };
+
   const handleAddRow = () => {
-    setNewResultRows([...newResultRows, { id: Date.now().toString() + Math.random(), studentName: '', teamId: '', position: 1, points: POSITION_DEFAULT_POINTS[1], pointsModified: false }]);
+    const nextPos = getNextAvailablePosition();
+    const defaultPoints = (POSITION_DEFAULT_POINTS as any)[nextPos] || 0;
+    setNewResultRows([...newResultRows, { 
+      id: Date.now().toString() + Math.random(), 
+      studentName: '', 
+      teamId: '', 
+      position: nextPos, 
+      points: defaultPoints, 
+      pointsModified: false 
+    }]);
   };
 
   const handleRemoveRow = (id: string) => {
@@ -201,7 +225,7 @@ export default function ResultsEntry() {
       if (r.id !== id) return r;
       if (field === 'position' && !r.pointsModified) {
         const newPos = parseInt(value);
-        return { ...r, position: newPos, points: POSITION_DEFAULT_POINTS[newPos as 1|2|3] || r.points };
+        return { ...r, position: newPos, points: (POSITION_DEFAULT_POINTS as any)[newPos] || r.points };
       }
       if (field === 'points') {
         return { ...r, points: parseInt(value) || 0, pointsModified: true };
@@ -776,9 +800,14 @@ export default function ResultsEntry() {
                       value={row.position} 
                       onChange={(e: any) => updateRow(row.id, 'position', parseInt(e.target.value))}
                     >
-                      <option value={1}>1st Place</option>
-                      <option value={2}>2nd Place</option>
-                      <option value={3}>3rd Place</option>
+                      {Array.from({ length: Math.max(10, newResultRows.length + 3) }, (_, i) => i + 1).map(pos => {
+                        const isUsed = newResultRows.some(r => r.position === pos && r.id !== row.id);
+                        return (
+                          <option key={pos} value={pos} disabled={isUsed}>
+                            {getPositionLabel(pos)}
+                          </option>
+                        );
+                      })}
                     </Select>
                   </div>
                   <div className="md:col-span-4">
