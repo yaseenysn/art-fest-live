@@ -371,17 +371,16 @@ export default function LeaderboardDesign3({
                 }}
 
                 d="
-                  M 850 70
-                  L 820 82
-                  M 850 70
-                  L 838 100
+                  M 822.2 73.5
+                  L 850 70
+                  L 835.7 94.0
                 "
 
                 fill="none"
 
                 stroke="#ffffff"
 
-                strokeWidth="6"
+                strokeWidth="5"
 
                 strokeLinecap="round"
 
