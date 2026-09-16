@@ -14,9 +14,11 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   // Initialize Socket.IO
+  const allowedOrigin = dev ? "*" : (process.env.SOCKET_ORIGIN || process.env.NEXT_PUBLIC_APP_URL || "*");
+
   const io = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin: allowedOrigin,
       methods: ["GET", "POST"]
     }
   });

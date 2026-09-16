@@ -558,37 +558,40 @@ export default function ResultsEntry() {
                 <h3 className="text-lg text-text-muted mb-8 uppercase tracking-widest">SAVED RESULTS FOR: {selectedProgram?.name}</h3>
                 
                 <div className="space-y-12 max-w-3xl mx-auto">
-                  {[1, 2, 3].map(pos => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const posResults = savedResultData.filter((r: any) => r.position === pos);
-                    if (posResults.length === 0) return null;
+                  {(() => {
+                    const allPositionsInResults = Array.from(new Set(savedResultData.map((r: any) => r.position))).sort((a: number, b: number) => a - b);
+                    const positionsToDisplay = Array.from(new Set([...[1, 2, 3], ...allPositionsInResults])).sort((a: number, b: number) => a - b);
 
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const isPosRevealed = posResults.every((r: any) => r.revealed);
-                    
-                    // A position is enabled if all previous non-empty positions are revealed
-                    // Find all positions before this one that have results
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const prevPositions = [1, 2, 3].filter(p => p < pos && savedResultData.some((r: any) => r.position === p));
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const isEnabled = prevPositions.every(p => savedResultData.filter((r: any) => r.position === p).every((r: any) => r.revealed));
+                    return positionsToDisplay.map(pos => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const posResults = savedResultData.filter((r: any) => r.position === pos);
+                      if (posResults.length === 0) return null;
 
-                    const posName = pos === 1 ? '1ST PLACE' : pos === 2 ? '2ND PLACE' : '3RD PLACE';
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const isPosRevealed = posResults.every((r: any) => r.revealed);
+                      
+                      // A position is enabled if all previous non-empty positions are revealed
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const prevPositions = positionsToDisplay.filter(p => p < pos && savedResultData.some((r: any) => r.position === p));
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const isEnabled = prevPositions.every(p => savedResultData.filter((r: any) => r.position === p).every((r: any) => r.revealed));
 
-                    return (
-                      <div key={pos} className="border border-border-card rounded-xl overflow-hidden bg-row">
-                        <div className="bg-slate-700 px-6 py-4 flex justify-between items-center border-b border-slate-600">
-                          <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
-                          <div className="text-sm font-bold uppercase tracking-widest">
-                            {isPosRevealed ? (
-                              <span className="text-emerald-400">✓ REVEALED</span>
-                            ) : isEnabled ? (
-                              <span className="text-amber-400">● READY</span>
-                            ) : (
-                              <span className="text-text-muted">🔒 LOCKED</span>
-                            )}
+                      const posName = getPositionLabel(pos).toUpperCase();
+
+                      return (
+                        <div key={pos} className="border border-border-card rounded-xl overflow-hidden bg-row">
+                          <div className="bg-slate-700 px-6 py-4 flex justify-between items-center border-b border-slate-600">
+                            <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
+                            <div className="text-sm font-bold uppercase tracking-widest">
+                              {isPosRevealed ? (
+                                <span className="text-emerald-400">✓ REVEALED</span>
+                              ) : isEnabled ? (
+                                <span className="text-amber-400">● READY</span>
+                              ) : (
+                                <span className="text-text-muted">🔒 LOCKED</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
                         
                         <div className="p-6 space-y-4">
                           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -745,7 +748,8 @@ export default function ResultsEntry() {
                         )}
                       </div>
                     );
-                  })}
+                  });
+                })()}
                 </div>
 
                 {/* ALL WINNERS POSTER BUTTON */}
@@ -800,14 +804,11 @@ export default function ResultsEntry() {
                       value={row.position} 
                       onChange={(e: any) => updateRow(row.id, 'position', parseInt(e.target.value))}
                     >
-                      {Array.from({ length: Math.max(10, newResultRows.length + 3) }, (_, i) => i + 1).map(pos => {
-                        const isUsed = newResultRows.some(r => r.position === pos && r.id !== row.id);
-                        return (
-                          <option key={pos} value={pos} disabled={isUsed}>
-                            {getPositionLabel(pos)}
-                          </option>
-                        );
-                      })}
+                      {Array.from({ length: Math.max(10, newResultRows.length + 3) }, (_, i) => i + 1).map(pos => (
+                        <option key={pos} value={pos}>
+                          {getPositionLabel(pos)}
+                        </option>
+                      ))}
                     </Select>
                   </div>
                   <div className="md:col-span-4">

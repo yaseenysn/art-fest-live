@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import { Team } from '@/models/Team';
 import { Result } from '@/models/Result';
@@ -8,6 +9,11 @@ import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
     const { id } = await params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Valid Team ID is required.' }, { status: 400 });
+    }
+
     const body = await req.json();
     let { name, shortName } = body;
     const { color } = body;
@@ -78,10 +84,12 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
   let session = null;
   try {
     const { id } = await params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Valid Team ID is required.' }, { status: 400 });
+    }
+
     await connectDB();
-    
-    // Fallback if mongoose doesn't expose startSession directly, we use mongoose.connection.startSession
-    const mongoose = (await import('mongoose')).default;
     
     try {
       session = await mongoose.startSession();

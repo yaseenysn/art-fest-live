@@ -43,7 +43,7 @@ export interface IProgram {
   createdAt: Date;
 }
 
-export type Position = 1 | 2 | 3;
+export type Position = number;
 
 export const POSITION_DEFAULT_POINTS = {
   1: 10,

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { Media } from '@/models/Media';
 import cloudinary from '@/lib/cloudinary';
+import { requireAdmin } from '@/lib/auth';
+import mongoose from 'mongoose';
 
 export async function GET() {
   try {
@@ -13,7 +15,7 @@ export async function GET() {
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
     
@@ -79,17 +81,17 @@ export async function POST(req: NextRequest) {
     console.error("[MEDIA UPLOAD ERROR]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
     
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Valid Media ID is required' }, { status: 400 });
     }
 
     const media = await Media.findById(id);
@@ -110,4 +112,4 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+});

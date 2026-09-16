@@ -14,7 +14,7 @@ export async function GET() {
   }
 }
 
-export const POST = async (req: NextRequest) => {
+export const POST = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
     const data = await req.json();
@@ -111,4 +111,4 @@ export const POST = async (req: NextRequest) => {
   } catch (error: unknown) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
-};
+});

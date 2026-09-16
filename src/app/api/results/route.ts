@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import { Result } from '@/models/Result';
-// Student import removed since we no longer use it for results
 import { Program } from '@/models/Program';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { getTeamRankings } from '@/lib/rankings';
@@ -13,6 +13,10 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const programId = searchParams.get('programId');
     
+    if (programId && !mongoose.Types.ObjectId.isValid(programId)) {
+      return NextResponse.json({ error: 'Invalid program ID format' }, { status: 400 });
+    }
+
     const query = programId ? { programId } : {};
     
     const limitParam = searchParams.get('limit');
@@ -43,6 +47,10 @@ export const POST = requireAdmin(async (req: NextRequest) => {
 
     const programId = body[0].programId;
 
+    if (!programId || !mongoose.Types.ObjectId.isValid(programId)) {
+      return NextResponse.json({ error: 'Valid Program ID is required' }, { status: 400 });
+    }
+
     // Validate program exists and is live/completed
     const program = await Program.findById(programId);
     if (!program) {
@@ -52,21 +60,34 @@ export const POST = requireAdmin(async (req: NextRequest) => {
     // Process results
     const savedResults = [];
     for (const result of body) {
-      if (!result.studentName || !result.position || !result.points || !result.teamId) {
-         continue; // Skip incomplete entries
+      if (!result.studentName || typeof result.studentName !== 'string' || !result.studentName.trim()) {
+        continue; // Skip incomplete entries
+      }
+      
+      if (!result.teamId || !mongoose.Types.ObjectId.isValid(result.teamId)) {
+        continue; // Skip invalid team entries
+      }
+
+      const positionNum = Number(result.position);
+      if (!Number.isInteger(positionNum) || positionNum < 1) {
+        continue; // Skip invalid position entries
+      }
+
+      const pointsNum = Number(result.points);
+      if (typeof pointsNum !== 'number' || isNaN(pointsNum) || !isFinite(pointsNum) || pointsNum < 0) {
+        continue; // Skip negative/invalid point entries
       }
       
       const newResult = {
         programId,
-        studentName: result.studentName,
+        studentName: result.studentName.trim(),
         teamId: result.teamId,
-        position: result.position,
-        points: result.points,
+        position: positionNum,
+        points: pointsNum,
         revealed: false // always start unrevealed
       };
       
       const savedResult = await Result.create(newResult);
-      // Wait to ensure socket gets full populated data if needed, but here we can just push it
       savedResults.push(savedResult);
     }
     
