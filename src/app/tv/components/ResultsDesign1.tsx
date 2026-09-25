@@ -93,7 +93,7 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
   const tColor = (firstResult.teamId as { color?: string })?.color || theme.glow;
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center z-10 px-8 py-10 relative overflow-hidden bg-[#050A18]">
+    <div className="min-h-screen md:h-full w-full flex flex-col justify-center items-center z-10 px-4 md:px-8 py-6 md:py-10 relative overflow-y-auto md:overflow-hidden bg-[#050A18]">
 
       {/* Background Atmosphere */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -110,7 +110,7 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
         {numWinners === 1 ? (
           /* Single Winner Layout: Side by side */
-          <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-[95%] md:max-w-[85%] mx-auto space-y-8 md:space-y-0 md:space-x-20">
+          <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-[95%] md:max-w-[85%] mx-auto space-y-6 md:space-y-0 md:space-x-20">
             {/* Left: Medal */}
             <motion.div
               initial={{ opacity: 0, x: -40, scale: 0.9 }}
@@ -118,25 +118,25 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
               transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 80 }}
               className="flex-1 flex items-center justify-center max-w-md"
             >
-              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
+              <div className="relative w-44 h-44 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] flex flex-col items-center justify-center">
                 {/* Ribbon */}
-                <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform -rotate-12 -translate-x-8 origin-bottom-right z-0`} />
-                <div className={`absolute -top-16 w-16 h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform rotate-12 translate-x-8 origin-bottom-left z-0`} />
+                <div className={`absolute -top-10 md:-top-16 w-10 md:w-16 h-20 md:h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform -rotate-12 -translate-x-5 md:-translate-x-8 origin-bottom-right z-0`} />
+                <div className={`absolute -top-10 md:-top-16 w-10 md:w-16 h-20 md:h-32 bg-gradient-to-b ${theme.ribbonGrad} shadow-2xl transform rotate-12 translate-x-5 md:translate-x-8 origin-bottom-left z-0`} />
 
                 {/* Medal Body */}
                 <div
-                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-[12px] md:border-[16px] ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
+                  className={`relative z-10 w-full h-full rounded-full bg-gradient-to-br ${theme.bodyGrad} border-[8px] md:border-[16px] ${theme.ringGrad} ${theme.shadow} flex flex-col items-center justify-center`}
                   style={{ boxShadow: `0 30px 60px ${theme.glow}, inset 0 0 60px rgba(255,255,255,0.5)` }}
                 >
-                  <div className="absolute inset-2 rounded-full border-4 md:border-8 border-white/20" />
-                  <span className="text-[6rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-4">
+                  <div className="absolute inset-2 rounded-full border-2 md:border-8 border-white/20" />
+                  <span className="text-[4.5rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-2 md:mt-4">
                     {position}
                     {position === 1 && <span className="text-[0.45em] align-top">ST</span>}
                     {position === 2 && <span className="text-[0.45em] align-top">ND</span>}
                     {position === 3 && <span className="text-[0.45em] align-top">RD</span>}
                     {position > 3 && <span className="text-[0.45em] align-top">TH</span>}
                   </span>
-                  <span className="text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-2">
+                  <span className="text-base md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1 md:-mt-2">
                     PLACE
                   </span>
                 </div>

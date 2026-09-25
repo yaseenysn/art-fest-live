@@ -203,7 +203,7 @@ export default function MediaControl() {
   };
 
   return (
-    <div className="min-h-screen bg-card-secondary p-8">
+    <div className="min-h-screen bg-card-secondary p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center space-x-4 mb-8">
           <Link href="/admin/display" className="p-3 bg-card text-text-muted hover:text-primary-indigo rounded-full shadow-sm hover:shadow-md transition-all">

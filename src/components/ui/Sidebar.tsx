@@ -25,11 +25,18 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex w-64 flex-col bg-sidebar border-r border-border-card min-h-screen">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-purple to-primary-pink tracking-tight">
-          MADRASA LIVE
-        </h1>
-        <p className="text-xs text-text-muted mt-1 uppercase tracking-widest font-semibold">Admin Control</p>
+      <div className="p-6 flex items-center space-x-3">
+        <img
+          src="/logo-al-mahsan.png"
+          alt="AL MAHSAN Logo"
+          className="w-10 h-10 object-contain shrink-0"
+        />
+        <div>
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-purple to-primary-pink tracking-tight leading-tight">
+            AL MAHSAN
+          </h1>
+          <p className="text-[10px] text-text-muted uppercase tracking-widest font-semibold">Admin Control</p>
+        </div>
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mt-4">

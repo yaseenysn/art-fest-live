@@ -83,8 +83,8 @@ export default function TeamModal({ isOpen, onClose, onSuccess, team }: TeamModa
   };
 
   return (
-    <div className="fixed inset-0 bg-app/90 backdrop-blur-sm flex items-center justify-center p-4 z-[200] overflow-y-auto">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border-card">
+    <div className="fixed inset-0 bg-app/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[200] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[calc(100vw-24px)] md:max-w-md max-h-[calc(100vh-32px)] flex flex-col overflow-hidden border border-border-card">
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-border-card flex items-center justify-between bg-card-secondary">
@@ -106,7 +106,7 @@ export default function TeamModal({ isOpen, onClose, onSuccess, team }: TeamModa
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
           {error && (
             <div className="bg-red-500/10 text-red-400 text-sm font-semibold p-3 rounded-xl border border-red-500/20">
               {error}

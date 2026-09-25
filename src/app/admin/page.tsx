@@ -101,6 +101,8 @@ export default function AdminDashboard() {
 
     const onProgramChange = () => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
     };
 
     const onEventReset = () => {

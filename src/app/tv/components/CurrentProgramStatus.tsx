@@ -10,13 +10,13 @@ const CurrentProgramStatus = React.memo(function CurrentProgramStatus({ presenta
   const queryClient = useQueryClient();
 
   // Determine position based on design presentation
-  let positionClasses = "top-[clamp(120px,15vh,160px)] right-[clamp(30px,5vw,60px)] items-end text-right"; // Default to Top-Right for Design 1, 2, 4
+  let positionClasses = "top-14 md:top-[clamp(120px,15vh,160px)] right-3 md:right-[clamp(30px,5vw,60px)] items-end text-right"; // Default to Top-Right for Design 1, 2, 4
 
   if (presentation === "design3") {
-    positionClasses = "top-[clamp(160px,20vh,240px)] left-[clamp(30px,5vw,60px)] items-start text-left";
+    positionClasses = "top-14 md:top-[clamp(160px,20vh,240px)] left-3 md:left-[clamp(30px,5vw,60px)] items-start text-left";
   }
 
-  const containerClasses = `absolute ${positionClasses} z-50 flex flex-col pointer-events-none px-4 w-full max-w-[90vw] md:max-w-md`;
+  const containerClasses = `absolute ${positionClasses} z-50 flex flex-col pointer-events-none px-2 md:px-4 w-auto max-w-[50vw] md:max-w-md`;
 
   const { data: programs, isLoading } = useQuery<IProgram[]>({
     queryKey: ["programs"],

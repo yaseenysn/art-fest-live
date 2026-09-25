@@ -97,7 +97,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
 
   return (
     <div
-      className="w-screen h-screen flex flex-col items-center justify-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-6 md:p-12"
+      className="w-screen min-h-screen md:h-screen flex flex-col items-center justify-center relative z-10 overflow-y-auto md:overflow-hidden font-sans bg-[#04060C] p-2 sm:p-4 md:p-12"
       onMouseLeave={handleMouseLeave}
     >
       <MemoizedBackgroundTexture />
@@ -114,7 +114,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full h-full flex flex-col relative z-10 bg-[#0a1229]/40 backdrop-blur-[50px] rounded-3xl md:rounded-[48px] border border-[#2a4596]/40 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_-80px_120px_-40px_rgba(59,130,246,0.7),inset_0_80px_120px_-40px_rgba(59,130,246,0.5)] overflow-hidden"
+        className="w-full h-full flex flex-col relative z-10 bg-[#0a1229]/40 backdrop-blur-[50px] rounded-2xl md:rounded-[48px] border border-[#2a4596]/40 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_-80px_120px_-40px_rgba(59,130,246,0.7),inset_0_80px_120px_-40px_rgba(59,130,246,0.5)] overflow-hidden"
       >
 
         {/* Inner subtle grid */}
@@ -136,17 +136,17 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         />
 
         {/* Header */}
-        <div className="flex justify-center items-center w-full px-10 md:px-14 pt-6 md:pt-8 pb-2 relative z-20">
+        <div className="flex justify-center items-center w-full px-4 md:px-14 pt-4 md:pt-8 pb-2 relative z-20">
           <img
-            src="/logo-al-mahsan.png"
+            src="/logo-al-mahsan-with-text.png"
             alt="Al Mahsan"
-            className="h-16 md:h-24 lg:h-28 w-auto object-contain drop-shadow-lg"
+            className="h-14 sm:h-20 md:h-[130px] lg:h-[160px] w-auto object-contain drop-shadow-lg"
           />
         </div>
 
         {/* Glowing Wavy Line Chart (Fake Glow via thick stroke) */}
         <div
-          className="absolute top-[20%] left-0 w-full h-[300px] pointer-events-none z-10"
+          className="absolute top-[20%] left-0 w-full h-[300px] pointer-events-none z-10 hidden md:block"
         >
           <svg
             className="w-full h-full"
@@ -195,7 +195,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         <div className="flex-1 flex flex-col md:flex-row w-full h-full relative z-20">
 
           {/* Left Hero Data */}
-          <div className="flex-1 p-6 md:p-14 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative">
+          <div className="flex-1 p-4 md:p-14 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative">
 
             <AnimatePresence mode="popLayout">
               <motion.div
@@ -217,9 +217,9 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                 className="flex flex-col h-full justify-center w-full"
               >
 
-                <div className="flex items-center space-x-4 mb-4">
+                <div className="flex items-center space-x-3 md:space-x-4 mb-2 md:mb-4">
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg border border-white/10"
+                    className="w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-lg md:text-2xl shadow-lg border border-white/10"
                     style={{
                       backgroundColor: activeColor,
                       boxShadow: `0 10px 30px -10px ${activeColor}`
@@ -228,26 +228,26 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                     {activeRow?.rank}
                   </div>
 
-                  <span className="text-white/40 tracking-[0.2em] uppercase text-sm font-bold">
+                  <span className="text-white/40 tracking-[0.2em] uppercase text-xs md:text-sm font-bold">
                     Current Rank
                   </span>
                 </div>
 
-                <h2 className={`text-[clamp(32px,6vw,96px)] font-black text-white uppercase tracking-tighter leading-tight mb-6 drop-shadow-lg break-words ${isArabic(activeRow?.name) ? 'font-ge-ss-two' : ''}`}>
+                <h2 className={`text-[clamp(24px,5vw,96px)] font-black text-white uppercase tracking-tighter leading-tight mb-3 md:mb-6 drop-shadow-lg break-words ${isArabic(activeRow?.name) ? 'font-ge-ss-two' : ''}`}>
                   {activeRow?.name}
                 </h2>
 
                 <div className="mt-auto">
-                  <div className="text-white/40 uppercase tracking-[0.2em] text-sm mb-2">
+                  <div className="text-white/40 uppercase tracking-[0.2em] text-xs md:text-sm mb-1 md:mb-2">
                     Total Score
                   </div>
 
-                  <div className="flex items-baseline space-x-3">
-                    <span className="text-7xl md:text-8xl font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                  <div className="flex items-baseline space-x-2 md:space-x-3">
+                    <span className="text-5xl md:text-8xl font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                       {activeRow?.points}
                     </span>
 
-                    <span className="text-2xl font-light text-white/50">
+                    <span className="text-xl md:text-2xl font-light text-white/50">
                       PTS
                     </span>
                   </div>

@@ -10,14 +10,14 @@ import CurrentProgramStatus from './CurrentProgramStatus';
 
 const Leaderboard = React.memo(function Leaderboard({ config, isPreview }: { config?: LeaderboardConfig; isPreview?: boolean }) {
   console.log("[LEADERBOARD] rendering:", config?.presentation);
-  
+
   if (!config) {
     return (
       <div className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden">
-        <img 
-          src="/logo-al-mahsan.png" 
-          alt="Al Mahsan" 
-          className="w-auto h-[120px] md:h-[200px] lg:h-[280px] max-w-[80vw] object-contain drop-shadow-2xl"
+        <img
+          src="/logo-al-mahsan-with-text.png"
+          alt="Al Mahsan"
+          className="w-auto h-[135px] md:h-[225px] lg:h-[315px] max-w-[80vw] object-contain drop-shadow-2xl"
         />
       </div>
     );

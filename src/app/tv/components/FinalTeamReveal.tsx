@@ -333,7 +333,8 @@ export default function FinalTeamReveal({
         z-[9999]
         w-screen
         h-screen
-        overflow-hidden
+        overflow-y-auto
+        md:overflow-hidden
         select-none
       "
       style={{

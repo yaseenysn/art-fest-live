@@ -101,10 +101,13 @@ export default function ProgramsPage() {
 
     const onScoreUpdated = () => {
       queryClient.invalidateQueries({ queryKey: ['results', 'all'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
     };
 
     const onProgramEvent = () => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
     };
 
     const onEventReset = () => {
@@ -283,6 +286,8 @@ export default function ProgramsPage() {
       }
       
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
       setIsDeleteModalOpen(false);
       setIsDetailsModalOpen(false);
       alert("Program deleted successfully.");
@@ -434,7 +439,7 @@ export default function ProgramsPage() {
             className="w-full pl-10 pr-4 py-2 border border-border-card rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:flex md:gap-4">
           <div className="relative">
             <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted" />
             <Select
@@ -635,15 +640,15 @@ export default function ProgramsPage() {
 
       {/* ADD/EDIT MODAL */}
       {(isAddModalOpen || isEditModalOpen) && (
-        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div className="px-6 py-5 border-b border-border-subtle flex justify-between items-center">
+        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-xl max-w-[calc(100vw-24px)] md:max-w-md w-full max-h-[calc(100vh-32px)] flex flex-col overflow-hidden">
+            <div className="px-6 py-5 border-b border-border-subtle flex justify-between items-center shrink-0">
               <h3 className="text-lg font-bold text-text-primary">
                 {isEditModalOpen ? 'EDIT PROGRAM' : 'ADD PROGRAM'}
               </h3>
             </div>
             
-            <form onSubmit={handleSaveProgram} className="p-6 space-y-4">
+            <form onSubmit={handleSaveProgram} className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-1">Program Name *</label>
                 <input
@@ -757,8 +762,8 @@ export default function ProgramsPage() {
 
       {/* DETAILS / DELETE MODAL */}
       {isDetailsModalOpen && selectedProgram && (
-        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
+        <div className="fixed inset-0 bg-card-secondary/50 flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-xl max-w-[calc(100vw-24px)] md:max-w-lg w-full max-h-[calc(100vh-32px)] flex flex-col overflow-hidden">
             
             {isDeleteModalOpen ? (
               <div className="p-6 text-center">

@@ -132,6 +132,8 @@ export default function ResultsEntry() {
 
     const onProgramDeleted = (payload?: { programId: string }) => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
       if (payload?.programId) {
         setSelectedProgramId(current => current === payload.programId ? '' : current);
       }
@@ -139,6 +141,8 @@ export default function ResultsEntry() {
     
     const onProgramChange = () => {
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+      queryClient.invalidateQueries({ queryKey: ['rankings'] });
     };
 
     const onEventReset = () => {
@@ -683,7 +687,7 @@ export default function ResultsEntry() {
                               ))}
                             </div>
                           </div>
-                          <div className="flex space-x-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <button
                               onClick={() => handleReveal(pos, isPosRevealed, 'PLACE')}
                               disabled={!isEnabled || (activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE')}

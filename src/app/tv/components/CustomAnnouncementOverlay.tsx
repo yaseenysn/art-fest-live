@@ -26,7 +26,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
   ========================================================= */
   if (data.template === "NEXT_PROGRAM") {
     return (
-      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center overflow-hidden bg-[#050505] select-none font-sans">
+      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center overflow-y-auto md:overflow-hidden bg-[#050505] select-none font-sans">
 
         {/* TOP ATMOSPHERIC GLOW */}
         <div
@@ -217,7 +217,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
 
     return (
       <div
-        className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-hidden select-none font-sans text-neutral-900 bg-white"
+        className="absolute inset-0 z-[100] flex h-full w-full flex-col overflow-y-auto md:overflow-hidden select-none font-sans text-neutral-900 bg-white"
       >
         {/* BACKGROUND IMAGE (BLURRED) */}
         <div 

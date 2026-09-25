@@ -5,6 +5,7 @@ import { Program } from '@/models/Program';
 import { requireAdmin } from '@/lib/auth';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { PROGRAM_LANGUAGES, PROGRAM_CATEGORIES } from '@/types';
+import { getTeamRankings, syncTVLeaderboardState } from '@/lib/rankings';
 
 export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
@@ -134,14 +135,47 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
         await session.commitTransaction();
         session.endSession();
       }
-      
-      // 4. Emit socket event
-      const io = getIO();
-      if (io) {
-        io.emit(SOCKET_EVENTS.PROGRAM_DELETED, { programId: id });
+
+      // 4. Clear presentation from TVState if it belongs to this deleted program
+      let TVStateModel;
+      try {
+        TVStateModel = mongoose.models.TVState || (await import('@/models/TVState')).TVState;
+      } catch {
+        TVStateModel = (await import('@/models/TVState')).TVState;
+      }
+
+      const currentTvState = await TVStateModel.findOne({});
+      if (currentTvState?.presentationData?.programId === id) {
+        await TVStateModel.updateOne(
+          {},
+          {
+            $set: {
+              presentationId: null,
+              presentationType: null,
+              presentationStartedAt: null,
+              presentationExpiresAt: null,
+              presentationDuration: null,
+              presentationData: null,
+            }
+          }
+        );
       }
       
-      return NextResponse.json({ success: true, deletedProgramId: id, message: 'Program deleted safely' }, { status: 200 });
+      // 5. Recalculate complete leaderboard rankings from remaining results in DB
+      const rankings = await getTeamRankings();
+
+      // 6. Regenerate and sync TV Leaderboard State
+      await syncTVLeaderboardState();
+      
+      // 7. Emit socket events for live UI updates across TV and Admin
+      const io = getIO();
+      if (io) {
+        io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
+        io.emit(SOCKET_EVENTS.PROGRAM_DELETED, { programId: id });
+        io.emit(SOCKET_EVENTS.RESULT_DELETED, { programId: id });
+      }
+      
+      return NextResponse.json({ success: true, deletedProgramId: id, message: 'Program and associated results deleted safely', rankings }, { status: 200 });
       
     } catch (err: unknown) {
       if (session) {
@@ -159,3 +193,4 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
     return NextResponse.json({ error: (error as Error).message || 'Failed to delete program safely.' }, { status: 500 });
   }
 });
+

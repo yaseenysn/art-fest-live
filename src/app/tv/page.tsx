@@ -294,6 +294,7 @@ export default function TVPage() {
         programId: string;
       }
     ) => {
+      refetchTvState();
       queryClient.invalidateQueries({
         queryKey: ["rankings"],
       });

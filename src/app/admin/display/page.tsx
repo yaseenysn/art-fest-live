@@ -537,7 +537,7 @@ export default function DisplayControl() {
             </div>
           )}
 
-          <div className="flex space-x-4 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button
               onClick={handleShowLeaderboard}
               disabled={pushingLeaderboard || !previewConfig}
@@ -658,7 +658,7 @@ export default function DisplayControl() {
             </div>
           )}
 
-          <div className="flex space-x-4 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button
               onClick={handleShowWinners}
               disabled={pushingWinners || !winnersPreviewConfig}

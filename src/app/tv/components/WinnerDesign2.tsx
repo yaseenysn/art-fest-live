@@ -244,7 +244,8 @@ export default function WinnerDesign2({
         inset-0
         w-full
         h-full
-        overflow-hidden
+        overflow-y-auto
+        md:overflow-hidden
         select-none
         bg-[#090211]
         text-white
@@ -444,11 +445,16 @@ export default function WinnerDesign2({
           flex-1
           min-h-0
           flex
+          flex-col
+          md:flex-row
           items-center
           justify-between
-          px-[clamp(28px,6vw,115px)]
-          pb-[clamp(30px,6vh,75px)]
-          pt-[clamp(20px,3vh,40px)]
+          px-4
+          md:px-[clamp(28px,6vw,115px)]
+          pb-6
+          md:pb-[clamp(30px,6vh,75px)]
+          pt-4
+          md:pt-[clamp(20px,3vh,40px)]
         "
       >
         {/* =================================================
@@ -460,9 +466,11 @@ export default function WinnerDesign2({
             flex
             flex-col
             justify-center
-            w-[58%]
+            w-full
+            md:w-[58%]
             h-full
-            gap-[clamp(24px,4vh,48px)]
+            gap-4
+            md:gap-[clamp(24px,4vh,48px)]
           "
         >
           {/* 1ST PLACE */}

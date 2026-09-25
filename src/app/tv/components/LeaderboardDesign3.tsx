@@ -56,8 +56,10 @@ export default function LeaderboardDesign3({
       className="
         relative
         w-screen
-        h-screen
-        overflow-hidden
+        min-h-screen
+        md:h-screen
+        overflow-y-auto
+        md:overflow-hidden
         bg-[#111111]
         text-white
         font-sans
@@ -120,7 +122,8 @@ export default function LeaderboardDesign3({
     w-full
     flex
     justify-center
-    top-[2.5vh]
+    top-[1.5vh]
+    md:top-[2.5vh]
     z-30
     pointer-events-none
   "
@@ -139,9 +142,9 @@ export default function LeaderboardDesign3({
     "
         >
           <img
-            src="/logo-al-mahsan.png"
+            src="/logo-al-mahsan-with-text.png"
             alt="Al Mahsan"
-            className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
+            className="h-14 sm:h-20 md:h-[126px] lg:h-[162px] w-auto object-contain drop-shadow-lg"
           />
         </div>
       </motion.div>
@@ -163,8 +166,10 @@ export default function LeaderboardDesign3({
         <div
           className="
             relative
-            w-[82vw]
-            h-[78vh]
+            w-[96vw]
+            md:w-[82vw]
+            h-[70vh]
+            md:h-[78vh]
           "
         >
 

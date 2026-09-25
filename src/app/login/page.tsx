@@ -58,7 +58,7 @@ export default function LoginPage() {
               <Lock className="w-6 h-6 text-amber-500" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-wider">
-              MADRASA <span className="text-amber-500">LIVE</span>
+              AL <span className="text-amber-500">MAHSAN</span>
             </h1>
             <p className="text-xs text-slate-400 mt-2 uppercase tracking-widest font-medium">Admin Control System</p>
           </div>

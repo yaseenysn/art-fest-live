@@ -72,7 +72,7 @@ export default function ResultsDesign1({
 
   return (
     <div
-      className="relative w-full h-full min-h-0 overflow-hidden bg-black text-white"
+      className="relative w-full min-h-screen md:h-full min-h-0 overflow-y-auto md:overflow-hidden bg-black text-white"
       style={{
         fontFamily:
           "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",

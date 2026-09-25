@@ -95,8 +95,8 @@ export default function ResultsDesign2({
           TOP BRAND
       ========================================================= */}
 
-      <div className="absolute left-12 top-10 z-20">
-        <div className="text-3xl font-bold tracking-tight text-white">
+      <div className="absolute left-4 top-4 md:left-12 md:top-10 z-20">
+        <div className="text-lg md:text-3xl font-bold tracking-tight text-white">
           AL MAHSAN
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function ResultsDesign2({
           MAIN CONTENT
       ========================================================= */}
 
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center">
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-4">
 
         {/* Program */}
         <motion.div
@@ -116,11 +116,13 @@ export default function ResultsDesign2({
           transition={{ duration: 0.7 }}
           className="
             absolute
-            top-[6%]
+            top-[3%]
+            md:top-[6%]
             text-center
+            px-4
           "
         >
-          <div className="text-3xl font-black tracking-[0.45em] text-white uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+          <div className="text-base md:text-3xl font-black tracking-[0.25em] md:tracking-[0.45em] text-white uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
             {programName}
           </div>
         </motion.div>
@@ -129,7 +131,7 @@ export default function ResultsDesign2({
             WINNERS LIST
         ===================================================== */}
 
-        <div className="flex flex-row flex-wrap justify-center items-center w-full max-w-[95%] mt-12 gap-8 md:gap-12">
+        <div className="flex flex-col md:flex-row flex-wrap justify-center items-center w-full max-w-[95%] mt-12 gap-6 md:gap-12">
           {results.map((result, idx) => {
             const position = result.position || 1;
             const suffix =

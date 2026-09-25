@@ -4,9 +4,14 @@ import { Bell } from 'lucide-react';
 export function Navbar() {
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-sidebar/90 backdrop-blur-xl border-b border-border-subtle lg:px-8">
-      <div className="flex items-center flex-1">
+      <div className="flex items-center flex-1 space-x-3">
+        <img
+          src="/logo-al-mahsan.png"
+          alt="AL MAHSAN Logo"
+          className="w-8 h-8 object-contain shrink-0 lg:hidden"
+        />
         <h2 className="lg:hidden text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-purple to-primary-pink tracking-tight">
-          MADRASA LIVE
+          AL MAHSAN
         </h2>
       </div>
       <div className="flex items-center gap-4">

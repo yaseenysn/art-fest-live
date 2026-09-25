@@ -22,7 +22,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
   const displayRows = gridPositions.map(pos => rows[pos.rank - 1]).filter(Boolean);
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center relative z-10 overflow-hidden font-sans bg-[#04060C] p-12">
+    <div className="w-screen min-h-screen md:h-screen flex flex-col items-center relative z-10 overflow-y-auto md:overflow-hidden font-sans bg-[#04060C] p-4 md:p-12">
 
       {/* Dark Premium Background with Soft Glows */}
       <div className="absolute inset-0 z-0 bg-[#04060C]">
@@ -41,22 +41,22 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/20 blur-[120px]" />
       </div>
 
-      <div className="w-full flex flex-col items-center text-center relative z-20 mb-16 -mt-8 px-10 md:px-20">
+      <div className="w-full flex flex-col items-center text-center relative z-20 mb-6 md:mb-16 -mt-2 md:-mt-8 px-4 md:px-20">
 
         <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
           className="drop-shadow-md"
         >
           <img
-            src="/logo-al-mahsan.png"
+            src="/logo-al-mahsan-with-text.png"
             alt="Al Mahsan"
-            className="h-20 md:h-28 lg:h-36 w-auto object-contain"
+            className="h-14 sm:h-20 md:h-[126px] lg:h-[162px] w-auto object-contain"
           />
         </motion.div>
       </div>
 
       {/* 2x2 Grid Container */}
-      <div className="relative z-20 w-full max-w-6xl px-6 md:px-12 flex-1 flex flex-col items-center justify-center">
+      <div className="relative z-20 w-full max-w-6xl px-4 md:px-12 flex-1 flex flex-col items-center justify-center">
 
         {/* Background Dotted Line Connections (visible only if enough items) */}
         {rows.length > 1 && (
@@ -75,7 +75,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
           </div>
         )}
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-32 gap-y-12 md:gap-y-24 relative z-10">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-32 gap-y-6 md:gap-y-24 relative z-10">
           {displayRows.map((row, idx) => {
             const tColor = row.color || '#3b82f6';
 
@@ -85,24 +85,24 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 + (idx * 0.15) }}
-                className="flex items-start relative w-full h-48"
+                className="flex items-start relative w-full h-36 md:h-48"
               >
                 {/* The Floating Rank Badge (01, 02...) */}
                 <div
-                  className="absolute -top-6 -left-6 w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl z-20"
+                  className="absolute -top-4 -left-3 md:-top-6 md:-left-6 w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl z-20"
                   style={{
                     background: `linear-gradient(135deg, ${tColor}, ${tColor}80)`,
                     boxShadow: `0 10px 30px -10px ${tColor}`
                   }}
                 >
-                  <span className="text-3xl font-black text-white drop-shadow-md">
+                  <span className="text-xl md:text-3xl font-black text-white drop-shadow-md">
                     {String(row.rank).padStart(2, '0')}
                   </span>
                 </div>
 
                 {/* The Glass Card */}
                 <div
-                  className="w-full h-full ml-6 bg-white/[0.03] backdrop-blur-2xl rounded-3xl border border-white/10 p-8 pl-16 flex flex-col justify-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+                  className="w-full h-full ml-4 md:ml-6 bg-white/[0.03] backdrop-blur-2xl rounded-2xl md:rounded-3xl border border-white/10 p-4 pl-14 md:p-8 md:pl-16 flex flex-col justify-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
                 >
                   {/* Frosted Inner corner glow */}
                   <div
@@ -110,14 +110,14 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
                     style={{ backgroundColor: tColor }}
                   />
 
-                  <h2 className={`text-2xl lg:text-4xl font-black text-white uppercase tracking-wider mb-2 truncate ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}>
+                  <h2 className={`text-xl lg:text-4xl font-black text-white uppercase tracking-wider mb-1 md:mb-2 truncate ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}>
                     {row.name}
                   </h2>
                   <div className="flex items-end space-x-2">
-                    <span className="text-5xl lg:text-6xl font-black text-white drop-shadow-sm">
+                    <span className="text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-sm">
                       {row.points}
                     </span>
-                    <span className="text-lg font-bold text-white/40 uppercase mb-2">PTS</span>
+                    <span className="text-sm md:text-lg font-bold text-white/40 uppercase mb-1 md:mb-2">PTS</span>
                   </div>
                 </div>
               </motion.div>

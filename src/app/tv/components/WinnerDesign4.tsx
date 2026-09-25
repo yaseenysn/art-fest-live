@@ -35,20 +35,20 @@ export default function WinnerDesign4({
       </div>
 
       {/* Left Typography Column */}
-      <div className="w-full md:w-[35%] h-auto md:h-full p-10 md:p-20 flex flex-col justify-between relative z-10 border-b md:border-b-0 md:border-r border-white/10">
+      <div className="w-full md:w-[35%] h-auto md:h-full p-6 md:p-20 flex flex-col justify-between relative z-10 border-b md:border-b-0 md:border-r border-white/10">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}>
-          <div className="text-white/40 tracking-[0.3em] font-medium text-[16px] uppercase mb-12">
+          <div className="text-white/40 tracking-[0.3em] font-medium text-sm md:text-[16px] uppercase mb-4 md:mb-12">
             {eventName} {eventYear}
           </div>
-          <h1 className="font-light text-[clamp(32px,5vw,50px)] leading-[0.9] tracking-tighter uppercase break-words">
+          <h1 className="font-light text-[clamp(28px,5vw,50px)] leading-[0.9] tracking-tighter uppercase break-words">
             CONGRAGULATION<br />
             <span className="font-black">WINNERS</span>
           </h1>
-          <div className="w-[50px] h-[4px] bg-white mt-12 mb-12" />
-          <h2 className="font-black text-[clamp(40px,6vw,64px)] tracking-tight uppercase leading-tight text-[#d4af37] break-words">
+          <div className="w-[50px] h-[4px] bg-white mt-4 md:mt-12 mb-4 md:mb-12" />
+          <h2 className="font-black text-[clamp(32px,6vw,64px)] tracking-tight uppercase leading-tight text-[#d4af37] break-words">
             {programName}
           </h2>
-          <div className="text-white/50 tracking-[0.2em] font-medium text-[18px] uppercase mt-4">
+          <div className="text-white/50 tracking-[0.2em] font-medium text-xs md:text-[18px] uppercase mt-2 md:mt-4">
             {language} • {category}
           </div>
         </motion.div>
@@ -59,7 +59,7 @@ export default function WinnerDesign4({
       </div>
 
       {/* Right Content Column */}
-      <div className="w-full md:w-[65%] h-auto md:h-full p-6 md:p-20 flex flex-col justify-center relative z-10">
+      <div className="w-full md:w-[65%] h-auto md:h-full p-4 md:p-20 flex flex-col justify-center relative z-10">
         <div className="flex flex-col space-y-0 w-full max-w-[1000px] ml-auto">
           {positions.map((pos, idx) => {
             const winners = winnersByPosition[pos] || [];
@@ -79,7 +79,7 @@ export default function WinnerDesign4({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 + (idx * 0.1), ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex items-center justify-between py-10 border-b border-white/10 group relative"
+                className="w-full flex items-center justify-between py-6 md:py-10 border-b border-white/10 group relative"
               >
                 {/* Hover accent - though for TV it's static, gives a nice visual grounding */}
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 group-hover:h-[60%] transition-all duration-500" style={{ backgroundColor: tColor }} />

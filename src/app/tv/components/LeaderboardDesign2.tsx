@@ -113,9 +113,11 @@ export default function LeaderboardDesign2({
     <div
       className="
         w-screen
-        h-screen
+        min-h-screen
+        md:h-screen
         relative
-        overflow-hidden
+        overflow-y-auto
+        md:overflow-hidden
         bg-[#0b0c0f]
         text-white
         font-sans
@@ -131,7 +133,8 @@ export default function LeaderboardDesign2({
       <div
         className="
           absolute
-          inset-4
+          inset-2
+          sm:inset-4
           md:inset-8
           lg:left-[52px]
           lg:right-[52px]
@@ -171,15 +174,16 @@ export default function LeaderboardDesign2({
             w-full
             justify-center
             items-center
-            mt-[15px]
+            mt-2
+            md:mt-[15px]
           "
         >
 
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center justify-center">
             <img
-              src="/logo-al-mahsan.png"
+              src="/logo-al-mahsan-with-text.png"
               alt="Al Mahsan"
-              className="h-20 md:h-28 lg:h-36 w-auto object-contain drop-shadow-lg"
+              className="h-14 sm:h-20 md:h-[126px] lg:h-[162px] w-auto object-contain drop-shadow-lg"
             />
           </div>
 

@@ -210,8 +210,8 @@ export default function TeamsPage() {
 
       {/* DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && teamToDelete && (
-        <div className="fixed inset-0 bg-app/90 backdrop-blur-sm flex items-center justify-center p-4 z-[200] overflow-y-auto">
-          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border-card">
+        <div className="fixed inset-0 bg-app/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[200] overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[calc(100vw-24px)] md:max-w-md max-h-[calc(100vh-32px)] flex flex-col overflow-hidden border border-border-card">
             <div className="p-6">
               <div className="flex items-center space-x-3 mb-4 text-red-400">
                 <AlertCircle className="w-8 h-8" />

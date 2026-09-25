@@ -271,7 +271,8 @@ export default function WinnerDesign3({
       className="
         fixed inset-0
         w-full h-full
-        overflow-hidden
+        overflow-y-auto
+        md:overflow-hidden
         select-none
         bg-[#050505]
         text-white
@@ -410,23 +411,26 @@ export default function WinnerDesign3({
       {/* ================= WINNERS ================= */}
       <div
         className="
-          absolute
+          relative md:absolute
           left-0 right-0
-          top-[32%]
-          bottom-[5%]
+          top-auto md:top-[32%]
+          bottom-auto md:bottom-[5%]
           z-10
           flex
           items-center
           justify-center
-          px-6
+          px-4 md:px-6
+          py-6 md:py-0
         "
       >
         <div
           className="
             flex
+            flex-col
+            md:flex-row
             items-center
             justify-center
-            gap-[55px]
+            gap-6
             md:gap-[75px]
             lg:gap-[90px]
             w-full
