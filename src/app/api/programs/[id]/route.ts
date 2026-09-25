@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose'; // Force HMR reload
 import connectDB from '@/lib/db';
 import { Program } from '@/models/Program';
+import { TVState } from '@/models/TVState';
 import { requireAdmin } from '@/lib/auth';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { PROGRAM_LANGUAGES, PROGRAM_CATEGORIES } from '@/types';
@@ -137,16 +138,9 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
       }
 
       // 4. Clear presentation from TVState if it belongs to this deleted program
-      let TVStateModel;
-      try {
-        TVStateModel = mongoose.models.TVState || (await import('@/models/TVState')).TVState;
-      } catch {
-        TVStateModel = (await import('@/models/TVState')).TVState;
-      }
-
-      const currentTvState = await TVStateModel.findOne({});
+      const currentTvState = await TVState.findOne();
       if (currentTvState?.presentationData?.programId === id) {
-        await TVStateModel.updateOne(
+        await TVState.updateOne(
           {},
           {
             $set: {
