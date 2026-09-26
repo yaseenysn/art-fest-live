@@ -95,6 +95,8 @@ export default function DisplayControl() {
     }
   }, [programs, selectedProgramId]);
 
+  const [initializedLeaderboard, setInitializedLeaderboard] = useState(false);
+
   // Sync state from persisted tvState preferences
   useEffect(() => {
     if (tvState) {
@@ -104,8 +106,9 @@ export default function DisplayControl() {
         if (d === 'design4') return 'Design 4';
         return 'Design 1 — Original';
       };
-      if (tvState.leaderboardDesign) {
+      if (tvState.leaderboardDesign && !initializedLeaderboard) {
         setSelectedLeaderboard(dToL(tvState.leaderboardDesign));
+        setInitializedLeaderboard(true);
       }
       if (tvState.allWinnersDesign) {
         setSelectedWinnersDesign(dToL(tvState.allWinnersDesign));
@@ -114,26 +117,10 @@ export default function DisplayControl() {
         setSelectedResultsDesign(dToL(tvState.resultsDesign));
       }
     }
-  }, [tvState]);
+  }, [tvState, initializedLeaderboard]);
 
-  const handleLeaderboardChange = async (label: string) => {
+  const handleLeaderboardChange = (label: string) => {
     setSelectedLeaderboard(label);
-    const designMap: Record<string, string> = {
-      'Design 1 — Original': 'design1',
-      'Design 2': 'design2',
-      'Design 3': 'design3',
-      'Design 4': 'design4',
-    };
-    try {
-      await fetch('/api/tv-state', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leaderboardDesign: designMap[label] || 'design1' })
-      });
-      refetchTvState();
-    } catch (err) {
-      console.error('Failed to persist leaderboard design', err);
-    }
   };
 
   const handleWinnersDesignChange = async (label: string) => {
@@ -232,6 +219,13 @@ export default function DisplayControl() {
   const handleShowLeaderboard = async () => {
     setPushingLeaderboard(true);
     try {
+      const designMap: Record<string, string> = {
+        'Design 1 — Original': 'design1',
+        'Design 2': 'design2',
+        'Design 3': 'design3',
+        'Design 4': 'design4',
+      };
+
       // Always generate a fresh config before pushing to avoid stale data overriding the TV
       const freshRes = await fetch('/api/leaderboards/generate', {
         method: 'POST',
@@ -244,6 +238,7 @@ export default function DisplayControl() {
         type: selectedLeaderboard,
         config: freshConfig,
         isActive: true,
+        leaderboardDesign: designMap[selectedLeaderboard] || 'design1',
         presentationId: null,
         presentationType: null,
         presentationStartedAt: null,

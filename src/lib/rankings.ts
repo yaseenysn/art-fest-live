@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import { Result } from '../models/Result';
 import { Team } from '../models/Team';
+import { ManualTeamScoreOverride } from '../models/ManualTeamScoreOverride';
 import { TeamRanking, LeaderboardConfig, LeaderboardRow } from '../types';
 import { TVState } from '../models/TVState';
 import { getIO, SOCKET_EVENTS } from './socket';
 
 export async function getTeamRankings(): Promise<TeamRanking[]> {
-  // Aggregate total points from Results
+  // Aggregate total points from Results (UNTOUCHED automatic calculation)
   const teamScores = await Result.aggregate([
     {
       $match: { revealed: true }
@@ -22,25 +23,43 @@ export async function getTeamRankings(): Promise<TeamRanking[]> {
   // Fetch all teams
   const teams = await Team.find({}).lean();
 
-  // Create a map of team scores
+  // Create a map of calculated team scores
   const scoreMap = new Map<string, number>();
   teamScores.forEach((ts) => {
     scoreMap.set(ts._id.toString(), ts.totalPoints);
   });
 
-  // Map teams to their scores, default to 0 if no results
-  const rankings: TeamRanking[] = teams.map((team: { _id: string, name: string, slug: string, color: string }) => ({
-    team: {
-      _id: team._id.toString(),
-      name: team.name,
-      slug: team.slug,
-      color: team.color,
-    },
-    totalPoints: scoreMap.get(team._id.toString()) || 0,
-    rank: 0 // Will be calculated next
-  }));
+  // Fetch manual team score overrides
+  const overrides = await ManualTeamScoreOverride.find({}).lean();
+  const overrideMap = new Map<string, number>();
+  overrides.forEach((ov: any) => {
+    overrideMap.set(ov.teamId.toString(), ov.manualScore);
+  });
 
-  // Sort by points descending
+  // Map teams to their effective scores (override priority: manual override ?? calculated)
+  const rankings: TeamRanking[] = teams.map((team: any) => {
+    const teamIdStr = team._id.toString();
+    const calculatedPoints = scoreMap.get(teamIdStr) || 0;
+    const hasOverride = overrideMap.has(teamIdStr);
+    const manualScore = hasOverride ? overrideMap.get(teamIdStr)! : null;
+    const totalPoints = hasOverride ? manualScore! : calculatedPoints;
+
+    return {
+      team: {
+        _id: teamIdStr,
+        name: team.name,
+        shortName: team.shortName,
+        slug: team.slug,
+        color: team.color,
+      },
+      totalPoints,
+      calculatedPoints,
+      manualScore,
+      rank: 0 // Will be calculated next
+    };
+  });
+
+  // Sort by effective points descending
   rankings.sort((a, b) => b.totalPoints - a.totalPoints);
 
   // Assign ranks (handling ties - e.g. 1st, 1st, 3rd, 4th)
@@ -71,7 +90,7 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
   
   const matchQuery: any = { revealed: true };
   
-  // Aggregate ALL points by team for the unified overall ranking
+  // Aggregate ALL points by team for the unified overall ranking (UNTOUCHED automatic calculation)
   const teamScores = await Result.aggregate([
     { $match: matchQuery },
     { $group: { _id: '$teamId', totalPoints: { $sum: '$points' } } }
@@ -80,15 +99,29 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
   const scoreMap = new Map<string, number>();
   teamScores.forEach((ts) => scoreMap.set(ts._id.toString(), ts.totalPoints));
   
-  const rows: LeaderboardRow[] = teams.map((team: any) => ({
-    id: team._id.toString(),
-    rank: 0,
-    name: team.name,
-    points: scoreMap.get(team._id.toString()) || 0,
-    color: team.color,
-  }));
+  // Fetch manual team score overrides
+  const overrides = await ManualTeamScoreOverride.find({}).lean();
+  const overrideMap = new Map<string, number>();
+  overrides.forEach((ov: any) => {
+    overrideMap.set(ov.teamId.toString(), ov.manualScore);
+  });
 
-  // Sort and Assign Ranks
+  const rows: LeaderboardRow[] = teams.map((team: any) => {
+    const teamIdStr = team._id.toString();
+    const calculatedPoints = scoreMap.get(teamIdStr) || 0;
+    const hasOverride = overrideMap.has(teamIdStr);
+    const points = hasOverride ? overrideMap.get(teamIdStr)! : calculatedPoints;
+
+    return {
+      id: teamIdStr,
+      rank: 0,
+      name: team.name,
+      points,
+      color: team.color,
+    };
+  });
+
+  // Sort and Assign Ranks based on effective points
   rows.sort((a, b) => (b.points as number) - (a.points as number));
 
   let currentRank = 1;

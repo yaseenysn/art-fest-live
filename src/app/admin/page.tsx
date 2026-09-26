@@ -17,9 +17,11 @@ import {
   Clock,
   ChevronRight,
   Users,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Edit3
 } from 'lucide-react';
 import TeamModal from '@/components/admin/TeamModal';
+import ManualScoreOverrideModal from '@/components/admin/ManualScoreOverrideModal';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
@@ -27,6 +29,7 @@ export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const [connected, setConnected] = useState(false);
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
 
   const { data: rankings = [], isLoading: loadingRankings } = useQuery<TeamRanking[]>({
     queryKey: ['rankings'],
@@ -186,7 +189,15 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          <div className="flex items-center space-x-3 mt-4 md:mt-0">
+          <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+            <Button
+              variant="secondary"
+              onClick={() => setIsOverrideModalOpen(true)}
+              className="space-x-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>Manual Score Override</span>
+            </Button>
             <Link href="/admin/results">
               <Button variant="secondary" className="space-x-2">
                 <Award className="w-4 h-4" />
@@ -517,6 +528,15 @@ export default function AdminDashboard() {
       <TeamModal
         isOpen={isTeamModalOpen}
         onClose={() => setIsTeamModalOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['teams'] });
+          queryClient.invalidateQueries({ queryKey: ['rankings'] });
+        }}
+      />
+
+      <ManualScoreOverrideModal
+        isOpen={isOverrideModalOpen}
+        onClose={() => setIsOverrideModalOpen(false)}
         onSuccess={() => {
           queryClient.invalidateQueries({ queryKey: ['teams'] });
           queryClient.invalidateQueries({ queryKey: ['rankings'] });

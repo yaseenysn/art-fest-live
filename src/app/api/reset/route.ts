@@ -6,6 +6,7 @@ import { Program } from '@/models/Program';
 import { Team } from '@/models/Team';
 import { Student } from '@/models/Student';
 import { Announcement } from '@/models/Announcement';
+import { ManualTeamScoreOverride } from '@/models/ManualTeamScoreOverride';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { requireAdmin } from '@/lib/auth';
 
@@ -37,12 +38,13 @@ export const POST = requireAdmin(async () => {
       const teamsDeleted = await Team.deleteMany({}, options);
       const studentsDeleted = await Student.deleteMany({}, options);
       const announcementsDeleted = await Announcement.deleteMany({}, options);
+      const overridesDeleted = await ManualTeamScoreOverride.deleteMany({}, options);
 
       if (useTransaction && session) {
         await session.commitTransaction();
       }
 
-      console.log(`[EVENT RESET] Programs: ${programsDeleted.deletedCount}, Teams: ${teamsDeleted.deletedCount}, Results: ${resultsDeleted.deletedCount}, Students: ${studentsDeleted.deletedCount}, Announcements: ${announcementsDeleted.deletedCount}`);
+      console.log(`[EVENT RESET] Programs: ${programsDeleted.deletedCount}, Teams: ${teamsDeleted.deletedCount}, Results: ${resultsDeleted.deletedCount}, Students: ${studentsDeleted.deletedCount}, Announcements: ${announcementsDeleted.deletedCount}, Manual Overrides: ${overridesDeleted.deletedCount}`);
     } catch (dbError) {
       if (useTransaction && session) {
         await session.abortTransaction();

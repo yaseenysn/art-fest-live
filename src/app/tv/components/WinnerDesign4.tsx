@@ -68,7 +68,7 @@ export default function WinnerDesign4({
             const isFirst = pos === 1;
             const tColor = winners[0]?.teamColor || '#ffffff';
             const names = winners.map(w => w.studentName).filter(Boolean).join("  •  ");
-            const teams = Array.from(new Set(winners.map(w => w.teamName).filter(Boolean)));
+            const teams = winners.map(w => w.teamName).filter(Boolean);
             const teamStr = teams.length > 0 ? teams.join("  •  ") : "TEAM";
             const pts = winners.map(w => w.points).filter(p => p !== undefined);
             const ptsStr = pts.length > 0 ? pts.join(" • ") : undefined;

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import { Team } from '@/models/Team';
 import { Result } from '@/models/Result';
+import { ManualTeamScoreOverride } from '@/models/ManualTeamScoreOverride';
 import { requireAdmin } from '@/lib/auth';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 
@@ -111,6 +112,7 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
 
     // Cascade Delete: Delete all results belonging to this team
     const resultDeleteInfo = await Result.deleteMany({ teamId: id }).session(session);
+    await ManualTeamScoreOverride.deleteMany({ teamId: id }).session(session);
 
     // Delete the team itself
     await Team.findByIdAndDelete(id).session(session);

@@ -70,6 +70,15 @@ export interface IAnnouncement {
   createdAt: Date;
 }
 
+export interface IManualTeamScoreOverride {
+  _id?: string;
+  teamId: string;
+  manualScore: number;
+  updatedBy?: string;
+  updatedAt?: Date;
+  createdAt?: Date;
+}
+
 export interface TeamRanking {
   team: {
     _id: string;
@@ -79,6 +88,8 @@ export interface TeamRanking {
     color: string;
   };
   totalPoints: number;
+  calculatedPoints?: number;
+  manualScore?: number | null;
   rank: number;
 }
 

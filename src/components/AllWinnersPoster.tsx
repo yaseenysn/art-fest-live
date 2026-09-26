@@ -341,13 +341,9 @@ export default function AllWinnersPoster({
                 .filter(Boolean)
                 .join("  •  ");
 
-              const teams = Array.from(
-                new Set(
-                  winners
-                    .map((winner) => winner.teamName)
-                    .filter(Boolean)
-                )
-              );
+              const teams = winners
+                .map((winner) => winner.teamName)
+                .filter(Boolean);
 
               const teamStr =
                 teams.length > 0

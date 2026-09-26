@@ -217,11 +217,10 @@ export default function WinnerDesign2({
       .filter(Boolean)
       .join(" • ");
 
-    const teamNames = Array.from(
-      new Set(
-        winners.map(w => w.teamName || w.team || "").filter(Boolean)
-      )
-    ).join(" • ");
+    const teamNames = winners
+      .map(w => w.teamName || w.team || "")
+      .filter(Boolean)
+      .join(" • ");
 
     return {
       position,

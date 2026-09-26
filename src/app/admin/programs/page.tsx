@@ -18,7 +18,9 @@ import {
   Edit2,
   Trash2,
   Eye,
-  AlertCircle
+  AlertCircle,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -90,6 +92,46 @@ export default function ProgramsPage() {
   
   const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
+
+  const isFiltered = searchQuery.trim() !== '' || statusFilter !== 'All' || languageFilter !== 'All' || categoryFilter !== 'All';
+
+  const handleMoveProgram = async (currentIndex: number, direction: 'up' | 'down') => {
+    if (isFiltered || isReordering) return;
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= filteredPrograms.length) return;
+
+    setIsReordering(true);
+
+    const newPrograms = [...filteredPrograms];
+    const temp = newPrograms[currentIndex];
+    newPrograms[currentIndex] = newPrograms[targetIndex];
+    newPrograms[targetIndex] = temp;
+
+    const programIds = newPrograms.map(p => p._id as string);
+
+    queryClient.setQueryData(['programs'], newPrograms);
+
+    try {
+      const res = await fetch('/api/programs/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ programIds })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to reorder programs.');
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+    } catch (err: unknown) {
+      alert((err as Error).message);
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+    } finally {
+      setIsReordering(false);
+    }
+  };
 
   useEffect(() => {
     // Socket.IO Setup
@@ -480,7 +522,12 @@ export default function ProgramsPage() {
       {/* ALL PROGRAMS TABLE */}
       <div className="bg-card rounded-2xl shadow-sm border border-border-card overflow-hidden">
         <div className="px-6 py-5 border-b border-border-subtle flex items-center justify-between bg-card-secondary">
-          <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">ALL PROGRAMS</h2>
+          <div className="flex items-center space-x-3">
+            <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">ALL PROGRAMS</h2>
+            {isFiltered && (
+              <span className="text-xs text-text-muted font-normal lowercase tracking-normal">(clear search & filters to reorder)</span>
+            )}
+          </div>
         </div>
         
         {filteredPrograms.length > 0 ? (
@@ -501,15 +548,39 @@ export default function ProgramsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-card">
-                {filteredPrograms.map((program) => {
+                {filteredPrograms.map((program, index) => {
                   const programResults = results.filter(r => (r.programId as { _id: string })._id === program._id || r.programId === program._id);
                   const resultStatus = getProgramResultStatus(programResults);
-                  const orderNum = program.programOrder || 0;
+                  const orderNum = program.programOrder || (index + 1);
                   
                   return (
                     <tr key={program._id as string} className="hover:bg-card-secondary/50 transition-colors group">
                       <td className="px-6 py-4 text-text-muted font-medium">
-                        {orderNum.toString().padStart(2, '0')}
+                        <div className="flex items-center space-x-2">
+                          <span className="w-5 font-mono text-xs font-bold text-text-muted">{orderNum.toString().padStart(2, '0')}</span>
+                          {!isFiltered && (
+                            <div className="flex flex-col space-y-0.5">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveProgram(index, 'up')}
+                                disabled={index === 0 || isReordering}
+                                className="p-0.5 hover:bg-card-secondary hover:text-white rounded disabled:opacity-20 text-text-muted transition-colors"
+                                title="Move Up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveProgram(index, 'down')}
+                                disabled={index === filteredPrograms.length - 1 || isReordering}
+                                className="p-0.5 hover:bg-card-secondary hover:text-white rounded disabled:opacity-20 text-text-muted transition-colors"
+                                title="Move Down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div 

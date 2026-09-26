@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ITeam } from '@/types';
 import TeamModal from '@/components/admin/TeamModal';
+import ManualScoreOverrideModal from '@/components/admin/ManualScoreOverrideModal';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
-import { Users, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { Users, Edit2, Edit3, Trash2, AlertCircle } from 'lucide-react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -26,6 +27,7 @@ export default function TeamsPage() {
   });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
 
   const [deleteStatus, setDeleteStatus] = useState<{type: 'error' | 'success', message: string} | null>(null);
@@ -118,10 +120,20 @@ export default function TeamsPage() {
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">TEAMS</h1>
           <p className="text-text-muted mt-1 font-medium">Manage competition teams and colors.</p>
         </div>
-        <Button onClick={openCreateModal} className="mt-4 md:mt-0 uppercase tracking-widest">
-          <Users className="w-5 h-5 mr-2" />
-          Add Team
-        </Button>
+        <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+          <Button
+            variant="secondary"
+            onClick={() => setIsOverrideModalOpen(true)}
+            className="uppercase tracking-widest border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+          >
+            <Edit3 className="w-5 h-5 mr-2" />
+            Manual Score Override
+          </Button>
+          <Button onClick={openCreateModal} className="uppercase tracking-widest">
+            <Users className="w-5 h-5 mr-2" />
+            Add Team
+          </Button>
+        </div>
       </div>
 
       {deleteStatus && (
@@ -260,6 +272,14 @@ export default function TeamsPage() {
           </div>
         </div>
       )}
+      <ManualScoreOverrideModal
+        isOpen={isOverrideModalOpen}
+        onClose={() => setIsOverrideModalOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['teams'] });
+          queryClient.invalidateQueries({ queryKey: ['rankings'] });
+        }}
+      />
     </div>
   );
 }

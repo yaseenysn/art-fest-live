@@ -38,6 +38,11 @@ export const POST = requireAdmin(async (req: NextRequest) => {
     
     console.log("[PROGRAM CREATE] body.language", body.language);
     
+    if (!body.programOrder || typeof body.programOrder !== 'number' || body.programOrder <= 0) {
+      const maxProgram = await Program.findOne({}).sort({ programOrder: -1 }).select('programOrder');
+      body.programOrder = (maxProgram?.programOrder || 0) + 1;
+    }
+    
     const program = await Program.create(body);
     
     console.log("[PROGRAM CREATE] saved.language", program.language);
