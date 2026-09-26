@@ -357,10 +357,6 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                                   }}
                                 />
 
-                                <span className="text-[10px] text-white/40 uppercase tracking-widest">
-                                  Team Color
-                                </span>
-
                               </div>
                             )}
 

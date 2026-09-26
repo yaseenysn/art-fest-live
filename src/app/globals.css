@@ -82,8 +82,9 @@ body {
 }
 @font-face {
   font-family: "GE SS Two";
-  src: url("/fonts/GE-SS-Two.woff2") format("woff2");
-  font-weight: 400 800;
+  src: url("/fonts/GE-SS-Two-Bold.woff2") format("woff2"),
+       url("/fonts/GE_SS_Two_Bold.otf") format("opentype");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }

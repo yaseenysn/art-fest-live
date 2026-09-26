@@ -45,7 +45,7 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
               className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 md:gap-8 items-center backdrop-blur-md"
             >
               <div className="flex flex-col min-w-0">
-                <h3 className="text-2xl md:text-4xl xl:text-5xl font-black uppercase text-white mb-2 md:mb-3 leading-tight break-words whitespace-pre-wrap">
+                <h3 className="-mt-1 md:-mt-2 text-2xl md:text-4xl xl:text-5xl font-black uppercase text-white mb-2 md:mb-3 leading-tight break-words whitespace-pre-wrap">
                   {res.studentName ? res.studentName.replace(/\s*,\s*/g, ', ') : ''}
                 </h3>
                 

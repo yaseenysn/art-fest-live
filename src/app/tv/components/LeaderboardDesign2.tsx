@@ -442,24 +442,6 @@ export default function LeaderboardDesign2({
                           }}
                         />
 
-                        <span
-                          className="
-                            text-white/35
-
-                            text-[8px]
-                            md:text-[10px]
-                            lg:text-[11px]
-
-                            font-semibold
-
-                            uppercase
-
-                            tracking-[0.16em]
-                          "
-                        >
-                          TEAM
-                        </span>
-
                       </motion.div>
 
                     </div>

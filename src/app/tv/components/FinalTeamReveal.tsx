@@ -169,13 +169,18 @@ export default function FinalTeamReveal({
         setTimeout(() => setStage("explosion"), 6000), // Dramatic explosion
         setTimeout(() => setStage("final"), 7500), // Wait 1.5s for explosion
       ];
-    } else {
+    } else if (position === 2) {
       setStage("3");
       timers = [
         setTimeout(() => setStage("2"), 1200),
         setTimeout(() => setStage("1"), 2400),
         setTimeout(() => setStage("explosion"), 3600), // Dramatic explosion
         setTimeout(() => setStage("final"), 5100), // Wait 1.5s for explosion
+      ];
+    } else {
+      setStage("explosion");
+      timers = [
+        setTimeout(() => setStage("final"), 1500), // Wait 1.5s for explosion
       ];
     }
 

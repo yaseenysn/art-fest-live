@@ -12,6 +12,8 @@ import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { IProgram } from '@/types';
 
+const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+
 export default function DisplayControl() {
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
@@ -23,10 +25,11 @@ export default function DisplayControl() {
   const [isResetting, setIsResetting] = useState(false);
 
   // Premium Custom Announcements State
-  const [customAnnTemplate, setCustomAnnTemplate] = useState<'NEXT_PROGRAM' | 'JUDGES_THANK_YOU'>('NEXT_PROGRAM');
+  const [customAnnTemplate, setCustomAnnTemplate] = useState<'NEXT_PROGRAM' | 'JUDGES_THANK_YOU' | 'WELCOME' | 'CUSTOM_ANNOUNCEMENT'>('NEXT_PROGRAM');
   const [nextProgName, setNextProgName] = useState('');
   const [nextProgChess, setNextProgChess] = useState('');
   const [judgesList, setJudgesList] = useState<{name: string}[]>([{name: ''}]);
+  const [customText, setCustomText] = useState('');
   const [customAnnDuration, setCustomAnnDuration] = useState(15);
   const [customAnnStatus, setCustomAnnStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [pushingCustomAnn, setPushingCustomAnn] = useState(false);
@@ -402,10 +405,15 @@ export default function DisplayControl() {
         setCustomAnnStatus({ type: 'error', text: 'Program Name and Chess Number are required.'});
         return;
       }
-    } else if (customAnnTemplate === 'JUDGES_THANK_YOU') {
+    } else if (customAnnTemplate === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') {
       const validJudges = judgesList.filter(j => j.name.trim() !== '');
       if (validJudges.length === 0) {
-        setCustomAnnStatus({ type: 'error', text: 'At least one Judge Name is required.'});
+        setCustomAnnStatus({ type: 'error', text: 'At least one Name is required.'});
+        return;
+      }
+    } else if (customAnnTemplate === 'CUSTOM_ANNOUNCEMENT') {
+      if (!customText.trim()) {
+        setCustomAnnStatus({ type: 'error', text: 'Announcement Text is required.'});
         return;
       }
     }
@@ -419,8 +427,10 @@ export default function DisplayControl() {
       if (customAnnTemplate === 'NEXT_PROGRAM') {
         presentationData.programName = nextProgName.trim();
         presentationData.chessNumber = nextProgChess.trim();
-      } else {
+      } else if (customAnnTemplate === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') {
         presentationData.judges = judgesList.filter(j => j.name.trim() !== '');
+      } else if (customAnnTemplate === 'CUSTOM_ANNOUNCEMENT') {
+        presentationData.customText = customText.trim();
       }
 
       const payload = {
@@ -803,6 +813,7 @@ export default function DisplayControl() {
             <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">TEMPLATE</label>
             <div className="flex space-x-4">
               <button
+                type="button"
                 onClick={() => setCustomAnnTemplate('NEXT_PROGRAM')}
                 className={clsx(
                   "flex-1 p-4 rounded-xl border-2 font-bold transition-all text-center",
@@ -812,13 +823,24 @@ export default function DisplayControl() {
                 NEXT PROGRAM
               </button>
               <button
-                onClick={() => setCustomAnnTemplate('JUDGES_THANK_YOU')}
+                type="button"
+                onClick={() => setCustomAnnTemplate('WELCOME')}
                 className={clsx(
                   "flex-1 p-4 rounded-xl border-2 font-bold transition-all text-center",
-                  customAnnTemplate === 'JUDGES_THANK_YOU' ? "border-indigo-500 bg-primary-purple/10 border border-primary-purple/20 text-indigo-700" : "border-border-card hover:border-indigo-300 text-text-secondary"
+                  (customAnnTemplate as string) === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU' ? "border-indigo-500 bg-primary-purple/10 border border-primary-purple/20 text-indigo-700" : "border-border-card hover:border-indigo-300 text-text-secondary"
                 )}
               >
-                JUDGES THANK YOU
+                WELCOME
+              </button>
+              <button
+                type="button"
+                onClick={() => setCustomAnnTemplate('CUSTOM_ANNOUNCEMENT')}
+                className={clsx(
+                  "flex-1 p-4 rounded-xl border-2 font-bold transition-all text-center",
+                  customAnnTemplate === 'CUSTOM_ANNOUNCEMENT' ? "border-indigo-500 bg-primary-purple/10 border border-primary-purple/20 text-indigo-700" : "border-border-card hover:border-indigo-300 text-text-secondary"
+                )}
+              >
+                CUSTOM ANNOUNCEMENT
               </button>
             </div>
           </div>
@@ -829,7 +851,7 @@ export default function DisplayControl() {
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Program Name</label>
                 <input
                   type="text"
-                  className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border"
+                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border", isArabic(nextProgName) && "font-ge-ss-two")}
                   placeholder="e.g. Quran Recitation"
                   value={nextProgName}
                   onChange={e => setNextProgName(e.target.value)}
@@ -839,7 +861,7 @@ export default function DisplayControl() {
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Chess Number</label>
                 <input
                   type="text"
-                  className="w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-lg font-bold"
+                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-lg font-bold", isArabic(nextProgChess) && "font-ge-ss-two")}
                   placeholder="025"
                   value={nextProgChess}
                   onChange={e => setNextProgChess(e.target.value)}
@@ -848,16 +870,16 @@ export default function DisplayControl() {
             </div>
           )}
 
-          {customAnnTemplate === 'JUDGES_THANK_YOU' && (
+          {((customAnnTemplate as string) === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') && (
             <div className="space-y-4 bg-card-secondary p-6 rounded-xl border border-border-card">
-              <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Judges List</label>
+              <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Welcome List</label>
               <div className="space-y-3">
                 {judgesList.map((judge, idx) => (
                   <div key={idx} className="flex space-x-2">
                     <input
                       type="text"
-                      className="flex-1 border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border"
-                      placeholder={`Judge ${idx + 1} Name`}
+                      className={clsx("flex-1 border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border", isArabic(judge.name) && "font-ge-ss-two")}
+                      placeholder={`Name ${idx + 1}`}
                       value={judge.name}
                       onChange={e => {
                         const newList = [...judgesList];
@@ -866,6 +888,7 @@ export default function DisplayControl() {
                       }}
                     />
                     <button
+                      type="button"
                       onClick={() => setJudgesList(judgesList.filter((_, i) => i !== idx))}
                       className="px-4 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-200 font-bold"
                     >
@@ -875,11 +898,27 @@ export default function DisplayControl() {
                 ))}
               </div>
               <button
+                type="button"
                 onClick={() => setJudgesList([...judgesList, { name: '' }])}
                 className="mt-2 text-sm font-bold text-primary-indigo hover:text-indigo-800 flex items-center"
               >
-                + ADD JUDGE
+                + ADD NAME
               </button>
+            </div>
+          )}
+
+          {customAnnTemplate === 'CUSTOM_ANNOUNCEMENT' && (
+            <div className="space-y-4 bg-card-secondary p-6 rounded-xl border border-border-card">
+              <div>
+                <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Announcement Text</label>
+                <input
+                  type="text"
+                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border", isArabic(customText) && "font-ge-ss-two")}
+                  placeholder="e.g. أهلاً وسهلاً"
+                  value={customText}
+                  onChange={e => setCustomText(e.target.value)}
+                />
+              </div>
             </div>
           )}
 

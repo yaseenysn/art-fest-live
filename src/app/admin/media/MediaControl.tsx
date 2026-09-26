@@ -137,14 +137,6 @@ export default function MediaControl() {
     
     try {
       const presentationId = crypto.randomUUID();
-      const firstItem = playlist[0];
-      let expiresAt: string | null = null;
-
-      const isFirstItemVideo = firstItem.media.type === 'video' || firstItem.media.mimeType?.startsWith('video/');
-      if (!isFirstItemVideo) {
-        expiresAt = new Date(Date.now() + firstItem.imageDuration * 1000).toISOString();
-      }
-
       const res = await fetch('/api/tv-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -152,7 +144,7 @@ export default function MediaControl() {
           presentationId,
           presentationType: 'MEDIA',
           presentationStartedAt: new Date().toISOString(),
-          presentationExpiresAt: expiresAt, // null for video
+          presentationExpiresAt: null,
           presentationData: {
             playlist: playlist.map(p => ({
               id: p.id,

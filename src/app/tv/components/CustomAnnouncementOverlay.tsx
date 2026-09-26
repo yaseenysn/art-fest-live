@@ -10,10 +10,11 @@ interface Judge {
 }
 
 interface CustomAnnouncementData {
-  template: "NEXT_PROGRAM" | "JUDGES_THANK_YOU";
+  template: "NEXT_PROGRAM" | "JUDGES_THANK_YOU" | "WELCOME" | "CUSTOM_ANNOUNCEMENT";
   programName?: string;
   chessNumber?: string;
   judges?: Judge[];
+  customText?: string;
 }
 
 interface Props {
@@ -202,18 +203,30 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
 
 
   /* =========================================================
-     JUDGES THANK YOU
+     CUSTOM ANNOUNCEMENT
   ========================================================= */
-  if (data.template === "JUDGES_THANK_YOU") {
+  if (data.template === "CUSTOM_ANNOUNCEMENT") {
+    const text = data.customText || "أهلاً وسهلاً";
+    const isAr = isArabic(text);
+    return (
+      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center bg-[#050505] p-8 text-center select-none font-sans text-white">
+        <div className="max-w-5xl">
+          <h1 className={`text-4xl md:text-7xl font-bold uppercase leading-tight ${isAr ? 'font-ge-ss-two' : ''}`}>
+            {text}
+          </h1>
+        </div>
+      </div>
+    );
+  }
+
+
+  /* =========================================================
+     WELCOME / JUDGES THANK YOU
+  ========================================================= */
+  if (data.template === "JUDGES_THANK_YOU" || (data.template as string) === "WELCOME") {
     const judges = data.judges || [];
 
-    let gridCols = "grid-cols-1";
-
-    if (judges.length === 2 || judges.length === 4) {
-      gridCols = "grid-cols-2";
-    } else if (judges.length === 3 || judges.length >= 5) {
-      gridCols = "grid-cols-3";
-    }
+    const gridCols = "grid-cols-1";
 
     return (
       <div
@@ -277,12 +290,12 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
               fontSize: "clamp(200px, 35vw, 500px)",
             }}
           >
-            جَزَاكُمُ اللهُ خَيْرًا
+            أَهْلًا وَسَهْلًا
           </div>
         </div>
 
         {/* MAIN CONTENT AREA */}
-        <div className="relative z-10 flex flex-1 w-full flex-col items-center justify-start pt-[15vh]">
+        <div className="relative z-10 flex flex-1 w-full flex-col items-center justify-start pt-[5vh]">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -300,16 +313,16 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                 delay: 0.2,
                 duration: 1,
               }}
-              className="mb-[6vh] w-full text-center px-[4vw]"
+              className="mb-[3vh] w-full text-center px-[4vw]"
             >
               <h1
                 dir="rtl"
                 className="text-[#1a1a1a] tracking-normal leading-tight font-bold font-ge-ss-two"
                 style={{
-                  fontSize: "clamp(40px, 8vw, 130px)",
+                  fontSize: "clamp(36px, 6vw, 90px)",
                 }}
               >
-                جَزَاكُمُ اللهُ خَيْرًا
+                أَهْلًا وَسَهْلًا
               </h1>
             </motion.div>
 
@@ -329,10 +342,9 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                   grid
                   ${gridCols}
                   w-full
-                  max-w-[1400px]
+                  max-w-[850px]
                   mx-auto
-                  gap-x-[4vw]
-                  gap-y-[5vh]
+                  gap-y-3 md:gap-y-4
                   px-[4vw]
                 `}
               >
@@ -348,7 +360,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                         transition: { type: "spring", stiffness: 60, damping: 15 }
                       }
                     }}
-                    className="flex flex-col items-center justify-center text-center bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] px-8 py-6 relative overflow-hidden group"
+                    className="flex flex-col items-center justify-center text-center bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] px-8 py-3.5 md:py-4 relative overflow-hidden group"
                   >
                     {/* Glass Shimmer Sweep */}
                     <motion.div
@@ -364,12 +376,12 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                         ${isArabic(judge.name) ? 'font-ge-ss-two font-bold' : 'font-poppins font-bold'}
                       `}
                       style={{
-                        fontSize: "clamp(60px, 4.5vw, 140px)",
+                        fontSize: "clamp(28px, 3.2vw, 64px)",
                       }}
                     >
                       {judge.name}
                     </h3>
-                    <div className="mt-[2vh] h-[3px] w-[4vw] min-w-[40px] max-w-[80px] bg-neutral-800/20 rounded-full relative z-10" />
+                    <div className="mt-[1.5vh] h-[3px] w-[4vw] min-w-[40px] max-w-[80px] bg-neutral-800/20 rounded-full relative z-10" />
                   </motion.div>
                 ))}
               </motion.div>

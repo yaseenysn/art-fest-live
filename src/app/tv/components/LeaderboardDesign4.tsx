@@ -22,7 +22,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
   const displayRows = gridPositions.map(pos => rows[pos.rank - 1]).filter(Boolean);
 
   return (
-    <div className="w-screen min-h-screen md:h-screen flex flex-col items-center relative z-10 overflow-y-auto md:overflow-hidden font-sans bg-[#04060C] p-4 md:p-12">
+    <div className="w-screen min-h-screen md:h-screen flex flex-col items-center relative z-10 overflow-y-auto md:overflow-hidden font-sans bg-[#04060C] p-4 md:py-6 lg:py-8 px-4 md:px-12">
 
       {/* Dark Premium Background with Soft Glows */}
       <div className="absolute inset-0 z-0 bg-[#04060C]">
@@ -41,7 +41,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/20 blur-[120px]" />
       </div>
 
-      <div className="w-full flex flex-col items-center text-center relative z-20 mb-6 md:mb-16 -mt-2 md:-mt-8 px-4 md:px-20">
+      <div className="w-full flex flex-col items-center text-center relative z-20 mb-3 md:mb-6 -mt-2 md:-mt-6 px-4 md:px-20">
 
         <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
@@ -50,7 +50,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
           <img
             src="/logo-al-mahsan-with-text.png"
             alt="Al Mahsan"
-            className="h-14 sm:h-20 md:h-[126px] lg:h-[162px] w-auto object-contain"
+            className="h-14 sm:h-18 md:h-[100px] lg:h-[130px] w-auto object-contain"
           />
         </motion.div>
       </div>
@@ -75,7 +75,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
           </div>
         )}
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-32 gap-y-6 md:gap-y-24 relative z-10">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-20 gap-y-6 md:gap-y-10 lg:gap-y-12 relative z-10">
           {displayRows.map((row, idx) => {
             const tColor = row.color || '#3b82f6';
 
@@ -85,7 +85,7 @@ export default function LeaderboardDesign4({ config }: { config: LeaderboardConf
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 + (idx * 0.15) }}
-                className="flex items-start relative w-full h-36 md:h-48"
+                className="flex items-start relative w-full h-32 md:h-40 lg:h-44"
               >
                 {/* The Floating Rank Badge (01, 02...) */}
                 <div
