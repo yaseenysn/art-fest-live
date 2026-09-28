@@ -6,6 +6,17 @@ import { AllWinnersConfig } from "./AllWinnersRouter";
 
 const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
+const getTeamArabicName = (teamName?: string): string => {
+  if (!teamName) return '';
+  const trimmed = teamName.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('marjan') || trimmed === 'مرجان') return 'مرجان';
+  if (lower.includes('yaqoot') || trimmed === 'ياقوت') return 'ياقوت';
+  if (lower.includes('lulu') || trimmed === 'لؤلؤ') return 'لؤلؤ';
+  if (lower.includes('johar') || trimmed === 'جوهر') return 'جوهر';
+  return trimmed;
+};
+
 type WinnerItem = {
   studentName?: string;
   name?: string;
@@ -132,7 +143,7 @@ const WinnerNode = ({
 
         {/* TEAM NAME */}
         <div
-          dir={isArabic(winner.teamName) ? 'rtl' : 'ltr'}
+          dir="rtl"
           className={`
             uppercase
             break-words
@@ -141,14 +152,14 @@ const WinnerNode = ({
             mt-[clamp(8px,1vw,16px)]
             leading-[1.2]
             text-[#a855f7]
-            ${isArabic(winner.teamName) ? 'font-ge-ss-two font-bold' : 'tracking-wide font-bold'}
+            font-ge-ss-two font-bold
             ${isFirst
               ? "text-[clamp(20px,3vw,36px)]"
               : "text-[clamp(16px,2vw,28px)]"
             }
           `}
         >
-          {winner.teamName || "TEAM"}
+          {winner.teamName}
         </div>
 
         {/* PROGRAM NAME */}
@@ -218,14 +229,14 @@ export default function WinnerDesign2({
       .join(" • ");
 
     const teamNames = winners
-      .map(w => w.teamName || w.team || "")
+      .map(w => getTeamArabicName(w.teamName || w.team))
       .filter(Boolean)
       .join(" • ");
 
     return {
       position,
       names: names || "—",
-      teamName: teamNames || "TEAM",
+      teamName: teamNames || "",
       programName,
       exists: winners.length > 0,
     };

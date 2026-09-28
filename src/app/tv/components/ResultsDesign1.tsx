@@ -78,9 +78,8 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
   const positionText = getPositionText(position);
   const numWinners = results.length;
 
-  const programLanguage = program?.language && program.language.toLowerCase() !== 'other'
-    ? program.language
-    : (program?.language || 'OTHER');
+  const programLanguage = program?.language || '';
+  const category = program?.category || '';
 
   const gridClass = numWinners === 1
     ? 'grid-cols-1'
@@ -129,14 +128,14 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
                   style={{ boxShadow: `0 30px 60px ${theme.glow}, inset 0 0 60px rgba(255,255,255,0.5)` }}
                 >
                   <div className="absolute inset-2 rounded-full border-2 md:border-8 border-white/20" />
-                  <span className="text-[4.5rem] md:text-[8rem] lg:text-[10rem] font-black leading-none text-white drop-shadow-xl mt-2 md:mt-4">
+                  <span className={`text-[4.5rem] md:text-[8rem] lg:text-[10rem] font-black leading-none mt-2 md:mt-4 ${position === 2 ? 'text-[#050A18] drop-shadow-sm' : 'text-white drop-shadow-xl'}`}>
                     {position}
                     {position === 1 && <span className="text-[0.45em] align-top">ST</span>}
                     {position === 2 && <span className="text-[0.45em] align-top">ND</span>}
                     {position === 3 && <span className="text-[0.45em] align-top">RD</span>}
                     {position > 3 && <span className="text-[0.45em] align-top">TH</span>}
                   </span>
-                  <span className="text-base md:text-2xl lg:text-3xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1 md:-mt-2">
+                  <span className={`text-base md:text-2xl lg:text-3xl font-black uppercase tracking-widest -mt-1 md:-mt-2 ${position === 2 ? 'text-[#050A18] drop-shadow-sm' : 'text-white/90 drop-shadow-md'}`}>
                     PLACE
                   </span>
                 </div>
@@ -186,14 +185,14 @@ export default function ResultsDesign1({ results, revealStage = 'WINNER' }: { re
                   style={{ boxShadow: `0 20px 40px ${theme.glow}, inset 0 0 30px rgba(255,255,255,0.4)` }}
                 >
                   <div className="absolute inset-2 rounded-full border-4 border-white/20" />
-                  <span className="text-[4rem] md:text-[5rem] font-black leading-none text-white drop-shadow-lg mt-2">
+                  <span className={`text-[4rem] md:text-[5rem] font-black leading-none mt-2 ${position === 2 ? 'text-[#050A18] drop-shadow-sm' : 'text-white drop-shadow-lg'}`}>
                     {position}
                     {position === 1 && <span className="text-[0.45em] align-top">ST</span>}
                     {position === 2 && <span className="text-[0.45em] align-top">ND</span>}
                     {position === 3 && <span className="text-[0.45em] align-top">RD</span>}
                     {position > 3 && <span className="text-[0.45em] align-top">TH</span>}
                   </span>
-                  <span className="text-lg md:text-xl font-black uppercase tracking-widest text-white/90 drop-shadow-md -mt-1">
+                  <span className={`text-lg md:text-xl font-black uppercase tracking-widest -mt-1 ${position === 2 ? 'text-[#050A18] drop-shadow-sm' : 'text-white/90 drop-shadow-md'}`}>
                     PLACE
                   </span>
                 </div>
@@ -277,12 +276,12 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
       </h2>
 
       {/* Team Info */}
-      <div 
+      <div
         dir={isArabic(teamName) ? 'rtl' : 'ltr'}
         className={`flex items-start ${isArabic(teamName) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 md:space-x-4 mb-6`}
       >
         <div className={`mt-2 shrink-0 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)] ${isLarge ? 'w-5 h-5 md:w-6 md:h-6' : 'w-4 h-4 md:w-5 md:h-5'}`} style={{ backgroundColor: tColor }} />
-        <span 
+        <span
           className={`font-bold uppercase break-words min-w-0 max-w-full leading-[1.2] text-slate-200 ${isArabic(teamName) ? 'font-ge-ss-two' : 'tracking-widest'} ${isLarge ? 'text-[clamp(32px,4vw,60px)]' : 'text-[clamp(24px,3vw,40px)]'}`}
         >
           {teamName || 'TEAM'}
@@ -308,9 +307,11 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
         <div className={`font-black uppercase tracking-wider text-white drop-shadow-md ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
           {programName}
         </div>
-        <div className={`font-bold uppercase tracking-[0.25em] text-slate-300 ${isLarge ? 'text-sm md:text-base' : 'text-[10px] md:text-sm'}`}>
-          {programLanguage} • {category || 'GENERAL'}
-        </div>
+        {[programLanguage, category].filter(Boolean).length > 0 && (
+          <div className={`font-bold uppercase tracking-[0.25em] text-slate-300 ${isLarge ? 'text-lg md:text-2xl' : 'text-sm md:text-xl'}`}>
+            {[programLanguage, category].filter(Boolean).join(' • ')}
+          </div>
+        )}
       </div>
     </div>
   );

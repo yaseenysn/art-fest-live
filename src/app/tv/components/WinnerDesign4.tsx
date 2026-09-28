@@ -5,6 +5,17 @@ import { AllWinnersConfig } from './AllWinnersRouter';
 
 const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
+const getTeamArabicName = (teamName?: string): string => {
+  if (!teamName) return '';
+  const trimmed = teamName.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('marjan') || trimmed === 'مرجان') return 'مرجان';
+  if (lower.includes('yaqoot') || trimmed === 'ياقوت') return 'ياقوت';
+  if (lower.includes('lulu') || trimmed === 'لؤلؤ') return 'لؤلؤ';
+  if (lower.includes('johar') || trimmed === 'جوهر') return 'جوهر';
+  return trimmed;
+};
+
 export default function WinnerDesign4({
   programName,
   language,
@@ -69,8 +80,8 @@ export default function WinnerDesign4({
             const isFirst = pos === 1;
             const tColor = winners[0]?.teamColor || '#ffffff';
             const names = winners.map(w => w.studentName).filter(Boolean).join("  •  ");
-            const teams = winners.map(w => w.teamName).filter(Boolean);
-            const teamStr = teams.length > 0 ? teams.join("  •  ") : "TEAM";
+            const teams = winners.map(w => getTeamArabicName(w.teamName)).filter(Boolean);
+            const teamStr = teams.length > 0 ? teams.join("  •  ") : "";
             const pts = winners.map(w => w.points).filter(p => p !== undefined);
             const ptsStr = pts.length > 0 ? pts.join(" • ") : undefined;
 
@@ -94,11 +105,11 @@ export default function WinnerDesign4({
                       {names}
                     </h3>
                     <div
-                      dir={isArabic(teamStr) ? 'rtl' : 'ltr'}
-                      className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 mt-1 md:mt-2`}
+                      dir="rtl"
+                      className="flex items-center space-x-3 space-x-reverse mt-1 md:mt-2"
                     >
-                      <div className="w-3 h-3 md:w-4 md:h-4 mt-2 rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]" style={{ backgroundColor: tColor }} />
-                      <span className={`text-white/70 min-w-0 max-w-full break-words leading-[1.2] uppercase font-bold ${isArabic(teamStr) ? 'font-ge-ss-two text-[clamp(24px,3vw,44px)]' : 'tracking-widest text-[clamp(20px,2vw,32px)]'}`}>
+                      <div className="w-3 h-3 md:w-4 md:h-4 mt-1.5 rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]" style={{ backgroundColor: tColor }} />
+                      <span className="text-white/70 min-w-0 max-w-full break-words leading-[1.2] uppercase font-bold font-ge-ss-two text-[clamp(24px,3vw,44px)]">
                         {teamStr}
                       </span>
                     </div>

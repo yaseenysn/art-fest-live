@@ -26,6 +26,17 @@ export interface AllWinnersPosterProps {
   id?: string;
 }
 
+const getTeamArabicName = (teamName?: string): string => {
+  if (!teamName) return '';
+  const trimmed = teamName.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('marjan') || trimmed === 'مرجان') return 'مرجان';
+  if (lower.includes('yaqoot') || trimmed === 'ياقوت') return 'ياقوت';
+  if (lower.includes('lulu') || trimmed === 'لؤلؤ') return 'لؤلؤ';
+  if (lower.includes('johar') || trimmed === 'جوهر') return 'جوهر';
+  return trimmed;
+};
+
 export default function AllWinnersPoster({
   programName,
   language,
@@ -342,13 +353,13 @@ export default function AllWinnersPoster({
                 .join("  •  ");
 
               const teams = winners
-                .map((winner) => winner.teamName)
+                .map((winner) => getTeamArabicName(winner.teamName))
                 .filter(Boolean);
 
               const teamStr =
                 teams.length > 0
                   ? teams.join("  •  ")
-                  : "TEAM";
+                  : "";
 
               const points = winners
                 .map((winner) => winner.points)
@@ -537,8 +548,8 @@ export default function AllWinnersPoster({
                           </h3>
 
                           <div
-                            dir={isArabic(teamStr) ? "rtl" : "ltr"}
-                            className={`flex items-start ${isArabic(teamStr) ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 mt-2 md:mt-3 w-full`}
+                            dir="rtl"
+                            className="flex items-center space-x-3 space-x-reverse mt-2 md:mt-3 w-full"
                           >
                             <div
                               className="rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.6)] mt-[6px] md:mt-[8px]"
@@ -549,7 +560,7 @@ export default function AllWinnersPoster({
                               }}
                             />
                             <span
-                              className={`
+                              className="
                                 font-bold
                                 text-white/90
                                 uppercase
@@ -557,8 +568,8 @@ export default function AllWinnersPoster({
                                 break-words
                                 max-w-[95%]
                                 leading-[1.2]
-                                ${isArabic(teamStr) ? 'font-ge-ss-two' : 'tracking-widest'}
-                              `}
+                                font-ge-ss-two
+                              "
                               style={{
                                 fontSize:
                                   "clamp(20px, 1.8vw, 34px)",

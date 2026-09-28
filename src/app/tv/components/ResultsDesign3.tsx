@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { IResult } from "@/types";
 
 const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+const isMalayalam = (text?: string) => /[\u0D00-\u0D7F]/.test(text || '');
 
 const getPositionTheme = (position: number) => {
   switch (position) {
@@ -58,8 +59,9 @@ export default function ResultsDesign1({
 
   const program = result.programId as { name?: string; language?: string; category?: string };
   const programName = program?.name || "PROGRAM";
-  const programLanguage = program?.language && program.language.toLowerCase() !== "other" ? program.language : "";
+  const programLanguage = program?.language || "";
   const category = program?.category || "";
+  const metaText = [programLanguage, category].filter(Boolean).join(" • ");
 
   const position = result.position || 1;
   const studentName = result.studentName || "WINNER";
@@ -75,7 +77,7 @@ export default function ResultsDesign1({
       className="relative w-full min-h-screen md:h-full min-h-0 overflow-y-auto md:overflow-hidden bg-black text-white"
       style={{
         fontFamily:
-          "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          "Inter, 'Anek Malayalam', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       }}
     >
       {/* =========================================================
@@ -338,7 +340,7 @@ export default function ResultsDesign1({
         transition={{ duration: 0.7 }}
       >
         <div
-          className="font-black uppercase tracking-[0.35em] text-[2.5rem]"
+          className={`font-black uppercase text-[2.5rem] ${isMalayalam(programName) ? 'tracking-normal' : 'tracking-[0.35em]'}`}
           style={{
             color: theme.text,
             textShadow: `0 0 25px ${theme.light}`,
@@ -347,11 +349,9 @@ export default function ResultsDesign1({
           {programName}
         </div>
 
-        {(programLanguage || category) && (
-          <div className="mt-2 text-white/50 font-bold tracking-[0.35em] text-sm uppercase">
-            {programLanguage}
-            {programLanguage && category ? " • " : ""}
-            {category}
+        {metaText && (
+          <div className="mt-2 text-white/60 font-bold tracking-[0.3em] text-base md:text-2xl uppercase">
+            {metaText}
           </div>
         )}
       </motion.div>

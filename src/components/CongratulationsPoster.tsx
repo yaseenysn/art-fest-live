@@ -12,6 +12,17 @@ export interface CongratulationsPosterProps {
   points?: number;
 }
 
+const getTeamArabicName = (teamName?: string): string => {
+  if (!teamName) return '';
+  const trimmed = teamName.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('marjan') || trimmed === 'مرجان') return 'مرجان';
+  if (lower.includes('yaqoot') || trimmed === 'ياقوت') return 'ياقوت';
+  if (lower.includes('lulu') || trimmed === 'لؤلؤ') return 'لؤلؤ';
+  if (lower.includes('johar') || trimmed === 'جوهر') return 'جوهر';
+  return trimmed;
+};
+
 export default function CongratulationsPoster({
   studentName,
   teamName,
@@ -126,10 +137,10 @@ export default function CongratulationsPoster({
                   </div>
                   
                   {/* Team Info */}
-                  <div className="flex items-center space-x-4 px-8 shrink-0 border-l border-white/10">
+                  <div className="flex items-center space-x-4 space-x-reverse px-8 shrink-0 border-l border-white/10" dir="rtl">
                     <div className="w-5 h-5 rounded-full shadow-[0_0_12px_rgba(255,255,255,0.6)]" style={{ backgroundColor: tColor }} />
-                    <span className="text-3xl font-bold text-white/90 uppercase tracking-widest drop-shadow-md">
-                      {teamName || 'TEAM'}
+                    <span className="text-3xl font-bold text-white/90 uppercase drop-shadow-md font-ge-ss-two">
+                      {getTeamArabicName(teamName) || teamName || ''}
                     </span>
                   </div>
                   

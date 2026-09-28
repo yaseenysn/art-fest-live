@@ -44,15 +44,17 @@
   --color-primary-indigo: var(--primary-indigo);
   --color-primary-pink: var(--primary-pink);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans), "Anek Malayalam", sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-ge-ss-two: "GE SS Two", sans-serif;
+  --font-ge-ss-two: "GE SS Two", "Anek Malayalam", sans-serif;
+  --font-anek-malayalam: "Anek Malayalam", sans-serif;
+  --font-malayalam: "Anek Malayalam", sans-serif;
 }
 
 body {
   background: var(--bg-app);
   color: var(--text-primary);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Anek Malayalam", Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
 
@@ -80,6 +82,45 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Malayalam Font: Anek Malayalam (Local WOFF2 Bundled) */
+@font-face {
+  font-family: "Anek Malayalam";
+  src: url("/fonts/AnekMalayalam-Regular.woff2") format("woff2"),
+       url("/fonts/AnekMalayalam-Regular-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Anek Malayalam";
+  src: url("/fonts/AnekMalayalam-Medium.woff2") format("woff2"),
+       url("/fonts/AnekMalayalam-Medium-latin.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Anek Malayalam";
+  src: url("/fonts/AnekMalayalam-SemiBold.woff2") format("woff2"),
+       url("/fonts/AnekMalayalam-SemiBold-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Anek Malayalam";
+  src: url("/fonts/AnekMalayalam-Bold.woff2") format("woff2"),
+       url("/fonts/AnekMalayalam-Bold-latin.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Arabic Font: GE SS Two */
 @font-face {
   font-family: "GE SS Two";
   src: url("/fonts/GE-SS-Two-Bold.woff2") format("woff2"),
@@ -87,4 +128,10 @@ body {
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+}
+
+/* Utility classes for Malayalam typography */
+.font-anek,
+.font-malayalam {
+  font-family: "Anek Malayalam", sans-serif;
 }

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { IResult } from "@/types";
 
 const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
+const isMalayalam = (text?: string) => /[\u0D00-\u0D7F]/.test(text || '');
 
 export default function ResultsDesign2({
   results,
@@ -29,6 +30,9 @@ export default function ResultsDesign2({
 
   const program = result.programId as any;
   const programName = program?.name || "PROGRAM";
+  const programLanguage = program?.language || "";
+  const category = program?.category || "";
+  const metaText = [programLanguage, category].filter(Boolean).join(" • ");
 
   const teamName =
     (result.teamId as any)?.name || "";
@@ -117,14 +121,19 @@ export default function ResultsDesign2({
           className="
             absolute
             top-[3%]
-            md:top-[6%]
+            md:top-[5%]
             text-center
             px-4
           "
         >
-          <div className="text-base md:text-3xl font-black tracking-[0.25em] md:tracking-[0.45em] text-white uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+          <div className={`text-base md:text-3xl font-black text-white uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] ${isMalayalam(programName) ? 'tracking-normal' : 'tracking-[0.25em] md:tracking-[0.45em]'}`}>
             {programName}
           </div>
+          {metaText && (
+            <div className="mt-1 text-base md:text-2xl font-bold tracking-[0.2em] md:tracking-[0.3em] text-blue-300 uppercase drop-shadow-sm">
+              {metaText}
+            </div>
+          )}
         </motion.div>
 
         {/* =====================================================

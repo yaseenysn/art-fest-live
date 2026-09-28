@@ -9,6 +9,9 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
   if (!results || results.length === 0) return null;
   const program = results[0]?.programId as any;
   const programName = program?.name || 'Program';
+  const programLanguage = program?.language || '';
+  const category = program?.category || '';
+  const metaText = [programLanguage, category].filter(Boolean).join(' • ');
   const position = results[0]?.position || 1;
   const posName = position === 1 ? '1ST PLACE' : position === 2 ? '2ND PLACE' : '3RD PLACE';
 
@@ -21,10 +24,15 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="text-emerald-500 font-bold tracking-[0.3em] uppercase text-base md:text-2xl mb-2 md:mb-8">
+          <div className="text-emerald-500 font-bold tracking-[0.3em] uppercase text-base md:text-2xl mb-2 md:mb-6">
             OFFICIAL RESULTS
           </div>
-          <h2 className="text-xl md:text-4xl font-light text-slate-300 uppercase mb-2 md:mb-4 leading-tight">{programName}</h2>
+          <h2 className="text-3xl md:text-6xl font-light text-slate-300 uppercase leading-tight mb-1 md:mb-2">{programName}</h2>
+          {metaText && (
+            <div className="text-lg md:text-3xl font-bold tracking-[0.25em] text-emerald-400/80 uppercase mb-3 md:mb-6">
+              {metaText}
+            </div>
+          )}
           <h1 className="text-[clamp(32px,8vw,96px)] font-black text-white tracking-tighter uppercase">{posName}</h1>
         </motion.div>
       </div>
