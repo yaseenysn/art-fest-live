@@ -7,6 +7,7 @@ const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
 interface Judge {
   name: string;
+  designation?: string;
 }
 
 interface CustomAnnouncementData {
@@ -305,6 +306,23 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
             }}
             className="flex w-full flex-col items-center"
           >
+            {/* AL MAHSAN LOGO + NAME */}
+            <motion.div
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.1,
+                duration: 0.8,
+              }}
+              className="mb-[1.5vh] flex justify-center"
+            >
+              <img
+                src="/logo-al-mahsan-with-text.png"
+                alt="Al Mahsan"
+                className="h-12 sm:h-16 md:h-[85px] lg:h-[105px] w-auto object-contain drop-shadow-md"
+              />
+            </motion.div>
+
             {/* ARABIC CALLIGRAPHY */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -381,6 +399,19 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                     >
                       {judge.name}
                     </h3>
+
+                    {judge.designation && judge.designation.trim() !== "" && (
+                      <p
+                        dir={isArabic(judge.designation) ? "rtl" : "ltr"}
+                        className={`
+                          mt-1 max-w-full overflow-visible tracking-wide text-neutral-700 relative z-10
+                          ${isArabic(judge.designation) ? 'font-ge-ss-two font-semibold text-[clamp(18px,2vw,36px)]' : 'font-poppins font-semibold text-[clamp(16px,1.8vw,32px)]'}
+                        `}
+                      >
+                        {judge.designation}
+                      </p>
+                    )}
+
                     <div className="mt-[1.5vh] h-[3px] w-[4vw] min-w-[40px] max-w-[80px] bg-neutral-800/20 rounded-full relative z-10" />
                   </motion.div>
                 ))}

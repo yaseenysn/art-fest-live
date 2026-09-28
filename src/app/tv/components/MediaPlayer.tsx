@@ -128,7 +128,7 @@ export default function MediaPlayer({
   useEffect(() => {
     if (isVideoMedia(currentMedia) && videoRef.current) {
       const video = videoRef.current;
-      
+
       console.log('[TV VIDEO AUDIO]', {
         muted: video.muted,
         volume: video.volume,
@@ -138,13 +138,13 @@ export default function MediaPlayer({
       });
 
       const playPromise = video.play();
-      
+
       if (playPromise !== undefined) {
         playPromise.then(() => {
           console.log('[TV VIDEO AUDIO] Autoplay with audio started successfully.');
         }).catch(error => {
           console.error('[TV VIDEO AUDIO] Autoplay rejected by browser. Waiting for user interaction...', error);
-          
+
           // Retry playing once the user interacts with the document
           const retryPlay = () => {
             console.log('[TV VIDEO AUDIO] User interacted, retrying playback...');
@@ -153,7 +153,7 @@ export default function MediaPlayer({
             window.removeEventListener('touchstart', retryPlay);
             window.removeEventListener('keydown', retryPlay);
           };
-          
+
           window.addEventListener('click', retryPlay);
           window.addEventListener('touchstart', retryPlay);
           window.addEventListener('keydown', retryPlay);

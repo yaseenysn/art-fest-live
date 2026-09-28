@@ -17,7 +17,8 @@ const Leaderboard = React.memo(function Leaderboard({ config, isPreview }: { con
         <img
           src="/logo-al-mahsan-with-text.png"
           alt="Al Mahsan"
-          className="w-auto h-[135px] md:h-[225px] lg:h-[315px] max-w-[80vw] object-contain drop-shadow-2xl"
+          className="w-auto h-[240px] md:h-[400px]
+           lg:h-[550px] max-w-[85vw] max-h-[75vh] object-contain drop-shadow-2xl"
         />
       </div>
     );

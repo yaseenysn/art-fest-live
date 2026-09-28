@@ -9,6 +9,7 @@ import { Announcement } from '@/models/Announcement';
 import { ManualTeamScoreOverride } from '@/models/ManualTeamScoreOverride';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { requireAdmin } from '@/lib/auth';
+import { syncTVLeaderboardState } from '@/lib/rankings';
 
 export const POST = requireAdmin(async () => {
   try {
@@ -56,6 +57,13 @@ export const POST = requireAdmin(async () => {
       }
     }
     
+    // Sync TV state so DB tvState.config is cleared/updated to empty rankings
+    try {
+      await syncTVLeaderboardState();
+    } catch (syncError) {
+      console.error("[EVENT RESET] Failed to sync TV leaderboard state:", syncError);
+    }
+
     const io = getIO();
     if (io) {
       io.emit(SOCKET_EVENTS.EVENT_RESET, { resetAt: new Date().toISOString() });

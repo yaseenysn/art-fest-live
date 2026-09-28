@@ -51,10 +51,14 @@ export default function TeamModal({ isOpen, onClose, onSuccess, team }: TeamModa
     setLoading(true);
     setError('');
 
+    const generatedSlug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = generatedSlug || `team-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`;
+
     const payload = {
       name: name.trim(),
       shortName: shortName.trim(),
-      color
+      color,
+      slug
     };
 
     try {

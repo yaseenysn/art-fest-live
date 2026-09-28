@@ -43,12 +43,20 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       return NextResponse.json({ error: 'A team with this name already exists.' }, { status: 409 });
     }
 
-    // Slug generation based on name (if we still need slug for older features)
-    let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Slug generation based on body or name with fallback for non-Latin / Arabic names
+    let slug = typeof body.slug === 'string' ? body.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : '';
+    if (!slug) {
+      slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+    if (!slug) {
+      slug = `team-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`;
+    }
+
     let slugExists = await Team.findOne({ slug });
     let counter = 1;
+    const baseSlug = slug;
     while (slugExists) {
-      slug = `${slug}-${counter}`;
+      slug = `${baseSlug}-${counter}`;
       slugExists = await Team.findOne({ slug });
       counter++;
     }

@@ -51,6 +51,8 @@ export default function LeaderboardDesign3({
     1
   );
 
+  const hasPoints = rows.some((row) => Number(row.points || 0) > 0);
+
   return (
     <div
       className="
@@ -236,167 +238,169 @@ export default function LeaderboardDesign3({
               CURVED GROWTH ARROW
           ====================================================== */}
 
-          <div
-            className="
-              absolute
-              inset-0
-              z-20
-              pointer-events-none
-            "
-          >
-
-            <svg
+          {hasPoints && (
+            <div
               className="
                 absolute
                 inset-0
-                w-full
-                h-full
+                z-10
+                pointer-events-none
               "
-              viewBox="0 0 1000 650"
-              preserveAspectRatio="none"
             >
 
-              <defs>
-
-                {/* Soft arrow glow */}
-                <filter
-                  id="finalArrowGlow"
-                  x="-50%"
-                  y="-50%"
-                  width="200%"
-                  height="200%"
-                >
-                  <feGaussianBlur
-                    stdDeviation="4"
-                    result="blur"
-                  />
-
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-
-                </filter>
-
-
-                {/* White gradient */}
-                <linearGradient
-                  id="finalArrowGradient"
-                  x1="0%"
-                  y1="100%"
-                  x2="100%"
-                  y2="0%"
-                >
-
-                  <stop
-                    offset="0%"
-                    stopColor="#ffffff"
-                    stopOpacity="0.28"
-                  />
-
-                  <stop
-                    offset="55%"
-                    stopColor="#ffffff"
-                    stopOpacity="0.65"
-                  />
-
-                  <stop
-                    offset="100%"
-                    stopColor="#ffffff"
-                    stopOpacity="0.95"
-                  />
-
-                </linearGradient>
-
-              </defs>
-
-
-              {/* ==================================================
-                  SMOOTH RISING CURVE
-              ================================================== */}
-
-              <motion.path
-                initial={{
-                  pathLength: 0,
-                  opacity: 0,
-                }}
-
-                animate={{
-                  pathLength: 1,
-                  opacity: 1,
-                }}
-
-                transition={{
-                  duration: 2.4,
-                  delay: 0.5,
-                  ease: "easeInOut",
-                }}
-
-                d="
-                  M 80 475
-                  C 230 455,
-                    360 395,
-                    475 320
-                  C 600 238,
-                    720 155,
-                    850 70
+              <svg
+                className="
+                  absolute
+                  inset-0
+                  w-full
+                  h-full
                 "
+                viewBox="0 0 1000 650"
+                preserveAspectRatio="none"
+              >
 
-                fill="none"
+                <defs>
 
-                stroke="url(#finalArrowGradient)"
+                  {/* Soft arrow glow */}
+                  <filter
+                    id="finalArrowGlow"
+                    x="-50%"
+                    y="-50%"
+                    width="200%"
+                    height="200%"
+                  >
+                    <feGaussianBlur
+                      stdDeviation="4"
+                      result="blur"
+                    />
 
-                strokeWidth="5"
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
 
-                strokeLinecap="round"
-
-                filter="url(#finalArrowGlow)"
-              />
+                  </filter>
 
 
-              {/* ==================================================
-                  CLEAN ARROW HEAD
-              ================================================== */}
+                  {/* White gradient */}
+                  <linearGradient
+                    id="finalArrowGradient"
+                    x1="0%"
+                    y1="100%"
+                    x2="100%"
+                    y2="0%"
+                  >
 
-              <motion.path
-                initial={{
-                  opacity: 0,
-                  pathLength: 0,
-                }}
+                    <stop
+                      offset="0%"
+                      stopColor="#ffffff"
+                      stopOpacity="0.28"
+                    />
 
-                animate={{
-                  opacity: 1,
-                  pathLength: 1,
-                }}
+                    <stop
+                      offset="55%"
+                      stopColor="#ffffff"
+                      stopOpacity="0.65"
+                    />
 
-                transition={{
-                  duration: 0.45,
-                  delay: 2.35,
-                  ease: "easeOut",
-                }}
+                    <stop
+                      offset="100%"
+                      stopColor="#ffffff"
+                      stopOpacity="0.95"
+                    />
 
-                d="
-                  M 822.2 73.5
-                  L 850 70
-                  L 835.7 94.0
-                "
+                  </linearGradient>
 
-                fill="none"
+                </defs>
 
-                stroke="#ffffff"
 
-                strokeWidth="5"
+                {/* ==================================================
+                    SMOOTH RISING CURVE
+                ================================================== */}
 
-                strokeLinecap="round"
+                <motion.path
+                  initial={{
+                    pathLength: 0,
+                    opacity: 0,
+                  }}
 
-                strokeLinejoin="round"
+                  animate={{
+                    pathLength: 1,
+                    opacity: 1,
+                  }}
 
-                filter="url(#finalArrowGlow)"
-              />
+                  transition={{
+                    duration: 2.4,
+                    delay: 0.5,
+                    ease: "easeInOut",
+                  }}
 
-            </svg>
+                  d="
+                    M 80 475
+                    C 230 455,
+                      360 395,
+                      475 320
+                    C 600 230,
+                      720 130,
+                      850 45
+                  "
 
-          </div>
+                  fill="none"
+
+                  stroke="url(#finalArrowGradient)"
+
+                  strokeWidth="5"
+
+                  strokeLinecap="round"
+
+                  filter="url(#finalArrowGlow)"
+                />
+
+
+                {/* ==================================================
+                    CLEAN ARROW HEAD
+                ================================================== */}
+
+                <motion.path
+                  initial={{
+                    opacity: 0,
+                    pathLength: 0,
+                  }}
+
+                  animate={{
+                    opacity: 1,
+                    pathLength: 1,
+                  }}
+
+                  transition={{
+                    duration: 0.45,
+                    delay: 2.35,
+                    ease: "easeOut",
+                  }}
+
+                  d="
+                    M 822.2 48.5
+                    L 850 45
+                    L 835.7 69.0
+                  "
+
+                  fill="none"
+
+                  stroke="#ffffff"
+
+                  strokeWidth="5"
+
+                  strokeLinecap="round"
+
+                  strokeLinejoin="round"
+
+                  filter="url(#finalArrowGlow)"
+                />
+
+              </svg>
+
+            </div>
+          )}
 
 
           {/* ======================================================
@@ -419,7 +423,7 @@ export default function LeaderboardDesign3({
               md:gap-[35px]
               lg:gap-[80px]
 
-              z-10
+              z-20
             "
           >
 

@@ -22,26 +22,27 @@ export default function WinnerDesign4({
       id={id}
       className="flex flex-col md:flex-row relative overflow-x-hidden overflow-y-auto md:overflow-hidden bg-[#0a0a0c] font-sans select-none text-white h-full w-full"
     >
-      {/* Background grain */}
-      <div className="absolute inset-0 z-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.95%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+      {/* Dark Premium Ambient Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Soft Ambient Radial Glows */}
+        <div className="absolute top-[-25%] left-[-15%] w-[60%] h-[60%] rounded-full bg-amber-500/[0.03] blur-[140px]" />
+        <div className="absolute bottom-[-25%] right-[-15%] w-[60%] h-[60%] rounded-full bg-indigo-900/[0.06] blur-[140px]" />
 
-      {/* Vertical subtle grid lines */}
-      <div className="absolute inset-0 flex justify-between px-[100px] pointer-events-none opacity-5">
-        <div className="w-[1px] h-full bg-white" />
-        <div className="w-[1px] h-full bg-white" />
-        <div className="w-[1px] h-full bg-white" />
-        <div className="w-[1px] h-full bg-white" />
-        <div className="w-[1px] h-full bg-white" />
+        {/* Subtle Radial Vignette for Depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#0a0a0c_100%)] opacity-90" />
       </div>
 
+      {/* Background grain */}
+      <div className="absolute inset-0 z-0 opacity-15 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.95%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+
       {/* Left Typography Column */}
-      <div className="w-full md:w-[35%] h-auto md:h-full p-6 md:p-20 flex flex-col justify-between relative z-10 border-b md:border-b-0 md:border-r border-white/10">
+      <div className="w-full md:w-[35%] h-auto md:h-full p-6 md:px-14 md:py-20 flex flex-col justify-between relative z-10 border-b md:border-b-0 md:border-r border-white/10">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}>
           <div className="text-white/40 tracking-[0.3em] font-medium text-sm md:text-[16px] uppercase mb-4 md:mb-12">
             {eventName} {eventYear}
           </div>
-          <h1 className="font-light text-[clamp(28px,5vw,50px)] leading-[0.9] tracking-tighter uppercase break-words">
-            CONGRAGULATION<br />
+          <h1 className="font-light text-[clamp(28px,5vw,50px)] leading-[0.9] tracking-tighter uppercase break-normal">
+            <span className="inline-block whitespace-nowrap">CONGRATULATION</span><br />
             <span className="font-black">WINNERS</span>
           </h1>
           <div className="w-[50px] h-[4px] bg-white mt-4 md:mt-12 mb-4 md:mb-12" />

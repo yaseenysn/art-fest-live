@@ -131,10 +131,10 @@ export default function MediaControl() {
 
   const handlePlayOnTV = async () => {
     if (playlist.length === 0) return;
-    
+
     setPushing(true);
     setPushStatus(null);
-    
+
     try {
       const presentationId = crypto.randomUUID();
       const res = await fetch('/api/tv-state', {
@@ -160,7 +160,7 @@ export default function MediaControl() {
       });
 
       if (!res.ok) throw new Error('Failed to play on TV');
-      
+
       setPushStatus({ type: 'success', text: 'Playing on TV!' });
       refetchTvState();
       setTimeout(() => setPushStatus(null), 3000);
@@ -213,19 +213,19 @@ export default function MediaControl() {
             <div className="bg-card rounded-xl shadow-sm border border-border-card p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold flex items-center">
-                  <ImageIcon className="w-6 h-6 mr-2 text-indigo-500" /> 
+                  <ImageIcon className="w-6 h-6 mr-2 text-indigo-500" />
                   Media Library
                 </h2>
                 <div>
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*,video/*" 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*,video/*"
+                    className="hidden"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                   />
-                  <button 
+                  <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
                     className="flex items-center space-x-2 bg-primary-purple/10 border border-primary-purple/20 text-indigo-700 hover:bg-primary-purple/20 px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50"
@@ -261,13 +261,13 @@ export default function MediaControl() {
                       <div className="p-3 flex-1 flex flex-col justify-between bg-card">
                         <p className="text-xs font-bold text-text-primary truncate mb-2" title={media.name}>{media.name}</p>
                         <div className="flex space-x-2">
-                          <button 
+                          <button
                             onClick={() => addToPlaylist(media)}
                             className="flex-1 bg-primary-indigo text-white text-white py-1.5 rounded text-xs font-bold hover:bg-primary-purple text-white transition-colors"
                           >
                             Add to Playlist
                           </button>
-                          <button 
+                          <button
                             onClick={() => {
                               if (confirm('Are you sure you want to delete this media?')) {
                                 deleteMedia.mutate(media._id);
@@ -295,7 +295,7 @@ export default function MediaControl() {
           <div className="space-y-6">
             <div className="bg-card-secondary text-white rounded-xl shadow-xl border border-border-card p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
-                <PlayCircle className="w-6 h-6 mr-2 text-emerald-400" /> 
+                <PlayCircle className="w-6 h-6 mr-2 text-emerald-400" />
                 Playlist
               </h2>
 
@@ -318,14 +318,14 @@ export default function MediaControl() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-slate-200 truncate">{item.media.name}</p>
-                        
+
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           {item.media.type === 'video' || item.media.mimeType?.startsWith('video/') ? (
                             <p className="text-xs text-text-muted uppercase font-semibold">Video (Native duration)</p>
                           ) : (
                             <div className="flex items-center space-x-1">
                               <span className="text-xs text-text-muted">Duration:</span>
-                              <Select 
+                              <Select
                                 value={item.imageDuration}
                                 onChange={(e: any) => updateImageDuration(item.id, parseInt(e.target.value))}
                                 className="!min-h-0 !py-1 !px-2 text-xs bg-slate-800"
@@ -340,7 +340,7 @@ export default function MediaControl() {
 
                           <div className="flex items-center space-x-1 border-l border-slate-600 pl-2">
                             <span className="text-xs text-text-muted">Rotate:</span>
-                            <Select 
+                            <Select
                               value={item.rotation || 0}
                               onChange={(e: any) => updateRotation(item.id, parseInt(e.target.value))}
                               className="!min-h-0 !py-1 !px-2 text-xs bg-slate-800"
@@ -372,7 +372,7 @@ export default function MediaControl() {
               </div>
 
               <div className="space-y-3">
-                <button 
+                <button
                   onClick={handlePlayOnTV}
                   disabled={playlist.length === 0 || pushing}
                   className="w-full flex items-center justify-center space-x-2 bg-emerald-500/10 border border-emerald-500/200 hover:bg-emerald-400 text-white rounded-lg py-4 font-black text-lg transition-colors disabled:opacity-50"
@@ -380,7 +380,7 @@ export default function MediaControl() {
                   <MonitorPlay className="w-6 h-6" />
                   <span>{pushing ? 'SENDING...' : 'PLAY PLAYLIST ON TV'}</span>
                 </button>
-                <button 
+                <button
                   onClick={handleStopOnTV}
                   disabled={pushing || !tvState?.presentationType || tvState?.presentationType !== 'MEDIA'}
                   className="w-full flex items-center justify-center space-x-2 bg-rose-500 hover:bg-rose-400 text-white rounded-lg py-4 font-black text-lg transition-colors disabled:opacity-50"
@@ -388,7 +388,7 @@ export default function MediaControl() {
                   <X className="w-6 h-6" />
                   <span>STOP MEDIA ON TV</span>
                 </button>
-                <button 
+                <button
                   onClick={() => setPlaylist([])}
                   disabled={playlist.length === 0}
                   className="w-full py-2 text-sm font-bold text-text-muted hover:text-white transition-colors disabled:opacity-50"

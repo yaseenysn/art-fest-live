@@ -313,6 +313,12 @@ export default function TVPage() {
       queryClient.invalidateQueries({
         queryKey: ["rankings"],
       });
+
+      queryClient.removeQueries({
+        queryKey: ["tvState"],
+      });
+
+      refetchTvState();
     };
 
     /* =======================================================

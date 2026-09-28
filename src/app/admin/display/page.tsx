@@ -28,7 +28,7 @@ export default function DisplayControl() {
   const [customAnnTemplate, setCustomAnnTemplate] = useState<'NEXT_PROGRAM' | 'JUDGES_THANK_YOU' | 'WELCOME' | 'CUSTOM_ANNOUNCEMENT'>('NEXT_PROGRAM');
   const [nextProgName, setNextProgName] = useState('');
   const [nextProgChess, setNextProgChess] = useState('');
-  const [judgesList, setJudgesList] = useState<{name: string}[]>([{name: ''}]);
+  const [judgesList, setJudgesList] = useState<{name: string, designation?: string}[]>([{name: '', designation: ''}]);
   const [customText, setCustomText] = useState('');
   const [customAnnDuration, setCustomAnnDuration] = useState(15);
   const [customAnnStatus, setCustomAnnStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
@@ -428,7 +428,12 @@ export default function DisplayControl() {
         presentationData.programName = nextProgName.trim();
         presentationData.chessNumber = nextProgChess.trim();
       } else if (customAnnTemplate === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') {
-        presentationData.judges = judgesList.filter(j => j.name.trim() !== '');
+        presentationData.judges = judgesList
+          .filter(j => j.name.trim() !== '')
+          .map(j => ({
+            name: j.name.trim(),
+            ...(j.designation && j.designation.trim() ? { designation: j.designation.trim() } : {})
+          }));
       } else if (customAnnTemplate === 'CUSTOM_ANNOUNCEMENT') {
         presentationData.customText = customText.trim();
       }
@@ -873,33 +878,53 @@ export default function DisplayControl() {
           {((customAnnTemplate as string) === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') && (
             <div className="space-y-4 bg-card-secondary p-6 rounded-xl border border-border-card">
               <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Welcome List</label>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {judgesList.map((judge, idx) => (
-                  <div key={idx} className="flex space-x-2">
-                    <input
-                      type="text"
-                      className={clsx("flex-1 border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border", isArabic(judge.name) && "font-ge-ss-two")}
-                      placeholder={`Name ${idx + 1}`}
-                      value={judge.name}
-                      onChange={e => {
-                        const newList = [...judgesList];
-                        newList[idx].name = e.target.value;
-                        setJudgesList(newList);
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setJudgesList(judgesList.filter((_, i) => i !== idx))}
-                      className="px-4 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-200 font-bold"
-                    >
-                      Remove
-                    </button>
+                  <div key={idx} className="p-4 rounded-xl border border-border-card bg-background/50 space-y-3 relative group">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Person #{idx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => setJudgesList(judgesList.filter((_, i) => i !== idx))}
+                        className="text-xs px-3 py-1 bg-red-500/10 text-red-400 rounded-md hover:bg-red-500/20 font-bold"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase">Name</label>
+                      <input
+                        type="text"
+                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.name) && "font-ge-ss-two")}
+                        placeholder="e.g. Muhammed Yaseen"
+                        value={judge.name}
+                        onChange={e => {
+                          const newList = [...judgesList];
+                          newList[idx] = { ...newList[idx], name: e.target.value };
+                          setJudgesList(newList);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase">Designation / Degree (Optional)</label>
+                      <input
+                        type="text"
+                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.designation) && "font-ge-ss-two")}
+                        placeholder="e.g. Imam of TVM Juma Masjid"
+                        value={judge.designation || ''}
+                        onChange={e => {
+                          const newList = [...judgesList];
+                          newList[idx] = { ...newList[idx], designation: e.target.value };
+                          setJudgesList(newList);
+                        }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
               <button
                 type="button"
-                onClick={() => setJudgesList([...judgesList, { name: '' }])}
+                onClick={() => setJudgesList([...judgesList, { name: '', designation: '' }])}
                 className="mt-2 text-sm font-bold text-primary-indigo hover:text-indigo-800 flex items-center"
               >
                 + ADD NAME
