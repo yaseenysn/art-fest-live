@@ -1,18 +1,59 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, MonitorPlay, EyeOff, RotateCcw, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, MonitorPlay, EyeOff, RotateCcw, CheckCircle2, AlertCircle, Loader2, Eye, X } from 'lucide-react';
 import FinalTeamReveal from '../../tv/components/FinalTeamReveal';
 import clsx from 'clsx';
 import { Select } from '@/components/ui/Select';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+function ResultRevealPreviewBox({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.4);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (ref.current) {
+        const width = ref.current.clientWidth;
+        setScale(width / 1920);
+      }
+    };
+
+    updateScale();
+    const element = ref.current;
+    if (!element) return;
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div 
+      ref={ref} 
+      className="w-full aspect-video relative overflow-hidden rounded-xl border border-border-card bg-slate-950 shadow-2xl"
+    >
+      <div 
+        style={{ 
+          width: 1920, 
+          height: 1080, 
+          transform: `scale(${scale})`, 
+          transformOrigin: 'top left' 
+        }}
+        className="absolute top-0 left-0 overflow-hidden bg-slate-950 pointer-events-none select-none"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function FinalRevealAdminPage() {
   const [positions, setPositions] = useState<Record<string, number | ''>>({});
   const [nextToReveal, setNextToReveal] = useState<number>(1);
   const [isStarting, setIsStarting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -250,18 +291,29 @@ export default function FinalRevealAdminPage() {
                 ) : (
                   <>
                     {!isActiveOnTv ? (
-                      <button
-                        onClick={handleStartNextReveal}
-                        disabled={isStarting || !isFormValid || !teamForNextReveal}
-                        className="w-full flex items-center justify-center space-x-3 bg-emerald-600 text-white rounded-xl py-5 font-black uppercase tracking-widest text-lg hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-600/30 disabled:opacity-50 border border-emerald-500/20"
-                      >
-                        <MonitorPlay className="w-6 h-6" />
-                        <span>
-                          {nextToReveal === 1 
-                            ? 'START REVEAL (1ST PLACE)' 
-                            : `REVEAL NEXT (${getOrdinal(nextToReveal)} PLACE)`}
-                        </span>
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={() => setIsPreviewModalOpen(true)}
+                          disabled={!isFormValid || !teamForNextReveal}
+                          className="py-4 px-6 rounded-xl font-bold text-sm tracking-wider transition-all bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 flex items-center justify-center space-x-2 uppercase shadow-sm disabled:opacity-50"
+                        >
+                          <Eye className="w-5 h-5" />
+                          <span>PREVIEW</span>
+                        </button>
+
+                        <button
+                          onClick={handleStartNextReveal}
+                          disabled={isStarting || !isFormValid || !teamForNextReveal}
+                          className="flex-1 flex items-center justify-center space-x-3 bg-emerald-600 text-white rounded-xl py-5 font-black uppercase tracking-widest text-lg hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-600/30 disabled:opacity-50 border border-emerald-500/20"
+                        >
+                          <MonitorPlay className="w-6 h-6" />
+                          <span>
+                            {nextToReveal === 1 
+                              ? 'START REVEAL (1ST PLACE)' 
+                              : `REVEAL NEXT (${getOrdinal(nextToReveal)} PLACE)`}
+                          </span>
+                        </button>
+                      </div>
                     ) : (
                       <button
                         onClick={handleEndReveal}
@@ -304,6 +356,66 @@ export default function FinalRevealAdminPage() {
 
         </div>
       </div>
+
+      {/* FINAL TEAM REVEAL PREVIEW MODAL */}
+      {isPreviewModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-card-secondary border border-border-card rounded-2xl max-w-5xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-border-card pb-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider flex items-center space-x-2">
+                  <MonitorPlay className="w-6 h-6 text-indigo-400" />
+                  <span>FINAL TEAM REVEAL PREVIEW</span>
+                </h2>
+                <p className="text-sm text-text-muted mt-1 uppercase tracking-wide">
+                  {getOrdinal(nextToReveal)} PLACE • {teamForNextReveal?.name || 'Selected Team'}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="text-text-muted hover:text-white p-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Live 16:9 Scaled TV Preview Container */}
+            <ResultRevealPreviewBox>
+              <div className="w-full h-full relative [&>div]:!absolute [&>div]:!w-full [&>div]:!h-full [&>div]:!inset-0 [&>div]:!top-0 [&>div]:!left-0 [&>div]:!right-0 [&>div]:!bottom-0">
+                <FinalTeamReveal
+                  key={`preview-${nextToReveal}-${teamForNextReveal?._id || 'team'}`}
+                  teamName={teamForNextReveal?.name || 'Team Name'}
+                  position={nextToReveal}
+                  active={true}
+                />
+              </div>
+            </ResultRevealPreviewBox>
+
+            {/* Action Footer */}
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-3 pt-2">
+              <button
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition uppercase"
+              >
+                CLOSE PREVIEW
+              </button>
+
+              <button
+                onClick={async () => {
+                  await handleStartNextReveal();
+                  setIsPreviewModalOpen(false);
+                }}
+                disabled={isStarting || !isFormValid || !teamForNextReveal}
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black tracking-wider transition shadow-lg shadow-emerald-600/30 uppercase flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                <MonitorPlay className="w-5 h-5 mr-1" />
+                <span>SHOW ON TV</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

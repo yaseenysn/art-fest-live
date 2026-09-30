@@ -776,7 +776,7 @@ export default function TVPage() {
             >
               <ResultsRouter
                 results={tvState.presentationData.results}
-                design={tvState?.resultsDesign || "design1"}
+                design={tvState.presentationData.design || tvState?.resultsDesign || "design1"}
                 revealStage={tvState.presentationData.revealStage || "WINNER"}
               />
             </motion.div>

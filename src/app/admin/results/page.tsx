@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IProgram, ITeam, IResult, EVENT_NAME, POSITION_DEFAULT_POINTS } from '@/types';
 import clsx from 'clsx';
-import { AlertCircle, CheckCircle2, Image as ImageIcon, Download, MonitorPlay, Plus, Trash2, Edit2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Image as ImageIcon, Download, MonitorPlay, Plus, Trash2, Edit2, Eye, X } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
 import CongratulationsPoster from '@/components/CongratulationsPoster';
 import AllWinnersPoster, { WinnerData } from '@/components/AllWinnersPoster';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import AllWinnersRouter from '../../tv/components/AllWinnersRouter';
+import ResultsRouter from '../../tv/components/ResultsRouter';
 import { getSocket } from '@/lib/socket-client';
 import { SOCKET_EVENTS } from '@/lib/socket';
 
@@ -19,6 +20,46 @@ const getPositionLabel = (pos: number) => {
   const v = pos % 100;
   return pos + (s[(v - 20) % 10] || s[v] || s[0]) + " Place";
 };
+
+function ResultRevealPreviewBox({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.4);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (ref.current) {
+        const width = ref.current.clientWidth;
+        setScale(width / 1920);
+      }
+    };
+
+    updateScale();
+    const element = ref.current;
+    if (!element) return;
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div 
+      ref={ref} 
+      className="w-full aspect-video relative overflow-hidden rounded-xl border border-border-card bg-slate-950 shadow-2xl"
+    >
+      <div 
+        style={{ 
+          width: 1920, 
+          height: 1080, 
+          transform: `scale(${scale})`, 
+          transformOrigin: 'top left' 
+        }}
+        className="absolute top-0 left-0 overflow-hidden bg-slate-950 pointer-events-none select-none"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function ResultsEntry() {
   const queryClient = useQueryClient();
@@ -368,8 +409,75 @@ export default function ResultsEntry() {
     }
   };
 
+  // Result Reveal Preview State
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [previewPosition, setPreviewPosition] = useState<number | null>(null);
+  const [previewDesign, setPreviewDesign] = useState<string>('design1');
+  const [previewStage, setPreviewStage] = useState<'PLACE' | 'WINNER'>('WINNER');
+
+  // All Winners Poster Preview State
+  const [allWinnersPreviewDesign, setAllWinnersPreviewDesign] = useState<string>('design1');
+
+  const getAllWinnersData = () => {
+    const winnersByPosition = {
+      1: [] as WinnerData[],
+      2: [] as WinnerData[],
+      3: [] as WinnerData[],
+    };
+
+    savedResultData.forEach((res: any) => {
+      if (res.position === 1 || res.position === 2 || res.position === 3) {
+        const pos = res.position as 1 | 2 | 3;
+        const team = typeof res.teamId === 'object' && res.teamId !== null
+          ? res.teamId
+          : teams.find(t => String(t._id) === String(res.teamId)) || { name: 'Unknown', color: '#f59e0b' };
+
+        winnersByPosition[pos].push({
+          studentName: res.studentName || 'Unknown',
+          teamName: team?.name || 'Unknown',
+          teamColor: team?.color || '#f59e0b',
+          points: res.points || 0,
+        });
+      }
+    });
+
+    return winnersByPosition;
+  };
+
+  const openPreview = (pos: number, stage: 'PLACE' | 'WINNER' = 'WINNER') => {
+    setPreviewPosition(pos);
+    setPreviewStage(stage);
+    setPreviewDesign(tvState?.resultsDesign || 'design1');
+    setIsPreviewModalOpen(true);
+  };
+
+  const getPreviewResults = (pos: number) => {
+    const posResults = savedResultData.filter((r: any) => r.position === pos);
+    return posResults.map((r: any) => {
+      const teamObj = typeof r.teamId === 'object' && r.teamId !== null 
+        ? r.teamId 
+        : teams.find(t => String(t._id) === String(r.teamId)) || { name: 'Team', color: '#6366f1' };
+        
+      const progObj = typeof r.programId === 'object' && r.programId !== null 
+        ? r.programId 
+        : {
+            name: selectedProgram?.name || 'Program',
+            language: selectedProgram?.language || '',
+            category: selectedProgram?.category || '',
+            type: selectedProgram?.type || ''
+          };
+
+      return {
+        ...r,
+        position: pos,
+        teamId: teamObj,
+        programId: progObj
+      };
+    });
+  };
+
   // --- SEQUENTIAL REVEAL WORKFLOW ---
-  const handleReveal = async (position: number, isAlreadyRevealed: boolean, stage: 'PLACE' | 'WINNER') => {
+  const handleReveal = async (position: number, isAlreadyRevealed: boolean, stage: 'PLACE' | 'WINNER', design?: string) => {
     if (!isAlreadyRevealed && stage === 'PLACE') {
       if (!confirm(`Are you sure you want to reveal the ${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} Place results on the TV now?`)) return;
     }
@@ -378,13 +486,20 @@ export default function ResultsEntry() {
       const res = await fetch('/api/results/reveal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ programId: selectedProgramId, position, duration: resultRevealDisplayTime, revealStage: stage })
+        body: JSON.stringify({ 
+          programId: selectedProgramId, 
+          position, 
+          duration: resultRevealDisplayTime, 
+          revealStage: stage,
+          resultsDesign: design || tvState?.resultsDesign || 'design1'
+        })
       });
       if (!res.ok) throw new Error('Failed to reveal');
       
       setActiveRevealState({ pos: position, stage });
       queryClient.invalidateQueries({ queryKey: ['results', selectedProgramId] });
       queryClient.invalidateQueries({ queryKey: ['results', 'recent'] });
+      queryClient.invalidateQueries({ queryKey: ['tvState'] });
     } catch (err: unknown) {
       alert((err as Error).message);
     }
@@ -586,14 +701,23 @@ export default function ResultsEntry() {
                         <div key={pos} className="border border-border-card rounded-xl overflow-hidden bg-row">
                           <div className="bg-slate-700 px-6 py-4 flex justify-between items-center border-b border-slate-600">
                             <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
-                            <div className="text-sm font-bold uppercase tracking-widest">
-                              {isPosRevealed ? (
-                                <span className="text-emerald-400">✓ REVEALED</span>
-                              ) : isEnabled ? (
-                                <span className="text-amber-400">● READY</span>
-                              ) : (
-                                <span className="text-text-muted">🔒 LOCKED</span>
-                              )}
+                            <div className="flex items-center space-x-3">
+                              <button
+                                onClick={() => openPreview(pos, isPosRevealed ? 'WINNER' : 'PLACE')}
+                                className="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 rounded-lg font-bold text-xs tracking-wider transition flex items-center space-x-1.5 uppercase shadow-sm"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>PREVIEW</span>
+                              </button>
+                              <div className="text-sm font-bold uppercase tracking-widest">
+                                {isPosRevealed ? (
+                                  <span className="text-emerald-400">✓ REVEALED</span>
+                                ) : isEnabled ? (
+                                  <span className="text-amber-400">● READY</span>
+                                ) : (
+                                  <span className="text-text-muted">🔒 LOCKED</span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         
@@ -689,6 +813,14 @@ export default function ResultsEntry() {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <button
+                              onClick={() => openPreview(pos, isPosRevealed ? 'WINNER' : 'PLACE')}
+                              className="py-3 px-4 rounded-lg font-bold text-sm tracking-wider transition-all bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 flex items-center justify-center space-x-2 uppercase shadow-sm"
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span>PREVIEW</span>
+                            </button>
+
+                            <button
                               onClick={() => handleReveal(pos, isPosRevealed, 'PLACE')}
                               disabled={!isEnabled || (activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE')}
                               className={clsx(
@@ -778,16 +910,29 @@ export default function ResultsEntry() {
                         ))}
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        setGeneratedAllWinnersPosterUrl(null);
-                        setIsAllWinnersPosterModalOpen(true);
-                      }}
-                      className="px-8 py-4 rounded-xl font-black text-sm tracking-widest transition-all bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500 shadow-xl shadow-orange-900/20 uppercase flex items-center space-x-3"
-                    >
-                      <span className="text-xl">🎉</span>
-                      <span>GENERATE ALL WINNERS POSTER</span>
-                    </button>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={() => {
+                            setAllWinnersPreviewDesign(tvState?.allWinnersDesign || 'design1');
+                            setIsAllWinnersPosterModalOpen(true);
+                          }}
+                          className="py-4 px-6 rounded-xl font-bold text-sm tracking-wider transition-all bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 flex items-center justify-center space-x-2 uppercase shadow-sm"
+                        >
+                          <Eye className="w-5 h-5" />
+                          <span>PREVIEW</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setAllWinnersPreviewDesign(tvState?.allWinnersDesign || 'design1');
+                            setIsAllWinnersPosterModalOpen(true);
+                          }}
+                          className="flex-1 px-8 py-4 rounded-xl font-black text-sm tracking-widest transition-all bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500 shadow-xl shadow-orange-900/20 uppercase flex items-center justify-center space-x-3"
+                        >
+                          <span className="text-xl">🎉</span>
+                          <span>GENERATE ALL WINNERS POSTER</span>
+                        </button>
+                      </div>
                   </div>
                 </div>
 
@@ -1066,137 +1211,246 @@ export default function ResultsEntry() {
         </div>
       )}
 
-    {/* All-Winners Poster Modal */}
+      {/* All-Winners Poster Live Preview Modal */}
       {isAllWinnersPosterModalOpen && selectedProgramId && (
-        <div className="fixed inset-0 bg-card-secondary/80 flex items-center justify-center p-4 z-[100] overflow-y-auto">
-          <div className="bg-card rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden border border-border-card mt-10 md:mt-0">
-            
-            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center min-h-[600px] border-r border-border-card relative">
-              <div className="w-full relative flex flex-col items-center group">
-                <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/200 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
-                  PREVIEW (16:9)
-                </div>
-                <div className="w-full overflow-hidden flex items-center justify-center shadow-2xl rounded-sm" style={{ aspectRatio: '16/9', contain: 'strict' }}>
-                  <div className="origin-top-left" style={{ transform: 'scale(calc(min(100%, 400px) / 1920))', width: '1920px', height: '1080px' }}>
-                {(() => {
-                  const program = programs.find(p => String(p._id) === selectedProgramId);
-                  
-                  // Group winners by position
-                  const winnersByPosition = {
-                    1: [] as WinnerData[],
-                    2: [] as WinnerData[],
-                    3: [] as WinnerData[],
-                  };
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-card-secondary border border-border-card rounded-2xl max-w-5xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-border-card pb-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider flex items-center space-x-2">
+                  <MonitorPlay className="w-6 h-6 text-amber-400" />
+                  <span>ALL WINNERS POSTER PREVIEW</span>
+                </h2>
+                <p className="text-sm text-text-muted mt-1 uppercase tracking-wide">
+                  {selectedProgram?.name || 'Program'} • All Winners Summary
+                </p>
+              </div>
+              <button
+                onClick={() => setIsAllWinnersPosterModalOpen(false)}
+                className="text-text-muted hover:text-white p-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  savedResultData.forEach((res: any) => {
-                    if (res.position === 1 || res.position === 2 || res.position === 3) {
-                      const pos = res.position as 1 | 2 | 3;
-                      const team = res.teamId as { name: string, color: string };
-                      winnersByPosition[pos].push({
-                        studentName: res.studentName || 'Unknown',
-                        teamName: team?.name || 'Unknown',
-                        teamColor: team?.color || '#f59e0b',
-                        points: res.points || 0,
-                      });
-                    }
-                  });
+            {/* Controls Bar: Design Dropdown & Duration */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-border-card">
+              <div className="flex items-center space-x-3 w-full sm:w-auto">
+                <label className="text-xs font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">
+                  Poster Design:
+                </label>
+                <Select
+                  value={allWinnersPreviewDesign}
+                  onChange={(e: any) => setAllWinnersPreviewDesign(e.target.value)}
+                  className="w-full sm:w-56 bg-slate-950 border-slate-700 text-white font-semibold"
+                >
+                  <option value="design1">Design 1</option>
+                  <option value="design2">Design 2</option>
+                  <option value="design3">Design 3</option>
+                  <option value="design4">Design 4</option>
+                </Select>
+              </div>
 
-                  return (
-                    <AllWinnersRouter
-                      config={{
-                        programName: program?.name || 'Program',
-                        language: program?.language || 'Other',
-                        category: program?.category || '',
-                        eventName: EVENT_NAME,
-                        eventYear: new Date().getFullYear().toString(),
-                        winnersByPosition,
-                        presentation: tvState?.allWinnersDesign || 'design1',
-                      }}
-                    />
-                  );
-                })()}
-                  </div>
+              <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                <span className="text-xs font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">
+                  Display Duration:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[10, 15, 20, 30, 60, 120].map(time => (
+                    <button
+                      key={time}
+                      onClick={() => setAllWinnersDisplayTime(time)}
+                      className={clsx(
+                        "px-3 py-1.5 rounded-lg text-xs font-bold transition",
+                        allWinnersDisplayTime === time
+                          ? "bg-amber-500 text-black font-extrabold"
+                          : "bg-slate-950 text-text-muted hover:text-white border border-slate-800"
+                      )}
+                    >
+                      {time >= 60 ? `${time / 60}m` : `${time}s`}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-card p-8 flex flex-col justify-center">
-              <div className="mb-8">
-                <h3 className="text-2xl font-black text-text-primary tracking-tight uppercase">ALL WINNERS POSTER</h3>
-                <p className="text-text-muted mt-2">Create a single combined poster featuring all 1st, 2nd, and 3rd place winners for this program.</p>
+            {/* Live 16:9 TV Preview Container */}
+            <ResultRevealPreviewBox>
+              {(() => {
+                const winnersByPosition = getAllWinnersData();
+                return (
+                  <AllWinnersRouter
+                    config={{
+                      programName: selectedProgram?.name || 'Program',
+                      language: selectedProgram?.language || 'Other',
+                      category: selectedProgram?.category || '',
+                      eventName: EVENT_NAME,
+                      eventYear: new Date().getFullYear().toString(),
+                      winnersByPosition,
+                      presentation: allWinnersPreviewDesign as any,
+                    }}
+                  />
+                );
+              })()}
+            </ResultRevealPreviewBox>
+
+            {/* Action Footer */}
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-3 pt-2">
+              <button
+                onClick={() => setIsAllWinnersPosterModalOpen(false)}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition uppercase"
+              >
+                CLOSE PREVIEW
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    const winnersByPosition = getAllWinnersData();
+                    const config = {
+                      programName: selectedProgram?.name || 'Program',
+                      language: selectedProgram?.language || 'Other',
+                      category: selectedProgram?.category || '',
+                      eventName: EVENT_NAME,
+                      eventYear: new Date().getFullYear().toString(),
+                      winnersByPosition,
+                      presentation: allWinnersPreviewDesign,
+                    };
+
+                    const startedAt = new Date();
+                    const expiresAt = new Date(startedAt.getTime() + allWinnersDisplayTime * 1000);
+
+                    const res = await fetch('/api/tv-state', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        allWinnersDesign: allWinnersPreviewDesign,
+                        presentationId: crypto.randomUUID(),
+                        presentationType: 'ALL_WINNERS',
+                        presentationData: config,
+                        presentationStartedAt: startedAt.toISOString(),
+                        presentationExpiresAt: expiresAt.toISOString(),
+                        presentationDuration: allWinnersDisplayTime
+                      })
+                    });
+
+                    if (!res.ok) throw new Error("Failed to push All Winners poster");
+                    alert('All-Winners Poster successfully sent to TV!');
+                    setIsAllWinnersPosterModalOpen(false);
+                    refetchTvState();
+                  } catch (err: any) {
+                    alert(err.message);
+                  }
+                }}
+                disabled={savedResultData.length === 0}
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-sm font-black tracking-wider transition shadow-lg shadow-amber-500/20 uppercase flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                <MonitorPlay className="w-5 h-5 mr-1" />
+                <span>SHOW ON TV</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RESULT REVEAL PREVIEW MODAL */}
+      {isPreviewModalOpen && previewPosition !== null && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-card-secondary border border-border-card rounded-2xl max-w-5xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-border-card pb-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider flex items-center space-x-2">
+                  <MonitorPlay className="w-6 h-6 text-indigo-400" />
+                  <span>RESULT REVEAL PREVIEW</span>
+                </h2>
+                <p className="text-sm text-text-muted mt-1 uppercase tracking-wide">
+                  {getPositionLabel(previewPosition)} • {selectedProgram?.name || 'Program'}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="text-text-muted hover:text-white p-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Controls: Design dropdown & Stage selector */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-border-card">
+              <div className="flex items-center space-x-3 w-full sm:w-auto">
+                <label className="text-xs font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">
+                  Result Reveal Design:
+                </label>
+                <Select
+                  value={previewDesign}
+                  onChange={(e: any) => setPreviewDesign(e.target.value)}
+                  className="w-full sm:w-56 bg-slate-950 border-slate-700 text-white font-semibold"
+                >
+                  <option value="design1">Design 1</option>
+                  <option value="design2">Design 2</option>
+                  <option value="design3">Design 3</option>
+                  <option value="design4">Design 4</option>
+                </Select>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-border-subtle">
-                <button
-                  onClick={async () => {
-                    try {
-                      const program = programs.find(p => String(p._id) === selectedProgramId);
-                      const winnersByPosition = { 1: [] as any[], 2: [] as any[], 3: [] as any[] };
-                      
-                      savedResultData.forEach((res: any) => {
-                        if (res.position === 1 || res.position === 2 || res.position === 3) {
-                          const pos = res.position as 1 | 2 | 3;
-                          const team = res.teamId as { name: string, color: string };
-                          winnersByPosition[pos].push({
-                            studentName: res.studentName || 'Unknown',
-                            teamName: team?.name || 'Unknown',
-                            teamColor: team?.color || '#f59e0b',
-                            points: res.points || 0,
-                          });
-                        }
-                      });
-
-                      const config = {
-                        programName: program?.name || 'Program',
-                        language: program?.language || 'Other',
-                        category: program?.category || '',
-                        eventName: EVENT_NAME,
-                        eventYear: new Date().getFullYear().toString(),
-                        winnersByPosition,
-                        presentation: tvState?.allWinnersDesign || 'design1',
-                      };
-
-                      const startedAt = new Date();
-                      const expiresAt = new Date(startedAt.getTime() + allWinnersDisplayTime * 1000);
-
-                      const res = await fetch('/api/tv-state', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                          presentationId: crypto.randomUUID(),
-                          presentationType: 'ALL_WINNERS',
-                          presentationData: config,
-                          presentationStartedAt: startedAt.toISOString(),
-                          presentationExpiresAt: expiresAt.toISOString(),
-                          presentationDuration: allWinnersDisplayTime
-                        })
-                      });
-                      if (!res.ok) throw new Error("Failed to push All Winners poster");
-                      alert('All-Winners Poster successfully sent to TV!');
-                      setIsAllWinnersPosterModalOpen(false);
-                      refetchTvState();
-                    } catch (err: any) {
-                      alert(err.message);
-                    }
-                  }}
-                  disabled={savedResultData.length === 0}
-                  className="w-full px-6 py-4 bg-primary-indigo text-white text-white rounded-xl font-bold text-lg hover:bg-primary-purple text-white transition-colors flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
-                >
-                  <MonitorPlay className="w-5 h-5" />
-                  <span>SHOW POSTER ON TV</span>
-                </button>
-              </div>
-              <div className="mt-8 pt-6 border-t border-border-subtle text-center">
-                <button
-                  onClick={() => setIsAllWinnersPosterModalOpen(false)}
-                  className="text-text-muted hover:text-text-primary font-bold transition-colors"
-                >
-                  CANCEL
-                </button>
+              <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Stage:</span>
+                <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                  <button
+                    onClick={() => setPreviewStage('PLACE')}
+                    className={clsx(
+                      "px-3 py-1.5 text-xs font-bold rounded-md transition",
+                      previewStage === 'PLACE' ? "bg-indigo-600 text-white" : "text-text-muted hover:text-white"
+                    )}
+                  >
+                    PLACE ONLY
+                  </button>
+                  <button
+                    onClick={() => setPreviewStage('WINNER')}
+                    className={clsx(
+                      "px-3 py-1.5 text-xs font-bold rounded-md transition",
+                      previewStage === 'WINNER' ? "bg-emerald-600 text-white" : "text-text-muted hover:text-white"
+                    )}
+                  >
+                    PLACE + WINNER
+                  </button>
+                </div>
               </div>
             </div>
-            
+
+            {/* Live Preview Container (16:9 TV composition) */}
+            <ResultRevealPreviewBox>
+              <ResultsRouter
+                results={getPreviewResults(previewPosition)}
+                design={previewDesign}
+                revealStage={previewStage}
+              />
+            </ResultRevealPreviewBox>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-3 pt-2">
+              <button
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition uppercase"
+              >
+                CLOSE PREVIEW
+              </button>
+
+              <button
+                onClick={async () => {
+                  const posResults = savedResultData.filter((r: any) => r.position === previewPosition);
+                  const isPosRevealed = posResults.every((r: any) => r.revealed);
+                  await handleReveal(previewPosition, isPosRevealed, previewStage, previewDesign);
+                  setIsPreviewModalOpen(false);
+                }}
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black tracking-wider transition shadow-lg shadow-emerald-600/30 uppercase flex items-center justify-center space-x-2"
+              >
+                <MonitorPlay className="w-5 h-5 mr-1" />
+                <span>REVEAL ON TV</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

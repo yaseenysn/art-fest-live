@@ -10,7 +10,7 @@ import { requireAdmin } from '@/lib/auth';
 export const POST = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
-    const { programId, position, duration, revealStage } = await req.json();
+    const { programId, position, duration, revealStage, resultsDesign, design } = await req.json();
     
     if (!programId) {
       return NextResponse.json({ error: 'Program ID is required' }, { status: 400 });
@@ -49,12 +49,13 @@ export const POST = requireAdmin(async (req: NextRequest) => {
 
     // Fetch the current state to grab the admin's selected resultsDesign
     const currentState = await TVState.findOne({});
-    const activeDesign = currentState?.resultsDesign || 'design1';
+    const activeDesign = resultsDesign || design || currentState?.resultsDesign || 'design1';
 
     const state = await TVState.findOneAndUpdate(
       {},
       {
         $set: {
+          resultsDesign: activeDesign,
           presentationId,
           presentationType: 'RESULT_REVEAL',
           presentationData: { 
