@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, UploadCloud, PlayCircle, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon, Video, MonitorPlay } from 'lucide-react';
+import { ArrowLeft, UploadCloud, PlayCircle, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon, Video, MonitorPlay, Eye, RotateCcw, RotateCw, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { Select } from '@/components/ui/Select';
@@ -34,6 +34,47 @@ export default function MediaControl() {
   const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
   const [pushing, setPushing] = useState(false);
   const [pushStatus, setPushStatus] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  const [previewTarget, setPreviewTarget] = useState<
+    | { type: 'media'; item: MediaItem }
+    | { type: 'playlist'; id: string }
+    | null
+  >(null);
+
+  const [libraryRotations, setLibraryRotations] = useState<Record<string, number>>({});
+
+  const activePreviewMedia = (() => {
+    if (!previewTarget) return null;
+    if (previewTarget.type === 'playlist') {
+      const item = playlist.find(p => p.id === previewTarget.id);
+      if (!item) return null;
+      return {
+        id: item.id,
+        isPlaylist: true,
+        name: item.media.name,
+        url: item.media.url,
+        type: item.media.type,
+        mimeType: item.media.mimeType,
+        rotation: item.rotation || 0,
+      };
+    }
+    const mediaId = previewTarget.item._id;
+    return {
+      id: mediaId,
+      isPlaylist: false,
+      name: previewTarget.item.name,
+      url: previewTarget.item.url,
+      type: previewTarget.item.type,
+      mimeType: previewTarget.item.mimeType,
+      rotation: libraryRotations[mediaId] || 0,
+    };
+  })();
+
+  const playlistIndex = activePreviewMedia?.isPlaylist
+    ? playlist.findIndex(p => p.id === activePreviewMedia.id)
+    : -1;
+  const hasPrevPlaylist = playlistIndex > 0;
+  const hasNextPlaylist = playlistIndex >= 0 && playlistIndex < playlist.length - 1;
 
   const { data: mediaLibrary = [], isLoading } = useQuery<MediaItem[]>({
     queryKey: ['media'],
@@ -102,9 +143,25 @@ export default function MediaControl() {
         id: crypto.randomUUID(),
         media,
         imageDuration: 15, // default 15s for images
-        rotation: 0 // default 0 degrees
+        rotation: libraryRotations[media._id] || 0
       }
     ]);
+  };
+
+  const handleSetRotation = (newDeg: number) => {
+    if (!activePreviewMedia) return;
+    if (activePreviewMedia.isPlaylist) {
+      updateRotation(activePreviewMedia.id, newDeg);
+    } else {
+      setLibraryRotations(prev => ({ ...prev, [activePreviewMedia.id]: newDeg }));
+    }
+  };
+
+  const handleRotateStep = (step: number) => {
+    if (!activePreviewMedia) return;
+    const currentRot = activePreviewMedia.rotation || 0;
+    const newDeg = (currentRot + step + 360) % 360;
+    handleSetRotation(newDeg);
   };
 
   const removeFromPlaylist = (id: string) => {
@@ -263,9 +320,17 @@ export default function MediaControl() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => addToPlaylist(media)}
-                            className="flex-1 bg-primary-indigo text-white text-white py-1.5 rounded text-xs font-bold hover:bg-primary-purple text-white transition-colors"
+                            className="flex-1 bg-primary-indigo text-white py-1.5 rounded text-xs font-bold hover:bg-primary-purple transition-colors"
                           >
                             Add to Playlist
+                          </button>
+                          <button
+                            onClick={() => setPreviewTarget({ type: 'media', item: media })}
+                            className="bg-slate-700 hover:bg-slate-600 text-white px-2 py-1.5 rounded text-xs font-bold transition-colors flex items-center justify-center space-x-1"
+                            title="Preview Media"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Preview</span>
                           </button>
                           <button
                             onClick={() => {
@@ -294,10 +359,31 @@ export default function MediaControl() {
           {/* RIGHT: Playlist */}
           <div className="space-y-6">
             <div className="bg-card-secondary text-white rounded-xl shadow-xl border border-border-card p-6">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <PlayCircle className="w-6 h-6 mr-2 text-emerald-400" />
-                Playlist
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold flex items-center">
+                  <PlayCircle className="w-6 h-6 mr-2 text-emerald-400" />
+                  Playlist
+                </h2>
+                {playlist.length > 0 && (
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setPreviewTarget({ type: 'playlist', id: playlist[0].id })}
+                      className="flex items-center space-x-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-300 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>Preview</span>
+                    </button>
+                    <button
+                      onClick={handlePlayOnTV}
+                      disabled={pushing}
+                      className="flex items-center space-x-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <MonitorPlay className="w-4 h-4" />
+                      <span>▶ Play on TV</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-3 mb-6 min-h-[300px]">
                 {playlist.length === 0 ? (
@@ -351,6 +437,26 @@ export default function MediaControl() {
                               <option value={180}>180&deg;</option>
                               <option value={270}>270&deg;</option>
                             </Select>
+                          </div>
+
+                          <div className="flex items-center space-x-1 border-l border-slate-600 pl-2">
+                            <button
+                              onClick={() => setPreviewTarget({ type: 'playlist', id: item.id })}
+                              className="flex items-center space-x-1 text-xs font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-2 py-1 rounded transition-colors"
+                              title="Preview on TV"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Preview</span>
+                            </button>
+                            <button
+                              onClick={handlePlayOnTV}
+                              disabled={pushing}
+                              className="flex items-center space-x-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                              title="Play on TV"
+                            >
+                              <MonitorPlay className="w-3.5 h-3.5" />
+                              <span>▶ Play on TV</span>
+                            </button>
                           </div>
                         </div>
 
@@ -409,6 +515,184 @@ export default function MediaControl() {
           </div>
         </div>
       </div>
+
+      {/* PREVIEW MODAL */}
+      {activePreviewMedia && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setPreviewTarget(null)}
+        >
+          <div
+            className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto bg-slate-900 border border-slate-700 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg">
+                  <MonitorPlay className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white truncate max-w-md" title={activePreviewMedia.name}>
+                    {activePreviewMedia.name}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Playlist Preview &bull; Item {playlistIndex >= 0 ? playlistIndex + 1 : 1} of {playlist.length || 1}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                {hasPrevPlaylist && (
+                  <button
+                    onClick={() => setPreviewTarget({ type: 'playlist', id: playlist[playlistIndex - 1].id })}
+                    className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors flex items-center space-x-1 text-xs font-bold"
+                    title="Previous Item"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Prev</span>
+                  </button>
+                )}
+                {hasNextPlaylist && (
+                  <button
+                    onClick={() => setPreviewTarget({ type: 'playlist', id: playlist[playlistIndex + 1].id })}
+                    className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors flex items-center space-x-1 text-xs font-bold"
+                    title="Next Item"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setPreviewTarget(null)}
+                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors ml-2"
+                  title="Close Preview"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* TV Frame (16:9 ratio) */}
+            <div
+              className="relative w-full aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center border border-slate-800 shadow-inner"
+              style={{ containerType: 'size' as const }}
+            >
+              {activePreviewMedia.type === 'video' || activePreviewMedia.mimeType?.startsWith('video/') ? (
+                <video
+                  key={`${activePreviewMedia.url}-${activePreviewMedia.rotation}`}
+                  src={activePreviewMedia.url}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls
+                  className="object-contain bg-black"
+                  style={{
+                    transform: `rotate(${activePreviewMedia.rotation}deg)`,
+                    width: (activePreviewMedia.rotation === 90 || activePreviewMedia.rotation === 270) ? '100cqh' : '100%',
+                    height: (activePreviewMedia.rotation === 90 || activePreviewMedia.rotation === 270) ? '100cqw' : '100%',
+                    maxWidth: 'none',
+                  }}
+                />
+              ) : (
+                <img
+                  key={`${activePreviewMedia.url}-${activePreviewMedia.rotation}`}
+                  src={activePreviewMedia.url}
+                  alt={activePreviewMedia.name}
+                  className="object-contain bg-black"
+                  style={{
+                    transform: `rotate(${activePreviewMedia.rotation}deg)`,
+                    width: (activePreviewMedia.rotation === 90 || activePreviewMedia.rotation === 270) ? '100cqh' : '100%',
+                    height: (activePreviewMedia.rotation === 90 || activePreviewMedia.rotation === 270) ? '100cqw' : '100%',
+                    maxWidth: 'none',
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Rotation Controls Section */}
+            <div className="flex flex-col items-center space-y-3 pt-1 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-semibold text-slate-400">Rotation:</span>
+                <span className="text-base font-black text-indigo-400">{activePreviewMedia.rotation}&deg;</span>
+              </div>
+
+              {/* Rotate Left, Reset, Rotate Right */}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  onClick={() => handleRotateStep(-90)}
+                  className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold transition-all shadow-sm"
+                  title="Rotate 90° Counter-Clockwise"
+                >
+                  <RotateCcw className="w-4 h-4 text-indigo-400" />
+                  <span>Rotate Left</span>
+                </button>
+                <button
+                  onClick={() => handleSetRotation(0)}
+                  className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold transition-all shadow-sm"
+                  title="Reset Rotation to 0°"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Reset</span>
+                </button>
+                <button
+                  onClick={() => handleRotateStep(90)}
+                  className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 rounded-lg text-xs font-bold transition-all shadow-sm"
+                  title="Rotate 90° Clockwise"
+                >
+                  <span>Rotate Right</span>
+                  <RotateCw className="w-4 h-4 text-indigo-400" />
+                </button>
+              </div>
+
+              {/* Preset Buttons */}
+              <div className="flex items-center space-x-2 pt-1">
+                {[0, 90, 180, 270].map(deg => (
+                  <button
+                    key={deg}
+                    onClick={() => handleSetRotation(deg)}
+                    className={clsx(
+                      "px-3 py-1.5 text-xs font-extrabold rounded-lg border transition-all min-w-[50px] text-center",
+                      activePreviewMedia.rotation === deg
+                        ? "bg-indigo-600 border-indigo-400 text-white shadow-md shadow-indigo-600/30 scale-105"
+                        : "bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+                    )}
+                  >
+                    {deg}&deg;
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-xs text-slate-400 hidden sm:block">
+                Rotation applies directly to playlist configuration
+              </div>
+              <div className="flex items-center space-x-2 w-full sm:w-auto">
+                <button
+                  onClick={() => setPreviewTarget(null)}
+                  className="flex-1 sm:flex-none px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all"
+                >
+                  Close Preview
+                </button>
+                <button
+                  onClick={() => {
+                    handlePlayOnTV();
+                    setPreviewTarget(null);
+                  }}
+                  disabled={pushing || playlist.length === 0}
+                  className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm rounded-xl transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                >
+                  <MonitorPlay className="w-4 h-4" />
+                  <span>▶ Play on TV</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
