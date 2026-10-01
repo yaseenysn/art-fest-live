@@ -532,11 +532,11 @@ export default function ProgramsPage() {
         
         {filteredPrograms.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse min-w-[1100px]">
               <thead>
                 <tr className="bg-card text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle">
-                  <th className="px-6 py-4">#</th>
-                  <th className="px-6 py-4">PROGRAM</th>
+                  <th className="px-4 py-4 sticky left-0 z-30 bg-card w-[80px] min-w-[80px]">#</th>
+                  <th className="px-6 py-4 sticky left-[80px] z-30 bg-card min-w-[200px] shadow-[4px_0_8px_-2px_rgba(0,0,0,0.4)]">PROGRAM</th>
                   <th className="px-6 py-4">LANGUAGE</th>
                   <th className="px-6 py-4">AGE GROUP</th>
                   <th className="px-6 py-4">TYPE</th>
@@ -544,7 +544,7 @@ export default function ProgramsPage() {
                   <th className="px-6 py-4">STATUS</th>
                   <th className="px-6 py-4">RESULT</th>
                   <th className="px-6 py-4">POSTER</th>
-                  <th className="px-6 py-4 text-right">ACTIONS</th>
+                  <th className="px-6 py-4 text-right sticky right-0 z-30 bg-card shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.4)]">ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-card">
@@ -555,7 +555,7 @@ export default function ProgramsPage() {
                   
                   return (
                     <tr key={program._id as string} className="hover:bg-card-secondary/50 transition-colors group">
-                      <td className="px-6 py-4 text-text-muted font-medium">
+                      <td className="px-4 py-4 text-text-muted font-medium sticky left-0 z-20 bg-card group-hover:bg-card-secondary transition-colors w-[80px] min-w-[80px]">
                         <div className="flex items-center space-x-2">
                           <span className="w-5 font-mono text-xs font-bold text-text-muted">{orderNum.toString().padStart(2, '0')}</span>
                           {!isFiltered && (
@@ -582,7 +582,7 @@ export default function ProgramsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 sticky left-[80px] z-20 bg-card group-hover:bg-card-secondary transition-colors min-w-[200px] shadow-[4px_0_8px_-2px_rgba(0,0,0,0.4)]">
                         <div 
                           className="font-bold text-text-primary cursor-pointer hover:text-primary-indigo"
                           onClick={() => { setSelectedProgram(program); setIsDetailsModalOpen(true); }}
@@ -639,7 +639,7 @@ export default function ProgramsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right sticky right-0 z-20 bg-card group-hover:bg-card-secondary transition-colors shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.4)]">
                         <div className="flex justify-end items-center space-x-2">
                           {program.status === 'upcoming' && (
                             <button 
