@@ -95,7 +95,7 @@ const CurrentProgramStatus = React.memo(function CurrentProgramStatus({ presenta
 
       {displayProgram ? (
         <>
-          <h2 className={`text-[clamp(16px,2vw,24px)] font-black text-white ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-tight md:leading-none mb-1 md:mb-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] uppercase tracking-wide truncate max-w-full`}>
+          <h2 className={`text-[clamp(24px,3.5vw,44px)] font-black text-white ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-tight md:leading-none mb-1 md:mb-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] uppercase tracking-wide truncate max-w-full`}>
             {displayProgram.name}
           </h2>
 
