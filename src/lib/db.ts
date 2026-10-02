@@ -23,11 +23,17 @@ async function connectDB() {
   }
 
   if (!cached.promise) {
-    const opts = {
+    const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 10000,
     };
+
+    // Safety Isolation: In development mode, force database name to 'almahsan_dev'
+    // so localhost operations NEVER modify or broadcast to the production database.
+    if (process.env.NODE_ENV === 'development') {
+      opts.dbName = process.env.MONGODB_DEV_DB_NAME || 'almahsan_dev';
+    }
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
       return mongoose;
