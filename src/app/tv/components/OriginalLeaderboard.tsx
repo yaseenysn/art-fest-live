@@ -136,7 +136,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         />
 
         {/* Header */}
-        <div className="flex justify-center items-center w-full px-4 md:px-14 pt-4 md:pt-8 pb-2 relative z-20">
+        <div className="flex justify-center items-center w-full px-4 md:px-14 pt-2 md:pt-3 pb-0 relative z-20">
           <img
             src="/logo-al-mahsan-with-text.png"
             alt="Al Mahsan"
@@ -195,7 +195,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
         <div className="flex-1 flex flex-col md:flex-row w-full h-full relative z-20">
 
           {/* Left Hero Data */}
-          <div className="flex-1 p-4 md:p-14 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative">
+          <div className="flex-1 p-4 md:px-14 md:py-8 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative">
 
             <AnimatePresence mode="popLayout">
               <motion.div
@@ -338,7 +338,7 @@ const OriginalLeaderboard = React.memo(function OriginalLeaderboard({ config }: 
                           <div className="flex flex-col">
 
                             <span
-                              className={`text-xl md:text-2xl font-bold uppercase tracking-wide transition-colors ${isActive
+                              className={`text-2xl md:text-4xl font-bold uppercase tracking-wide transition-colors ${isActive
                                 ? 'text-white'
                                 : 'text-white/70 group-hover:text-white'
                                 } ${isArabic(row.name) ? 'font-ge-ss-two' : ''}`}
