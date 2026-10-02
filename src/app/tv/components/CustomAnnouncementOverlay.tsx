@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
+import AutoFitText from "@/components/ui/AutoFitText";
 
 const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 
@@ -208,72 +209,21 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
   ========================================================= */
   if (data.template === "CUSTOM_ANNOUNCEMENT") {
     const rawText = data.customText || "أهلاً وسهلاً";
-    const lines = rawText
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0);
-
-    const displayLines = lines.length > 0 ? lines : [rawText];
-    const lineCount = displayLines.length;
-
-    const maxVisualLength = Math.max(
-      ...displayLines.map((l) => {
-        // Exclude diacritics when measuring string width for font scaling
-        const baseChars = l.replace(/[\u0D00-\u0D3F\u0D4D\u0D57\u064B-\u065F]/g, "");
-        return Math.max(baseChars.length, 1);
-      })
-    );
-
-    const lineHeight = lineCount > 15 ? 1.15 : lineCount > 8 ? 1.25 : 1.35;
-
-    let gapVh = 1.6;
-    if (lineCount > 20) {
-      gapVh = 0.25;
-    } else if (lineCount > 15) {
-      gapVh = 0.4;
-    } else if (lineCount > 10) {
-      gapVh = 0.6;
-    } else if (lineCount > 5) {
-      gapVh = 0.9;
-    } else if (lineCount > 2) {
-      gapVh = 1.2;
-    }
-
-    const totalGapsVh = Math.max(0, lineCount - 1) * gapVh;
-    const availableLinesHeightVh = Math.max(10, 84 - totalGapsVh);
-
-    const fontByHeightVh = availableLinesHeightVh / (lineCount * lineHeight);
-
-    // 1vw = 16/9 vh on 16:9 1920x1080 screen
-    const fontByWidthVw = 90 / Math.max(maxVisualLength * 0.68, 6);
-    const fontByWidthVh = fontByWidthVw * (16 / 9);
-
-    let fontSizeVh = Math.min(fontByHeightVh, fontByWidthVh);
-    fontSizeVh = Math.max(1.4, Math.min(fontSizeVh, 7.5));
+    const isAr = isArabic(rawText);
 
     return (
-      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center bg-[#050505] p-6 text-center select-none font-sans text-white overflow-hidden">
-        <div
-          className="w-full max-w-[94vw] max-h-[86vh] flex flex-col items-center justify-center"
-          style={{ gap: `${gapVh}vh` }}
-        >
-          {displayLines.map((line, index) => {
-            const isAr = isArabic(line);
-            return (
-              <div
-                key={index}
-                className={`font-bold uppercase w-full max-w-full whitespace-nowrap tracking-wide ${
-                  isAr ? "font-ge-ss-two" : ""
-                }`}
-                style={{
-                  fontSize: `${fontSizeVh}vh`,
-                  lineHeight,
-                }}
-              >
-                {line}
-              </div>
-            );
-          })}
+      <div className="absolute inset-0 z-[100] flex h-full w-full flex-col items-center justify-center bg-[#050505] p-6 md:p-12 text-center select-none font-sans text-white overflow-hidden">
+        <div className="w-full max-w-[92vw] h-[85vh] max-h-[85vh] flex items-center justify-center overflow-hidden">
+          <AutoFitText
+            text={rawText}
+            maxFontSizeVh={8.0}
+            minFontSizeVh={1.6}
+            className={`font-bold uppercase w-full max-w-full text-center leading-relaxed md:leading-normal whitespace-pre-wrap break-words tracking-wide ${
+              isAr ? "font-ge-ss-two" : ""
+            }`}
+          >
+            {rawText}
+          </AutoFitText>
         </div>
       </div>
     );
