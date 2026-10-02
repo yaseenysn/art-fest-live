@@ -82,50 +82,55 @@ export default function WinnerDesign4({
             const names = winners.map(w => w.studentName).filter(Boolean).join("  •  ");
             const teams = winners.map(w => getTeamArabicName(w.teamName)).filter(Boolean);
             const teamStr = teams.length > 0 ? teams.join("  •  ") : "";
-            const pts = winners.map(w => w.points).filter(p => p !== undefined);
+            const pts = winners.map(w => w.points).filter((p): p is number => p !== undefined);
             const ptsStr = pts.length > 0 ? pts.join(" • ") : undefined;
+            const isMultiPts = pts.length > 1;
 
-            return (
-              <motion.div
-                key={pos}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 + (idx * 0.1), ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex items-center justify-between py-6 md:py-10 border-b border-white/10 group relative"
-              >
-                {/* Hover accent - though for TV it's static, gives a nice visual grounding */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 group-hover:h-[60%] transition-all duration-500" style={{ backgroundColor: tColor }} />
+                return (
+                  <motion.div
+                    key={pos}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 + (idx * 0.1), ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full flex items-center justify-between py-6 md:py-10 border-b border-white/10 group relative"
+                  >
+                    {/* Hover accent - though for TV it's static, gives a nice visual grounding */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 group-hover:h-[60%] transition-all duration-500" style={{ backgroundColor: tColor }} />
 
-                <div className="flex items-center space-x-6 md:space-x-12">
-                  <div className={`font-light tabular-nums ${isFirst ? 'text-[48px] md:text-[80px] text-white' : 'text-[36px] md:text-[60px] text-white/40'}`}>
-                    0{pos}
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
-                      {names}
-                    </h3>
-                    <div
-                      dir="rtl"
-                      className="flex items-center space-x-3 space-x-reverse mt-1 md:mt-2"
-                    >
-                      <div className="w-3 h-3 md:w-4 md:h-4 mt-1.5 rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]" style={{ backgroundColor: tColor }} />
-                      <span className="text-white/70 min-w-0 max-w-full break-words leading-[1.2] uppercase font-bold font-ge-ss-two text-[clamp(24px,3vw,44px)]">
-                        {teamStr}
-                      </span>
+                    <div className="flex items-center space-x-6 md:space-x-12 flex-1 min-w-0 mr-6">
+                      <div className={`font-light tabular-nums shrink-0 ${isFirst ? 'text-[48px] md:text-[80px] text-white' : 'text-[36px] md:text-[60px] text-white/40'}`}>
+                        0{pos}
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
+                          {names}
+                        </h3>
+                        <div
+                          dir="rtl"
+                          className="flex items-center space-x-3 space-x-reverse mt-1 md:mt-2"
+                        >
+                          <div className="w-3 h-3 md:w-4 md:h-4 mt-1.5 rounded-full shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]" style={{ backgroundColor: tColor }} />
+                          <span className="text-white/85 min-w-0 max-w-full break-words leading-[1.2] uppercase font-bold font-ge-ss-two text-[clamp(28px,3.5vw,50px)]">
+                            {teamStr}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {ptsStr !== undefined && (
-                  <div className="flex flex-col items-end">
-                    <span className="text-white/30 tracking-[0.2em] font-medium text-[12px] uppercase mb-1">PTS</span>
-                    <span className={`tabular-nums leading-none ${isFirst ? 'font-black text-[64px]' : 'font-bold text-[48px] text-white/60'}`}>
-                      {ptsStr}
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-            );
+                    {ptsStr !== undefined && (
+                      <div className="flex flex-col items-end shrink-0 ml-6">
+                        <span className="text-white/30 tracking-[0.2em] font-medium text-[12px] uppercase mb-1">PTS</span>
+                        <span className={`tabular-nums leading-none whitespace-nowrap ${
+                          isFirst 
+                            ? isMultiPts ? 'font-black text-[clamp(32px,3.5vw,52px)] text-white' : 'font-black text-[64px] text-white' 
+                            : isMultiPts ? 'font-bold text-[clamp(26px,2.8vw,40px)] text-white/80' : 'font-bold text-[48px] text-white/60'
+                        }`}>
+                          {ptsStr}
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
+                );
           })}
         </div>
       </div>

@@ -159,10 +159,10 @@ const WinnerCard = ({
                       text-center
                       ${isArabic(teamName) ? 'font-ge-ss-two font-bold' : 'font-semibold tracking-[0.12em]'}
                       ${isFirst
-                        ? "text-[clamp(18px,2vw,30px)] text-[#d4af37]"
+                        ? "text-[clamp(24px,2.5vw,38px)] text-[#d4af37]"
                         : isSecond
-                          ? "text-[clamp(16px,1.8vw,26px)] text-white/70"
-                          : "text-[clamp(14px,1.6vw,24px)] text-white/60"
+                          ? "text-[clamp(21px,2.2vw,34px)] text-white/80"
+                          : "text-[clamp(19px,2.0vw,30px)] text-white/75"
                       }
                     `}
                   >

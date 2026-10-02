@@ -180,7 +180,7 @@ export default function AllWinnersPoster({
         "
         style={{
           padding:
-            "clamp(16px, 2.5vh, 36px) clamp(28px, 4.2vw, 82px)",
+            "clamp(10px, 1.4vh, 24px) clamp(28px, 4.2vw, 82px)",
           boxSizing: "border-box",
         }}
       >
@@ -199,7 +199,7 @@ export default function AllWinnersPoster({
             justify-center
           "
           style={{
-            minHeight: "clamp(100px, 14vh, 160px)",
+            minHeight: "clamp(60px, 8vh, 100px)",
           }}
         >
           {/* LEFT BRANDING */}
@@ -323,7 +323,7 @@ export default function AllWinnersPoster({
               min-h-0
             "
             style={{
-              gap: "clamp(8px, 1.5vh, 24px)",
+              gap: "clamp(4px, 0.8vh, 12px)",
             }}
           >
             {positions.map((posNum) => {
@@ -436,7 +436,7 @@ export default function AllWinnersPoster({
                     className="relative z-10 w-full"
                     style={{
                       marginTop:
-                        "clamp(4px, 0.8vh, 12px)",
+                        "clamp(2px, 0.4vh, 6px)",
                     }}
                   >
                     <div
@@ -452,9 +452,9 @@ export default function AllWinnersPoster({
                         borderRadius:
                           "clamp(18px, 1.5vw, 30px)",
                         padding:
-                          "clamp(12px, 1.25vh, 21px) clamp(14px, 1.8vw, 32px)",
+                          "clamp(8px, 1vh, 16px) clamp(14px, 1.8vw, 32px)",
                         minHeight:
-                          "clamp(68px, 9vh, 96px)",
+                          "clamp(54px, 7vh, 84px)",
                         boxSizing: "border-box",
                       }}
                     >
@@ -562,7 +562,7 @@ export default function AllWinnersPoster({
                             <span
                               className="
                                 font-bold
-                                text-white/90
+                                text-white/95
                                 uppercase
                                 drop-shadow-md
                                 break-words
@@ -572,7 +572,7 @@ export default function AllWinnersPoster({
                               "
                               style={{
                                 fontSize:
-                                  "clamp(20px, 1.8vw, 34px)",
+                                  "clamp(25px, 2.4vw, 42px)",
                               }}
                             >
                               {teamStr}

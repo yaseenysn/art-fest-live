@@ -154,8 +154,8 @@ const WinnerNode = ({
             text-[#a855f7]
             font-ge-ss-two font-bold
             ${isFirst
-              ? "text-[clamp(20px,3vw,36px)]"
-              : "text-[clamp(16px,2vw,28px)]"
+              ? "text-[clamp(25px,3.2vw,44px)]"
+              : "text-[clamp(22px,2.5vw,34px)]"
             }
           `}
         >
