@@ -687,13 +687,10 @@ export default function ResultsEntry() {
                       if (posResults.length === 0) return null;
 
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const isPosRevealed = posResults.every((r: any) => r.revealed);
-                      
-                      // A position is enabled if all previous non-empty positions are revealed
+                      const isPlaceRevealed = posResults.every((r: any) => r.placeRevealed || r.revealed);
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const prevPositions = positionsToDisplay.filter(p => p < pos && savedResultData.some((r: any) => r.position === p));
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const isEnabled = prevPositions.every(p => savedResultData.filter((r: any) => r.position === p).every((r: any) => r.revealed));
+                      const isNameRevealed = posResults.every((r: any) => r.nameRevealed || (r.revealed && activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER'));
+                      const isPosRevealed = isPlaceRevealed || isNameRevealed;
 
                       const posName = getPositionLabel(pos).toUpperCase();
 
@@ -703,19 +700,19 @@ export default function ResultsEntry() {
                             <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
                             <div className="flex items-center space-x-3">
                               <button
-                                onClick={() => openPreview(pos, isPosRevealed ? 'WINNER' : 'PLACE')}
+                                onClick={() => openPreview(pos, isNameRevealed ? 'WINNER' : 'PLACE')}
                                 className="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 rounded-lg font-bold text-xs tracking-wider transition flex items-center space-x-1.5 uppercase shadow-sm"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>PREVIEW</span>
                               </button>
                               <div className="text-sm font-bold uppercase tracking-widest">
-                                {isPosRevealed ? (
-                                  <span className="text-emerald-400">✓ REVEALED</span>
-                                ) : isEnabled ? (
-                                  <span className="text-amber-400">● READY</span>
+                                {isNameRevealed ? (
+                                  <span className="text-emerald-400">✓ NAME & PLACE REVEALED</span>
+                                ) : isPlaceRevealed ? (
+                                  <span className="text-amber-400">● PLACE REVEALED</span>
                                 ) : (
-                                  <span className="text-text-muted">🔒 LOCKED</span>
+                                  <span className="text-text-muted">● READY</span>
                                 )}
                               </div>
                             </div>
@@ -813,7 +810,7 @@ export default function ResultsEntry() {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <button
-                              onClick={() => openPreview(pos, isPosRevealed ? 'WINNER' : 'PLACE')}
+                              onClick={() => openPreview(pos, isNameRevealed ? 'WINNER' : 'PLACE')}
                               className="py-3 px-4 rounded-lg font-bold text-sm tracking-wider transition-all bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 flex items-center justify-center space-x-2 uppercase shadow-sm"
                             >
                               <Eye className="w-4 h-4" />
@@ -822,14 +819,12 @@ export default function ResultsEntry() {
 
                             <button
                               onClick={() => handleReveal(pos, isPosRevealed, 'PLACE')}
-                              disabled={!isEnabled || (activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE')}
+                              disabled={activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE'}
                               className={clsx(
                                 "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase relative overflow-hidden",
                                 activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE'
                                   ? "bg-indigo-900/40 text-indigo-300 border border-indigo-500/30 cursor-not-allowed"
-                                  : isEnabled
-                                    ? "bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 shadow-indigo-500/20"
-                                    : "bg-slate-700/50 text-text-muted cursor-not-allowed border border-slate-600/50"
+                                  : "bg-primary-indigo text-white hover:bg-primary-purple/10 border border-primary-purple/200 shadow-indigo-500/20"
                               )}
                             >
                               {activeRevealState?.pos === pos && activeRevealState?.stage === 'PLACE' ? "PLACE REVEALED" : "REVEAL PLACE"}
@@ -837,14 +832,12 @@ export default function ResultsEntry() {
 
                             <button
                               onClick={() => handleReveal(pos, isPosRevealed, 'WINNER')}
-                              disabled={!isPosRevealed || (activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER')}
+                              disabled={activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER'}
                               className={clsx(
                                 "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase relative overflow-hidden",
                                 activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER'
                                   ? "bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 cursor-not-allowed"
-                                  : isPosRevealed
-                                    ? "bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-400 shadow-emerald-500/20"
-                                    : "bg-slate-700/50 text-text-muted cursor-not-allowed border border-slate-600/50"
+                                  : "bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-400 shadow-emerald-500/20"
                               )}
                             >
                               {activeRevealState?.pos === pos && activeRevealState?.stage === 'WINNER' ? "NAME REVEALED" : "REVEAL NAME"}
@@ -855,10 +848,10 @@ export default function ResultsEntry() {
                                 handleEndReveal(pos);
                                 setActiveRevealState(null);
                               }}
-                              disabled={!isPosRevealed}
+                              disabled={!isPosRevealed && activeRevealState?.pos !== pos}
                             className={clsx(
                               "flex-1 py-3 rounded-lg font-bold text-sm tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 uppercase",
-                              isPosRevealed
+                              isPosRevealed || activeRevealState?.pos === pos
                                 ? "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
                                 : "bg-row text-text-secondary cursor-not-allowed border border-border-card"
                             )}

@@ -3,6 +3,68 @@
 import { motion } from "motion/react";
 import { LeaderboardConfig } from "@/types";
 
+const getTeamColors = (teamName?: string) => {
+  const name = (teamName || "").toUpperCase().trim();
+
+  // MARJAN (مرجان) -> Palette: #DD5327 / #B93040 / #E13E55
+  if (name.includes("MARJAN") || name.includes("مرجان")) {
+    return {
+      gradient: "linear-gradient(180deg, #E13E55 0%, #B93040 50%, #DD5327 100%)",
+      border: "1px solid rgba(225, 62, 85, 0.6)",
+      topEdgeBg: "#E13E55",
+      topEdgeShadow: "0 0 18px rgba(225, 62, 85, 0.7)",
+      glowBg: "rgba(221, 83, 39, 0.4)",
+      boxShadow: "0 0 25px rgba(225, 62, 85, 0.35), 0 20px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4)",
+    };
+  }
+
+  // YAQOOTH (ياقوت) -> Palette: #F15A26 / #C94427 / #F47948
+  if (name.includes("YAQOOTH") || name.includes("YAQUT") || name.includes("ياقوت")) {
+    return {
+      gradient: "linear-gradient(180deg, #F47948 0%, #F15A26 50%, #C94427 100%)",
+      border: "1px solid rgba(241, 90, 38, 0.6)",
+      topEdgeBg: "#F47948",
+      topEdgeShadow: "0 0 18px rgba(241, 90, 38, 0.7)",
+      glowBg: "rgba(241, 90, 38, 0.4)",
+      boxShadow: "0 0 25px rgba(241, 90, 38, 0.35), 0 20px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4)",
+    };
+  }
+
+  // LU’LU (لؤلؤ) -> Palette: #FFF9EA / #E4D6BA / #C5AD86
+  if (name.includes("LU") || name.includes("لؤلؤ")) {
+    return {
+      gradient: "linear-gradient(180deg, #FFF9EA 0%, #E4D6BA 50%, #C5AD86 100%)",
+      border: "1px solid rgba(228, 214, 186, 0.7)",
+      topEdgeBg: "#FFF9EA",
+      topEdgeShadow: "0 0 18px rgba(255, 249, 234, 0.8)",
+      glowBg: "rgba(197, 173, 134, 0.45)",
+      boxShadow: "0 0 25px rgba(228, 214, 186, 0.4), 0 20px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.6)",
+    };
+  }
+
+  // JOHAR (جوهر) -> Palette: #1EB299 / #008F79 / #006C5A
+  if (name.includes("JOHAR") || name.includes("JAUHAR") || name.includes("جوهر")) {
+    return {
+      gradient: "linear-gradient(180deg, #1EB299 0%, #008F79 50%, #006C5A 100%)",
+      border: "1px solid rgba(30, 178, 153, 0.6)",
+      topEdgeBg: "#1EB299",
+      topEdgeShadow: "0 0 18px rgba(30, 178, 153, 0.7)",
+      glowBg: "rgba(0, 143, 121, 0.4)",
+      boxShadow: "0 0 25px rgba(30, 178, 153, 0.35), 0 20px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4)",
+    };
+  }
+
+  // Fallback default
+  return {
+    gradient: "linear-gradient(180deg, rgba(255,255,255,0.48) 0%, rgba(190,190,190,0.28) 30%, rgba(95,95,95,0.18) 70%, rgba(35,35,35,0.35) 100%)",
+    border: "1px solid rgba(255,255,255,0.28)",
+    topEdgeBg: "rgba(255,255,255,0.4)",
+    topEdgeShadow: "0 0 18px rgba(255,255,255,0.20)",
+    glowBg: "rgba(255,255,255,0.12)",
+    boxShadow: "0 0 25px rgba(255,255,255,0.08), 0 20px 45px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35)",
+  };
+};
+
 export default function LeaderboardDesign3({
   config,
 }: {
@@ -442,6 +504,8 @@ export default function LeaderboardDesign3({
               const barHeight =
                 95 + ratio * 285;
 
+              const teamColors = getTeamColors(row.name);
+
 
               return (
                 <motion.div
@@ -566,25 +630,11 @@ export default function LeaderboardDesign3({
                       height:
                         `${barHeight}px`,
 
-                      background: `
-                        linear-gradient(
-                          180deg,
-                          rgba(255,255,255,0.48) 0%,
-                          rgba(190,190,190,0.28) 30%,
-                          rgba(95,95,95,0.18) 70%,
-                          rgba(35,35,35,0.35) 100%
-                        )
-                      `,
+                      background: teamColors.gradient,
 
-                      border:
-                        "1px solid rgba(255,255,255,0.28)",
+                      border: teamColors.border,
 
-                      boxShadow: `
-                        0 0 25px rgba(255,255,255,0.08),
-                        0 20px 45px rgba(0,0,0,0.5),
-                        inset 0 1px 0 rgba(255,255,255,0.35),
-                        inset 12px 0 25px rgba(255,255,255,0.035)
-                      `,
+                      boxShadow: teamColors.boxShadow,
 
                       backdropFilter:
                         "blur(8px)",
@@ -603,36 +653,11 @@ export default function LeaderboardDesign3({
                         top-[-5px]
                         h-[6px]
                         rounded-t-[4px]
-                        bg-white/40
-                        shadow-[0_0_18px_rgba(255,255,255,0.20)]
                       "
-                    />
-
-
-                    {/* =================================================
-                        INNER HIGHLIGHT
-                    ================================================= */}
-
-                    <div
-                      className="
-                        absolute
-                        left-[12%]
-                        top-0
-                        bottom-0
-                        w-[1px]
-                        bg-white/[0.12]
-                      "
-                    />
-
-                    <div
-                      className="
-                        absolute
-                        right-[10%]
-                        top-0
-                        bottom-0
-                        w-[1px]
-                        bg-black/[0.20]
-                      "
+                      style={{
+                        backgroundColor: teamColors.topEdgeBg,
+                        boxShadow: teamColors.topEdgeShadow,
+                      }}
                     />
 
 
@@ -696,12 +721,13 @@ export default function LeaderboardDesign3({
 
                         rounded-full
 
-                        bg-white/[0.12]
-
                         blur-[18px]
 
                         pointer-events-none
                       "
+                      style={{
+                        backgroundColor: teamColors.glowBg,
+                      }}
                     />
 
                   </div>
@@ -746,17 +772,18 @@ export default function LeaderboardDesign3({
 
                     <span
                       className={`
-                        text-[18px]
-                        md:text-[22px]
-                        lg:text-[27px]
+                        text-[22px]
+                        md:text-[28px]
+                        lg:text-[35px]
 
-                        font-bold
+                        font-extrabold
 
                         uppercase
 
                         tracking-[0.02em]
 
-                        text-white/90
+                        text-white
+                        drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]
                         ${isArabic(row.name) ? 'font-ge-ss-two' : ''}
                       `}
                     >
@@ -770,16 +797,16 @@ export default function LeaderboardDesign3({
                       className="
                         mt-1
 
-                        text-[11px]
-                        md:text-[12px]
+                        text-[12px]
+                        md:text-[14px]
 
-                        font-semibold
+                        font-bold
 
                         tracking-[0.18em]
 
                         uppercase
 
-                        text-white/30
+                        text-white/40
                       "
                     >
                       RANK #{row.rank || index + 1}

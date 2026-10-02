@@ -16,15 +16,19 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       return NextResponse.json({ error: 'Program ID is required' }, { status: 400 });
     }
 
-    if (!position || ![1, 2, 3].includes(position)) {
-      return NextResponse.json({ error: 'Valid position (1, 2, or 3) is required' }, { status: 400 });
+    if (!position || typeof position !== 'number' || position < 1) {
+      return NextResponse.json({ error: 'Valid position is required' }, { status: 400 });
     }
 
-    // Mark any unrevealed results for this position as revealed
-    const updateRes = await Result.updateMany({ programId, position, revealed: false }, { $set: { revealed: true } });
+    // Mark results for this position as revealed (and placeRevealed / nameRevealed depending on stage)
+    const updateFields: Record<string, boolean> = { revealed: true, placeRevealed: true };
+    if (revealStage === 'WINNER') {
+      updateFields.nameRevealed = true;
+    }
+    const updateRes = await Result.updateMany({ programId, position }, { $set: updateFields });
 
-    // Fetch the complete revealed result set for that position
-    const allPositionResults = await Result.find({ programId, position, revealed: true })
+    // Fetch the complete result set for that position
+    const allPositionResults = await Result.find({ programId, position })
       .populate('programId', 'name language category type')
       .populate('teamId', 'name color')
       .sort({ position: 1 });

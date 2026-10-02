@@ -8,6 +8,8 @@ const ResultSchema = new Schema<IResult>({
   position: { type: Number, required: true, min: 1 },
   points: { type: Number, required: true },
   revealed: { type: Boolean, default: false },
+  placeRevealed: { type: Boolean, default: false },
+  nameRevealed: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

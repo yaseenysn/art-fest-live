@@ -59,6 +59,8 @@ export interface IResult {
   position: Position;
   points: number;
   revealed: boolean;
+  placeRevealed?: boolean;
+  nameRevealed?: boolean;
   createdAt: Date;
 }
 
