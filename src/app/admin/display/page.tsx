@@ -936,9 +936,9 @@ export default function DisplayControl() {
             <div className="space-y-4 bg-card-secondary p-6 rounded-xl border border-border-card">
               <div>
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Announcement Text</label>
-                <input
-                  type="text"
-                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border", isArabic(customText) && "font-ge-ss-two")}
+                <textarea
+                  rows={6}
+                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border resize-y", isArabic(customText) && "font-ge-ss-two")}
                   placeholder="e.g. أهلاً وسهلاً"
                   value={customText}
                   onChange={e => setCustomText(e.target.value)}
