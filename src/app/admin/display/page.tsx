@@ -459,7 +459,7 @@ export default function DisplayControl() {
 
     if (customAnnTemplate === 'NEXT_PROGRAM') {
       if (!nextProgName.trim() || !nextProgChess.trim()) {
-        setCustomAnnStatus({ type: 'error', text: 'Program Name and Chess Number are required.'});
+        setCustomAnnStatus({ type: 'error', text: 'Program Name and Chest Number are required.'});
         return;
       }
     } else if (customAnnTemplate === 'WELCOME' || customAnnTemplate === 'JUDGES_THANK_YOU') {
@@ -930,7 +930,7 @@ export default function DisplayControl() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Chess Number</label>
+                <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Chest Number</label>
                 <input
                   type="text"
                   className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-lg font-bold", isArabic(nextProgChess) && "font-ge-ss-two")}
