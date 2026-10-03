@@ -50,22 +50,6 @@ export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: P
       return NextResponse.json(program);
     }
 
-    // Validation: LIVE -> COMPLETED
-    if (body.status === 'completed' && currentProgram.status === 'live') {
-      // Must have results completely revealed
-      let Result;
-      try {
-        Result = mongoose.models.Result || (await import('@/models/Result')).Result;
-      } catch {
-        Result = (await import('@/models/Result')).Result;
-      }
-      
-      const results = await Result.find({ programId: id });
-      if (results.length !== 3 || !results.every((r: { revealed: boolean }) => r.revealed)) {
-        return NextResponse.json({ error: 'Reveal the result before completing this program.' }, { status: 400 });
-      }
-    }
-
     // Generic update
     const program = await Program.findByIdAndUpdate(id, body, { new: true });
     

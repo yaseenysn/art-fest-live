@@ -37,12 +37,6 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       return NextResponse.json({ error: 'No results found for this position' }, { status: 404 });
     }
 
-    // Check if the program is completed (no more unrevealed results for the entire program)
-    const remainingUnrevealed = await Result.countDocuments({ programId, revealed: false });
-    if (remainingUnrevealed === 0) {
-      await Program.findByIdAndUpdate(programId, { status: 'completed' });
-    }
-
     // Update TVState with presentation expiration
     const displayDuration = duration || 15;
     const startedAt = new Date();
@@ -98,10 +92,6 @@ export const POST = requireAdmin(async (req: NextRequest) => {
         // Emit updated rankings to clients
         const rankings = await getTeamRankings();
         io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings); // Tell clients to refetch with updated points
-      }
-      
-      if (remainingUnrevealed === 0 && updateRes.modifiedCount > 0) {
-        io.emit(SOCKET_EVENTS.PROGRAM_UPDATED, { programId });
       }
     }
 
