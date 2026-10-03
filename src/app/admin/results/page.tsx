@@ -157,10 +157,27 @@ export default function ResultsEntry() {
 
   useEffect(() => {
     if (programs.length > 0 && !selectedProgramId) {
-      const livePrograms = programs.filter(p => p.status === 'live');
-      if (livePrograms.length > 0) {
+      const completedPrograms = programs.filter(p => p.status === 'completed');
+      if (completedPrograms.length > 0) {
+        completedPrograms.sort((a, b) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const timeA = new Date((a as any).updatedAt || a.createdAt || 0).getTime();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const timeB = new Date((b as any).updatedAt || b.createdAt || 0).getTime();
+          if (timeA !== timeB) return timeB - timeA;
+          return (b.programOrder || 0) - (a.programOrder || 0);
+        });
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelectedProgramId(String(livePrograms[0]._id));
+        setSelectedProgramId(String(completedPrograms[0]._id));
+      } else {
+        const livePrograms = programs.filter(p => p.status === 'live');
+        if (livePrograms.length > 0) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setSelectedProgramId(String(livePrograms[0]._id));
+        } else if (programs.length > 0) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setSelectedProgramId(String(programs[0]._id));
+        }
       }
     }
   }, [programs, selectedProgramId]);

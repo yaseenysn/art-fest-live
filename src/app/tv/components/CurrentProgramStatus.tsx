@@ -16,7 +16,7 @@ const CurrentProgramStatus = React.memo(function CurrentProgramStatus({ presenta
     positionClasses = "top-14 md:top-[clamp(160px,20vh,240px)] left-3 md:left-[clamp(30px,5vw,60px)] items-start text-left";
   }
 
-  const containerClasses = `absolute ${positionClasses} z-50 flex flex-col pointer-events-none px-2 md:px-4 w-auto max-w-[50vw] md:max-w-md`;
+  const containerClasses = `absolute ${positionClasses} z-50 flex flex-col pointer-events-none px-2 md:px-4 w-auto max-w-[65vw] md:max-w-[40vw]`;
 
   const { data: programs, isLoading } = useQuery<IProgram[]>({
     queryKey: ["programs"],
@@ -95,7 +95,7 @@ const CurrentProgramStatus = React.memo(function CurrentProgramStatus({ presenta
 
       {displayProgram ? (
         <>
-          <h2 className={`text-[clamp(24px,3.5vw,44px)] font-black text-white ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-tight md:leading-none mb-1 md:mb-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] uppercase tracking-wide truncate max-w-full`}>
+          <h2 className={`text-[clamp(20px,2.8vw,40px)] font-black text-white ${presentation === 'design3' ? 'text-left' : 'text-right'} leading-[1.15] mb-1 md:mb-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] uppercase tracking-wide break-words whitespace-normal max-w-full pb-0.5`}>
             {displayProgram.name}
           </h2>
 

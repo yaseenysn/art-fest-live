@@ -53,7 +53,7 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
               className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 md:gap-8 items-center backdrop-blur-md"
             >
               <div className="flex flex-col min-w-0">
-                <h3 className={`-mt-1 md:-mt-2 text-2xl md:text-4xl xl:text-5xl font-black uppercase text-white mb-2 md:mb-3 leading-tight break-words whitespace-pre-wrap ${isArabic(res.studentName) ? 'font-amiri' : ''}`}>
+                <h3 className={`-mt-1 md:-mt-2 text-2xl md:text-4xl xl:text-5xl font-black uppercase text-white mb-1 md:mb-1.5 leading-tight break-words whitespace-pre-wrap ${isArabic(res.studentName) ? 'font-amiri' : ''}`}>
                   {res.studentName ? res.studentName.replace(/\s*,\s*/g, ', ') : ''}
                 </h3>
                 
@@ -63,10 +63,10 @@ export default function ResultsDesign4({ results, revealStage = 'WINNER' }: { re
                   return (
                     <div 
                       dir={hasArabic ? 'rtl' : 'ltr'}
-                      className={`flex items-start ${hasArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-3 md:space-x-4 mt-1 md:mt-2`}
+                      className={`flex items-center ${hasArabic ? 'flex-row-reverse space-x-reverse' : ''} space-x-2.5 md:space-x-3.5 mt-0 md:-mt-1`}
                     >
-                      <div className="w-3 h-3 md:w-5 md:h-5 mt-1.5 md:mt-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
-                      <span className={`font-bold uppercase text-emerald-100 min-w-0 max-w-full break-words leading-[1.2] ${hasArabic ? 'font-ge-ss-two text-[clamp(20px,3vw,48px)]' : 'tracking-widest text-[clamp(18px,3vw,44px)]'}`}>
+                      <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                      <span className={`font-bold uppercase text-emerald-100 min-w-0 max-w-full break-words leading-tight ${hasArabic ? 'font-ge-ss-two text-[clamp(16px,2.2vw,32px)]' : 'tracking-widest text-[clamp(14px,2vw,28px)]'}`}>
                         {teamName}
                       </span>
                     </div>
