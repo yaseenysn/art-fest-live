@@ -138,7 +138,7 @@ export default function ResultsEntry() {
 
   // Keyboard ENTER control state for Result Review
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
-  const [keyboardStage, setKeyboardStage] = useState<'PLACE' | 'WINNER'>('PLACE');
+  const [keyboardStage, setKeyboardStage] = useState<'PLACE' | 'WINNER' | 'LEADERBOARD'>('PLACE');
 
   // Poster State
   const [isPosterModalOpen, setIsPosterModalOpen] = useState(false);
@@ -572,10 +572,17 @@ export default function ResultsEntry() {
       const isNameRevealed = posResults.every((r: any) => r.nameRevealed || (r.revealed && activeRevealState?.pos === selectedPosition && activeRevealState?.stage === 'WINNER'));
       const isPosRevealed = isPlaceRevealed || isNameRevealed;
 
+      if (keyboardStage === 'LEADERBOARD') {
+        handleEndReveal(selectedPosition);
+        setActiveRevealState(null);
+        setKeyboardStage('PLACE');
+        return;
+      }
+
       if (keyboardStage === 'PLACE') {
         handleReveal(selectedPosition, isPosRevealed, 'PLACE');
         setKeyboardStage('WINNER');
-      } else {
+      } else if (keyboardStage === 'WINNER') {
         handleReveal(selectedPosition, isPosRevealed, 'WINNER');
 
         // Automatically advance to the next available position after completing Name Reveal
@@ -585,8 +592,11 @@ export default function ResultsEntry() {
         if (currentIndex !== -1 && currentIndex + 1 < allPositions.length) {
           const nextPos = allPositions[currentIndex + 1];
           setSelectedPosition(nextPos);
+          setKeyboardStage('PLACE');
+        } else {
+          // Final position reached! Next ENTER press returns TV to Leaderboard
+          setKeyboardStage('LEADERBOARD');
         }
-        setKeyboardStage('PLACE');
       }
     };
 
