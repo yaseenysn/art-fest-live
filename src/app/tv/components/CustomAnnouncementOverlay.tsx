@@ -173,7 +173,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                   text-white/60
                 "
               >
-                CHESS NUMBERS
+                CHEST NUMBERS
               </h3>
 
               <div className="h-px flex-1 bg-white/15" />
