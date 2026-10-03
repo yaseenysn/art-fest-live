@@ -502,7 +502,7 @@ export default function LeaderboardDesign3({
                */
 
               const barHeight =
-                95 + ratio * 285;
+                80 + ratio * 245;
 
               const teamColors = getTeamColors(row.name);
 
