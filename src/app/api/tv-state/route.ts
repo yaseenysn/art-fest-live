@@ -18,7 +18,7 @@ export const POST = requireAdmin(async (req: NextRequest) => {
   try {
     await connectDB();
     const data = await req.json();
-    const { type, config, isActive, leaderboardDesign, allWinnersDesign, resultsDesign, finalRevealActive, finalRevealTeamName, finalRevealPosition, displayEnabled, presentationId, presentationType, presentationStartedAt, presentationExpiresAt, presentationDuration, presentationData, clearPresentationId } = data;
+    const { type, config, isActive, leaderboardDesign, allWinnersDesign, resultsDesign, finalRevealActive, finalRevealTeamName, finalRevealPosition, displayEnabled, presentationId, presentationType, presentationStartedAt, presentationExpiresAt, presentationDuration, presentationData, clearPresentationId, savedCustomAnnouncements } = data;
 
     console.log("[API] received presentation update:", { type, presentationType, clearPresentationId, presentationId });
 
@@ -57,6 +57,7 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       if (presentationExpiresAt !== undefined) updatePayload.presentationExpiresAt = presentationExpiresAt;
       if (presentationDuration !== undefined) updatePayload.presentationDuration = presentationDuration;
       if (presentationData !== undefined) updatePayload.presentationData = presentationData;
+      if (savedCustomAnnouncements !== undefined) updatePayload.savedCustomAnnouncements = savedCustomAnnouncements;
     }
 
     const state = await TVState.findOneAndUpdate(

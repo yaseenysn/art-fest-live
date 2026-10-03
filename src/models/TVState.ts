@@ -34,7 +34,8 @@ const TVStateSchema = new mongoose.Schema({
   presentationStartedAt: { type: Date, default: null },
   presentationExpiresAt: { type: Date, default: null },
   presentationDuration: { type: Number, default: null },
-  presentationData: { type: mongoose.Schema.Types.Mixed, default: null }
+  presentationData: { type: mongoose.Schema.Types.Mixed, default: null },
+  savedCustomAnnouncements: { type: mongoose.Schema.Types.Mixed, default: null }
 }, { timestamps: true });
 
 // Force recompilation of model in Next.js development

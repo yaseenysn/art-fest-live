@@ -25,6 +25,7 @@ export default function DisplayControl() {
   const [isResetting, setIsResetting] = useState(false);
 
   // Premium Custom Announcements State
+  const PREMIUM_ANN_STORAGE_KEY = 'musabaqa_premium_custom_announcements_v1';
   const [customAnnTemplate, setCustomAnnTemplate] = useState<'NEXT_PROGRAM' | 'JUDGES_THANK_YOU' | 'WELCOME' | 'CUSTOM_ANNOUNCEMENT'>('NEXT_PROGRAM');
   const [nextProgName, setNextProgName] = useState('');
   const [nextProgChess, setNextProgChess] = useState('');
@@ -33,6 +34,7 @@ export default function DisplayControl() {
   const [customAnnDuration, setCustomAnnDuration] = useState(15);
   const [customAnnStatus, setCustomAnnStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [pushingCustomAnn, setPushingCustomAnn] = useState(false);
+  const [hasLoadedSavedAnnouncements, setHasLoadedSavedAnnouncements] = useState(false);
 
   // Leaderboard States
   const { data: tvState, refetch: refetchTvState } = useQuery<any>({
@@ -121,6 +123,61 @@ export default function DisplayControl() {
       }
     }
   }, [tvState, initializedLeaderboard]);
+
+  // Hydrate saved custom announcements state from localStorage or tvState
+  useEffect(() => {
+    if (hasLoadedSavedAnnouncements) return;
+
+    let loaded = false;
+    try {
+      const stored = localStorage.getItem(PREMIUM_ANN_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.customAnnTemplate) setCustomAnnTemplate(parsed.customAnnTemplate);
+        if (typeof parsed.nextProgName === 'string') setNextProgName(parsed.nextProgName);
+        if (typeof parsed.nextProgChess === 'string') setNextProgChess(parsed.nextProgChess);
+        if (Array.isArray(parsed.judgesList) && parsed.judgesList.length > 0) setJudgesList(parsed.judgesList);
+        if (typeof parsed.customText === 'string') setCustomText(parsed.customText);
+        if (typeof parsed.customAnnDuration === 'number') setCustomAnnDuration(parsed.customAnnDuration);
+        loaded = true;
+      }
+    } catch (e) {
+      console.error("Error reading saved custom announcements from localStorage:", e);
+    }
+
+    if (!loaded && tvState?.savedCustomAnnouncements) {
+      const saved = tvState.savedCustomAnnouncements;
+      if (saved.customAnnTemplate) setCustomAnnTemplate(saved.customAnnTemplate);
+      if (typeof saved.nextProgName === 'string') setNextProgName(saved.nextProgName);
+      if (typeof saved.nextProgChess === 'string') setNextProgChess(saved.nextProgChess);
+      if (Array.isArray(saved.judgesList) && saved.judgesList.length > 0) setJudgesList(saved.judgesList);
+      if (typeof saved.customText === 'string') setCustomText(saved.customText);
+      if (typeof saved.customAnnDuration === 'number') setCustomAnnDuration(saved.customAnnDuration);
+      loaded = true;
+    }
+
+    if (loaded || tvState !== undefined) {
+      setHasLoadedSavedAnnouncements(true);
+    }
+  }, [tvState, hasLoadedSavedAnnouncements]);
+
+  // Save custom announcements state to localStorage on state changes
+  useEffect(() => {
+    if (!hasLoadedSavedAnnouncements) return;
+    try {
+      const savedObj = {
+        customAnnTemplate,
+        nextProgName,
+        nextProgChess,
+        judgesList,
+        customText,
+        customAnnDuration
+      };
+      localStorage.setItem(PREMIUM_ANN_STORAGE_KEY, JSON.stringify(savedObj));
+    } catch (e) {
+      console.error("Error saving custom announcements to localStorage:", e);
+    }
+  }, [customAnnTemplate, nextProgName, nextProgChess, judgesList, customText, customAnnDuration, hasLoadedSavedAnnouncements, PREMIUM_ANN_STORAGE_KEY]);
 
   const handleLeaderboardChange = (label: string) => {
     setSelectedLeaderboard(label);
@@ -438,13 +495,23 @@ export default function DisplayControl() {
         presentationData.customText = customText.trim();
       }
 
+      const savedCustomAnnouncements = {
+        customAnnTemplate,
+        nextProgName,
+        nextProgChess,
+        judgesList,
+        customText,
+        customAnnDuration
+      };
+
       const payload = {
         presentationType: "CUSTOM_ANNOUNCEMENT",
         presentationId,
         presentationStartedAt: new Date(now).toISOString(),
         presentationExpiresAt: new Date(now + customAnnDuration * 1000).toISOString(),
         presentationDuration: customAnnDuration,
-        presentationData
+        presentationData,
+        savedCustomAnnouncements
       };
 
       const res = await fetch('/api/tv-state', {
