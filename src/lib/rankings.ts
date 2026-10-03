@@ -7,11 +7,8 @@ import { TVState } from '../models/TVState';
 import { getIO, SOCKET_EVENTS } from './socket';
 
 export async function getTeamRankings(): Promise<TeamRanking[]> {
-  // Aggregate total points from Results (UNTOUCHED automatic calculation)
+  // Aggregate total points from ALL saved Results for Admin Dashboard
   const teamScores = await Result.aggregate([
-    {
-      $match: { revealed: true }
-    },
     {
       $group: {
         _id: '$teamId',

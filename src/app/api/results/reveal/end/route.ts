@@ -3,6 +3,7 @@ import { getIO, SOCKET_EVENTS } from '@/lib/socket';
 import { requireAdmin } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import { TVState } from '@/models/TVState';
+import { syncTVLeaderboardState } from '@/lib/rankings';
 
 export const POST = requireAdmin(async (req: NextRequest) => {
   try {
@@ -30,6 +31,8 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       },
       { new: true, upsert: true }
     );
+
+    await syncTVLeaderboardState();
 
     // Emit event to end the reveal on TV
     const io = getIO();
