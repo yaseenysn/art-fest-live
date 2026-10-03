@@ -136,6 +136,10 @@ export default function ResultsEntry() {
   // Track active reveal stage for UI disabling
   const [activeRevealState, setActiveRevealState] = useState<{pos: number, stage: 'PLACE'|'WINNER'} | null>(null);
 
+  // Keyboard ENTER control state for Result Review
+  const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
+  const [keyboardStage, setKeyboardStage] = useState<'PLACE' | 'WINNER'>('PLACE');
+
   // Poster State
   const [isPosterModalOpen, setIsPosterModalOpen] = useState(false);
   const [posterResultId, setPosterResultId] = useState<string | null>(null);
@@ -518,6 +522,80 @@ export default function ResultsEntry() {
     }
   };
 
+  // Default select first available position for keyboard ENTER control
+  useEffect(() => {
+    if (savedResultData && savedResultData.length > 0) {
+      const positions = Array.from(new Set(savedResultData.map((r: any) => r.position))).sort((a: number, b: number) => a - b);
+      if (positions.length > 0 && (selectedPosition === null || !positions.includes(selectedPosition))) {
+        setSelectedPosition(positions[0]);
+        setKeyboardStage('PLACE');
+      }
+    }
+  }, [savedResultData, selectedPosition]);
+
+  // Handle ENTER key presses for Result Review
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter') return;
+
+      // Do NOT capture ENTER if user is typing inside text inputs, textareas, selects, or contenteditable elements
+      const activeEl = document.activeElement as HTMLElement | null;
+      if (activeEl) {
+        const tagName = activeEl.tagName ? activeEl.tagName.toLowerCase() : '';
+        if (
+          tagName === 'input' ||
+          tagName === 'textarea' ||
+          tagName === 'select' ||
+          activeEl.isContentEditable
+        ) {
+          return;
+        }
+      }
+
+      // Do NOT trigger if modals are open or editing a result row
+      if (isPreviewModalOpen || isPosterModalOpen || isAllWinnersPosterModalOpen || editingResultId) {
+        return;
+      }
+
+      if (selectedPosition === null) return;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const posResults = savedResultData.filter((r: any) => r.position === selectedPosition);
+      if (posResults.length === 0) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isPlaceRevealed = posResults.every((r: any) => r.placeRevealed || r.revealed);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isNameRevealed = posResults.every((r: any) => r.nameRevealed || (r.revealed && activeRevealState?.pos === selectedPosition && activeRevealState?.stage === 'WINNER'));
+      const isPosRevealed = isPlaceRevealed || isNameRevealed;
+
+      if (keyboardStage === 'PLACE') {
+        handleReveal(selectedPosition, isPosRevealed, 'PLACE');
+        setKeyboardStage('WINNER');
+      } else {
+        handleReveal(selectedPosition, isPosRevealed, 'WINNER');
+
+        // Automatically advance to the next available position after completing Name Reveal
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const allPositions = Array.from(new Set(savedResultData.map((r: any) => r.position))).sort((a: number, b: number) => a - b);
+        const currentIndex = allPositions.indexOf(selectedPosition);
+        if (currentIndex !== -1 && currentIndex + 1 < allPositions.length) {
+          const nextPos = allPositions[currentIndex + 1];
+          setSelectedPosition(nextPos);
+        }
+        setKeyboardStage('PLACE');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedPosition, keyboardStage, savedResultData, isPreviewModalOpen, isPosterModalOpen, isAllWinnersPosterModalOpen, editingResultId, activeRevealState]);
+
   // --- POSTER WORKFLOW ---
   const generatePoster = async () => {
     if (isGeneratingPoster) return; // duplicate click protection
@@ -695,7 +773,16 @@ export default function ResultsEntry() {
                       const posName = getPositionLabel(pos).toUpperCase();
 
                       return (
-                        <div key={pos} className="border border-border-card rounded-xl overflow-hidden bg-row">
+                        <div 
+                          key={pos} 
+                          onClick={() => {
+                            if (selectedPosition !== pos) {
+                              setSelectedPosition(pos);
+                              setKeyboardStage('PLACE');
+                            }
+                          }}
+                          className="border border-border-card rounded-xl overflow-hidden bg-row"
+                        >
                           <div className="bg-slate-700 px-6 py-4 flex justify-between items-center border-b border-slate-600">
                             <h4 className="text-xl font-bold tracking-widest text-white">{posName}</h4>
                             <div className="flex items-center space-x-3">
