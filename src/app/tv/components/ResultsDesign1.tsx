@@ -270,7 +270,7 @@ function WinnerCard({ result, teamColor, teamName, programName, programLanguage,
 
       {/* Winner Name */}
       <h2
-        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isLarge ? 'text-[clamp(32px,5vw,72px)] mb-6' : 'text-[clamp(24px,4vw,48px)] mb-4'}`}
+        className={`font-black text-white uppercase tracking-tight leading-tight drop-shadow-md break-words max-w-full ${isArabic(result.studentName) ? 'font-amiri' : ''} ${isLarge ? 'text-[clamp(32px,5vw,72px)] mb-6' : 'text-[clamp(24px,4vw,48px)] mb-4'}`}
       >
         {result.studentName}
       </h2>

@@ -542,7 +542,7 @@ export default function ResultsDesign1({
                   {/* WINNER NAME */}
                   {revealStage === 'WINNER' && (
                     <motion.div
-                      className="relative font-light uppercase break-words text-center"
+                      className={`relative font-light uppercase break-words text-center ${isArabic(studentName) ? 'font-amiri' : ''}`}
                       style={{
                         fontSize: isMultiple
                           ? "clamp(32px, 4.5vw, 65px)"

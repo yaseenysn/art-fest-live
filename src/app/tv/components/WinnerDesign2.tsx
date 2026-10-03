@@ -130,6 +130,7 @@ const WinnerNode = ({
             leading-[0.95]
             tracking-tight
             break-words
+            ${isArabic(winner.names !== "—" ? winner.names : "") ? 'font-amiri' : ''}
             ${isFirst
               ? "text-[clamp(24px,3vw,52px)]"
               : "text-[clamp(20px,2.35vw,40px)]"

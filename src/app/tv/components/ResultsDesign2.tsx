@@ -195,6 +195,7 @@ export default function ResultsDesign2({
                       className={`
                         font-light uppercase leading-tight tracking-[0.08em] text-white
                         drop-shadow-[0_0_25px_rgba(255,255,255,0.18)] break-words
+                        ${isArabic(result.studentName) ? 'font-amiri' : ''}
                         ${isMultiple ? "text-[clamp(32px,5vw,75px)]" : "text-[clamp(55px,7vw,120px)]"}
                       `}
                     >

@@ -134,6 +134,7 @@ const WinnerCard = ({
                     break-words
                     whitespace-normal
                     text-center
+                    ${isArabic(studentName) ? 'font-amiri' : ''}
                     ${winner.winners.length >= 2 
                       ? (isFirst ? "text-[clamp(22px,2.2vw,34px)]" : isSecond ? "text-[clamp(18px,1.8vw,26px)]" : "text-[clamp(16px,1.6vw,22px)]")
                       : (isFirst ? "text-[clamp(30px,3vw,48px)]" : isSecond ? "text-[clamp(24px,2.2vw,36px)]" : "text-[clamp(22px,2vw,32px)]")

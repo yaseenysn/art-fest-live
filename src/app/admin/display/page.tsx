@@ -962,7 +962,7 @@ export default function DisplayControl() {
                       <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase">Name</label>
                       <input
                         type="text"
-                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.name) && "font-ge-ss-two")}
+                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.name) && "font-amiri")}
                         placeholder="e.g. Muhammed Yaseen"
                         value={judge.name}
                         onChange={e => {
@@ -976,7 +976,7 @@ export default function DisplayControl() {
                       <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase">Designation / Degree (Optional)</label>
                       <input
                         type="text"
-                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.designation) && "font-ge-ss-two")}
+                        className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border text-sm", isArabic(judge.designation) && "font-amiri")}
                         placeholder="e.g. Imam of TVM Juma Masjid"
                         value={judge.designation || ''}
                         onChange={e => {
@@ -1005,7 +1005,7 @@ export default function DisplayControl() {
                 <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide">Announcement Text</label>
                 <textarea
                   rows={6}
-                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border resize-y", isArabic(customText) && "font-ge-ss-two")}
+                  className={clsx("w-full border-border-card rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border resize-y", isArabic(customText) && "font-amiri")}
                   placeholder="e.g. أهلاً وسهلاً"
                   value={customText}
                   onChange={e => setCustomText(e.target.value)}

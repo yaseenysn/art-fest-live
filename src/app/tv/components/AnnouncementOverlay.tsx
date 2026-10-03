@@ -106,7 +106,7 @@ export default function AnnouncementOverlay({ announcement }: { announcement: IA
               maxFontSizeVh={6.5}
               minFontSizeVh={1.6}
               className={`text-[#111827] font-extrabold text-center leading-snug md:leading-normal whitespace-pre-wrap break-words drop-shadow-sm w-full max-w-full ${
-                isAr ? "font-ge-ss-two" : ""
+                isAr ? "font-amiri" : ""
               }`}
             >
               {message}

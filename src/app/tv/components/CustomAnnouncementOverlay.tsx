@@ -219,7 +219,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
             maxFontSizeVh={8.0}
             minFontSizeVh={1.6}
             className={`font-bold uppercase w-full max-w-full text-center leading-relaxed md:leading-normal whitespace-pre-wrap break-words tracking-wide ${
-              isAr ? "font-ge-ss-two" : ""
+              isAr ? "font-amiri" : ""
             }`}
           >
             {rawText}
@@ -295,7 +295,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.035] overflow-hidden mix-blend-multiply">
           <div
             dir="rtl"
-            className="font-extrabold whitespace-nowrap -rotate-[12deg] scale-125 select-none font-ge-ss-two"
+            className="font-extrabold whitespace-nowrap -rotate-[12deg] scale-125 select-none font-amiri"
             style={{
               fontSize: "clamp(200px, 35vw, 500px)",
             }}
@@ -344,7 +344,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
             >
               <h1
                 dir="rtl"
-                className="text-[#1a1a1a] tracking-normal leading-tight font-bold font-ge-ss-two"
+                className="text-[#1a1a1a] tracking-normal leading-tight font-bold font-amiri"
                 style={{
                   fontSize: "clamp(36px, 6vw, 90px)",
                 }}
@@ -400,7 +400,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                       dir={isArabic(judge.name) ? "rtl" : "ltr"}
                       className={`
                         max-w-full overflow-visible tracking-wide text-neutral-900 relative z-10
-                        ${isArabic(judge.name) ? 'font-ge-ss-two font-bold' : 'font-poppins font-bold'}
+                        ${isArabic(judge.name) ? 'font-amiri font-bold' : 'font-poppins font-bold'}
                       `}
                       style={{
                         fontSize: "clamp(28px, 3.2vw, 64px)",
@@ -414,7 +414,7 @@ export default function CustomAnnouncementOverlay({ data }: Props) {
                         dir={isArabic(judge.designation) ? "rtl" : "ltr"}
                         className={`
                           mt-1 max-w-full overflow-visible tracking-wide text-neutral-700 relative z-10
-                          ${isArabic(judge.designation) ? 'font-ge-ss-two font-semibold text-[clamp(18px,2vw,36px)]' : 'font-poppins font-semibold text-[clamp(16px,1.8vw,32px)]'}
+                          ${isArabic(judge.designation) ? 'font-amiri font-semibold text-[clamp(18px,2vw,36px)]' : 'font-poppins font-semibold text-[clamp(16px,1.8vw,32px)]'}
                         `}
                       >
                         {judge.designation}

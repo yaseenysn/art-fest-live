@@ -102,7 +102,7 @@ export default function WinnerDesign4({
                         0{pos}
                       </div>
                       <div className="flex flex-col flex-1 min-w-0">
-                        <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
+                        <h3 className={`uppercase tracking-wide leading-none mb-3 break-words ${isArabic(names) ? 'font-amiri' : ''} ${isFirst ? 'font-black text-[clamp(28px,4vw,52px)]' : 'font-bold text-[clamp(20px,3vw,40px)] text-white/90'}`}>
                           {names}
                         </h3>
                         <div
