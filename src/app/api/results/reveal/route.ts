@@ -20,10 +20,11 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       return NextResponse.json({ error: 'Valid position is required' }, { status: 400 });
     }
 
-    // Mark results for this position as revealed (and placeRevealed / nameRevealed depending on stage)
-    const updateFields: Record<string, boolean> = { revealed: true, placeRevealed: true };
+    // Mark results for this position as placeRevealed and/or nameRevealed/revealed depending on stage
+    const updateFields: Record<string, boolean> = { placeRevealed: true };
     if (revealStage === 'WINNER') {
       updateFields.nameRevealed = true;
+      updateFields.revealed = true;
     }
     const updateRes = await Result.updateMany({ programId, position }, { $set: updateFields });
 

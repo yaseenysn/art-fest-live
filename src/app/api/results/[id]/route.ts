@@ -59,13 +59,12 @@ export const PUT = requireAdmin(async (req: NextRequest, { params }: { params: P
       return NextResponse.json({ error: 'Result not found' }, { status: 404 });
     }
     
-    // Recalculate rankings
+    // Recalculate rankings for Admin Dashboard
     const rankings = await getTeamRankings();
     
     // Emit events
     const io = getIO();
     if (io) {
-      await syncTVLeaderboardState();
       io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
       io.emit(SOCKET_EVENTS.RESULT_SAVED, [result]);
     }
@@ -91,13 +90,12 @@ export const DELETE = requireAdmin(async (req: NextRequest, { params }: { params
       return NextResponse.json({ error: 'Result not found' }, { status: 404 });
     }
     
-    // Recalculate rankings
+    // Recalculate rankings for Admin Dashboard
     const rankings = await getTeamRankings();
     
     // Emit events
     const io = getIO();
     if (io) {
-      await syncTVLeaderboardState();
       io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
       io.emit(SOCKET_EVENTS.RESULT_DELETED, { id, programId: result.programId });
     }

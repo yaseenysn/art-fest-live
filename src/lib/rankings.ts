@@ -85,8 +85,16 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
   const title = "OVERALL TEAM RANKINGS";
   const subtitle = "AL MAHSAN";
   
-  // Aggregate ALL points by team for the unified overall ranking
+  // Aggregate ONLY points from FULLY REVEALED results (nameRevealed / revealed) for the TV leaderboard score
   const teamScores = await Result.aggregate([
+    {
+      $match: {
+        $or: [
+          { nameRevealed: true },
+          { revealed: true }
+        ]
+      }
+    },
     { $group: { _id: '$teamId', totalPoints: { $sum: '$points' } } }
   ]);
   

@@ -91,11 +91,10 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       savedResults.push(savedResult);
     }
     
-    // Recalculate rankings & sync TV leaderboard
-    await syncTVLeaderboardState();
+    // Recalculate rankings for Admin Dashboard (TV score remains locked until revealed)
     const rankings = await getTeamRankings();
     
-    // Emit events
+    // Emit events for Dashboard update
     const io = getIO();
     if (io) {
       io.emit(SOCKET_EVENTS.SCORE_UPDATED, rankings);
