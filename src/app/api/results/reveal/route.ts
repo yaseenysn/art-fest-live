@@ -87,8 +87,8 @@ export const POST = requireAdmin(async (req: NextRequest) => {
         presentationDuration: displayDuration
       });
       
-      if (updateRes.modifiedCount > 0) {
-        // Synchronize the TV state with the newly revealed results
+      if (updateRes.matchedCount > 0) {
+        // Synchronize the TV state with the revealed results
         await syncTVLeaderboardState();
         // Emit updated rankings to clients
         const rankings = await getTeamRankings();
