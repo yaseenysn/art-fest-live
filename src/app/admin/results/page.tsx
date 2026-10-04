@@ -197,25 +197,36 @@ export default function ResultsEntry() {
     return [...programs].sort((a: IProgram, b: IProgram) => (a.programOrder || 0) - (b.programOrder || 0));
   }, [programs]);
 
+  const handleProgramSelect = (newProgramId: string) => {
+    setSelectedProgramId(newProgramId);
+    if (typeof window !== 'undefined' && newProgramId) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('programId', newProgramId);
+        window.history.replaceState(null, '', url.toString());
+      } catch (e) {}
+    }
+  };
+
   useEffect(() => {
     if (programs.length === 0) return;
 
-    let urlProgramId: string | null = null;
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      urlProgramId = params.get('programId') || params.get('id');
-    }
-
-    if (urlProgramId && programs.some((p: IProgram) => String(p._id) === urlProgramId)) {
-      if (selectedProgramId !== urlProgramId) {
-        setSelectedProgramId(urlProgramId);
+    if (!selectedProgramId || !programs.some((p: IProgram) => String(p._id) === selectedProgramId)) {
+      let urlProgramId: string | null = null;
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        urlProgramId = params.get('programId') || params.get('id');
       }
-    } else if (!selectedProgramId || !programs.some((p: IProgram) => String(p._id) === selectedProgramId)) {
-      const liveProgram = sortedPrograms.find((p: IProgram) => p.status === 'live');
-      if (liveProgram) {
-        setSelectedProgramId(String(liveProgram._id));
-      } else if (sortedPrograms.length > 0) {
-        setSelectedProgramId(String(sortedPrograms[0]._id));
+
+      if (urlProgramId && programs.some((p: IProgram) => String(p._id) === urlProgramId)) {
+        setSelectedProgramId(urlProgramId);
+      } else {
+        const liveProgram = sortedPrograms.find((p: IProgram) => p.status === 'live');
+        if (liveProgram) {
+          setSelectedProgramId(String(liveProgram._id));
+        } else if (sortedPrograms.length > 0) {
+          setSelectedProgramId(String(sortedPrograms[0]._id));
+        }
       }
     }
   }, [programs, selectedProgramId, sortedPrograms]);
@@ -764,7 +775,7 @@ export default function ResultsEntry() {
         <label className="block text-sm font-semibold text-text-primary mb-2">Select Live Program</label>
         <Select
           value={selectedProgramId}
-          onChange={(e: any) => setSelectedProgramId(e.target.value)}
+          onChange={(e: any) => handleProgramSelect(e.target.value)}
           wrapperClassName="w-full lg:w-1/2"
         >
           <option value="">-- Please select a program --</option>
