@@ -85,11 +85,8 @@ export async function generateLeaderboardConfig(type: string, options?: { startD
   const title = "OVERALL TEAM RANKINGS";
   const subtitle = "AL MAHSAN";
   
-  const matchQuery: any = { revealed: true };
-  
-  // Aggregate ALL points by team for the unified overall ranking (UNTOUCHED automatic calculation)
+  // Aggregate ALL points by team for the unified overall ranking
   const teamScores = await Result.aggregate([
-    { $match: matchQuery },
     { $group: { _id: '$teamId', totalPoints: { $sum: '$points' } } }
   ]);
   

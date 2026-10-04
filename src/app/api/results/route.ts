@@ -4,7 +4,7 @@ import connectDB from '@/lib/db';
 import { Result } from '@/models/Result';
 import { Program } from '@/models/Program';
 import { getIO, SOCKET_EVENTS } from '@/lib/socket';
-import { getTeamRankings } from '@/lib/rankings';
+import { getTeamRankings, syncTVLeaderboardState } from '@/lib/rankings';
 import { requireAdmin } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
@@ -91,7 +91,8 @@ export const POST = requireAdmin(async (req: NextRequest) => {
       savedResults.push(savedResult);
     }
     
-    // Recalculate rankings
+    // Recalculate rankings & sync TV leaderboard
+    await syncTVLeaderboardState();
     const rankings = await getTeamRankings();
     
     // Emit events

@@ -426,7 +426,7 @@ export default function ProgramsPage() {
                   
                   <div className="flex items-center space-x-3 shrink-0">
                     <Link
-                      href="/admin/results"
+                      href={`/admin/results?programId=${liveProgram._id}`}
                       className="flex items-center space-x-2 bg-card-secondary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-row transition-colors shadow-sm"
                     >
                       <Award className="w-4 h-4" />
@@ -653,7 +653,7 @@ export default function ProgramsPage() {
                           {program.status === 'live' && (
                             <>
                               <Link 
-                                href="/admin/results"
+                                href={`/admin/results?programId=${program._id}`}
                                 className="text-xs font-bold bg-card-secondary text-white px-3 py-1.5 rounded hover:bg-row transition-colors flex items-center"
                               >
                                 ENTER RESULT
@@ -669,7 +669,7 @@ export default function ProgramsPage() {
                           
                           {program.status === 'completed' && (
                             <Link 
-                              href="/admin/results"
+                              href={`/admin/results?programId=${program._id}`}
                               className="text-xs font-bold text-primary-indigo bg-primary-purple/10 border border-primary-purple/20 px-3 py-1.5 rounded hover:bg-primary-purple/20 transition-colors flex items-center"
                             >
                               <Eye className="w-3.5 h-3.5 mr-1" /> RESULT

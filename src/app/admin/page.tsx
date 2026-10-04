@@ -272,7 +272,7 @@ export default function AdminDashboard() {
                     <h3 className="text-xl font-bold mb-1 truncate text-white">{liveProg.name}</h3>
                     <p className="text-primary-indigo/80 text-sm mb-4 truncate font-medium">{liveProg.language || 'Other'} • {liveProg.category}</p>
                     <Link
-                      href="/admin/results"
+                      href={`/admin/results?programId=${liveProg._id}`}
                       className="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-sm font-semibold border border-white/10"
                     >
                       <Award className="w-4 h-4" />

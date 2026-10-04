@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IProgram, ITeam, IResult, EVENT_NAME, POSITION_DEFAULT_POINTS } from '@/types';
 import clsx from 'clsx';
@@ -155,32 +155,33 @@ export default function ResultsEntry() {
   const [resultRevealDisplayTime, setResultRevealDisplayTime] = useState<number>(15);
   const [allWinnersDisplayTime, setAllWinnersDisplayTime] = useState<number>(20);
 
+  // Sorted programs following exact persisted programOrder
+  const sortedPrograms = useMemo(() => {
+    return [...programs].sort((a: IProgram, b: IProgram) => (a.programOrder || 0) - (b.programOrder || 0));
+  }, [programs]);
+
   useEffect(() => {
-    if (programs.length > 0 && !selectedProgramId) {
-      const completedPrograms = programs.filter(p => p.status === 'completed');
-      if (completedPrograms.length > 0) {
-        completedPrograms.sort((a, b) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const timeA = new Date((a as any).updatedAt || a.createdAt || 0).getTime();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const timeB = new Date((b as any).updatedAt || b.createdAt || 0).getTime();
-          if (timeA !== timeB) return timeB - timeA;
-          return (b.programOrder || 0) - (a.programOrder || 0);
-        });
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelectedProgramId(String(completedPrograms[0]._id));
-      } else {
-        const livePrograms = programs.filter(p => p.status === 'live');
-        if (livePrograms.length > 0) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          setSelectedProgramId(String(livePrograms[0]._id));
-        } else if (programs.length > 0) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          setSelectedProgramId(String(programs[0]._id));
-        }
+    if (programs.length === 0) return;
+
+    let urlProgramId: string | null = null;
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      urlProgramId = params.get('programId') || params.get('id');
+    }
+
+    if (urlProgramId && programs.some((p: IProgram) => String(p._id) === urlProgramId)) {
+      if (selectedProgramId !== urlProgramId) {
+        setSelectedProgramId(urlProgramId);
+      }
+    } else if (!selectedProgramId || !programs.some((p: IProgram) => String(p._id) === selectedProgramId)) {
+      const liveProgram = sortedPrograms.find((p: IProgram) => p.status === 'live');
+      if (liveProgram) {
+        setSelectedProgramId(String(liveProgram._id));
+      } else if (sortedPrograms.length > 0) {
+        setSelectedProgramId(String(sortedPrograms[0]._id));
       }
     }
-  }, [programs, selectedProgramId]);
+  }, [programs, selectedProgramId, sortedPrograms]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -730,13 +731,7 @@ export default function ResultsEntry() {
           wrapperClassName="w-full lg:w-1/2"
         >
           <option value="">-- Please select a program --</option>
-          {programs
-            .sort((a, b) => {
-              if (a.status === 'live' && b.status !== 'live') return -1;
-              if (a.status !== 'live' && b.status === 'live') return 1;
-              return (a.programOrder || 0) - (b.programOrder || 0);
-            })
-            .map(p => (
+          {sortedPrograms.map((p: IProgram) => (
             <option key={String(p._id)} value={String(p._id)}>
               {p.name} ({p.category}) {p.status === 'live' ? ' 🔴 LIVE' : ''}
             </option>
