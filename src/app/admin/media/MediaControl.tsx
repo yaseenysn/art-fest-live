@@ -136,13 +136,26 @@ export default function MediaControl() {
     }
   };
 
+  const [lastSelectedImageDuration, setLastSelectedImageDuration] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('last_selected_image_duration');
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return 15;
+  });
+
   const addToPlaylist = (media: MediaItem) => {
     setPlaylist(prev => [
       ...prev,
       {
         id: crypto.randomUUID(),
         media,
-        imageDuration: 15, // default 15s for images
+        imageDuration: lastSelectedImageDuration,
         rotation: libraryRotations[media._id] || 0
       }
     ]);
@@ -179,6 +192,10 @@ export default function MediaControl() {
   };
 
   const updateImageDuration = (id: string, duration: number) => {
+    setLastSelectedImageDuration(duration);
+    try {
+      localStorage.setItem('last_selected_image_duration', duration.toString());
+    } catch (e) {}
     setPlaylist(prev => prev.map(item => item.id === id ? { ...item, imageDuration: duration } : item));
   };
 

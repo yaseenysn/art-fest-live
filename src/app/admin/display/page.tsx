@@ -17,7 +17,25 @@ const isArabic = (text?: string) => /[\u0600-\u06FF]/.test(text || '');
 export default function DisplayControl() {
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
-  const [duration, setDuration] = useState(10);
+  const [duration, setDurationState] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('last_selected_announcement_duration');
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return 10;
+  });
+
+  const setDuration = (d: number) => {
+    setDurationState(d);
+    try {
+      localStorage.setItem('last_selected_announcement_duration', d.toString());
+    } catch (e) {}
+  };
   const [status, setStatus] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [sending, setSending] = useState(false);
   const [isResetConfirmModalOpen, setIsResetConfirmModalOpen] = useState(false); // To avoid conflict if we just renamed

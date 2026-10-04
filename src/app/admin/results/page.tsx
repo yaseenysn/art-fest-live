@@ -151,9 +151,46 @@ export default function ResultsEntry() {
   const [generatedAllWinnersPosterUrl, setGeneratedAllWinnersPosterUrl] = useState<string | null>(null);
   const [isGeneratingAllWinnersPoster, setIsGeneratingAllWinnersPoster] = useState(false);
 
-  // TV Display Durations
-  const [resultRevealDisplayTime, setResultRevealDisplayTime] = useState<number>(15);
-  const [allWinnersDisplayTime, setAllWinnersDisplayTime] = useState<number>(20);
+  // TV Display Durations (persist and carry forward last selected duration)
+  const [resultRevealDisplayTime, setResultRevealDisplayTimeState] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('last_selected_result_reveal_duration');
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return 15;
+  });
+
+  const [allWinnersDisplayTime, setAllWinnersDisplayTimeState] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('last_selected_all_winners_duration');
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return 20;
+  });
+
+  const setResultRevealDisplayTime = (time: number) => {
+    setResultRevealDisplayTimeState(time);
+    try {
+      localStorage.setItem('last_selected_result_reveal_duration', time.toString());
+    } catch (e) {}
+  };
+
+  const setAllWinnersDisplayTime = (time: number) => {
+    setAllWinnersDisplayTimeState(time);
+    try {
+      localStorage.setItem('last_selected_all_winners_duration', time.toString());
+    } catch (e) {}
+  };
 
   // Sorted programs following exact persisted programOrder
   const sortedPrograms = useMemo(() => {
