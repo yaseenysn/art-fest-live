@@ -330,6 +330,16 @@ export default function FinalTeamReveal({
     };
   }, [stage, active]);
 
+  useEffect(() => {
+    if (stage !== "final" || !active || !onComplete) return;
+
+    const timer = setTimeout(() => {
+      onComplete();
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [stage, active, onComplete]);
+
   return (
     <div
       className="

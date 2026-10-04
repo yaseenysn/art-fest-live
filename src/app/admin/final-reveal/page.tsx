@@ -54,18 +54,9 @@ export default function FinalRevealAdminPage() {
   const [isStarting, setIsStarting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [previewPosition, setPreviewPosition] = useState<number>(1);
   
   const queryClient = useQueryClient();
-
-  // Fetch TV State
-  const { data: tvState, refetch: refetchTvState } = useQuery<any>({
-    queryKey: ['tvState'],
-    queryFn: async () => {
-      const res = await fetch('/api/tv-state');
-      if (!res.ok) throw new Error('Failed to fetch TV state');
-      return res.json();
-    }
-  });
 
   // Fetch Existing Teams
   const { data: dbTeams = [], isLoading: isLoadingTeams } = useQuery<any[]>({
@@ -73,6 +64,23 @@ export default function FinalRevealAdminPage() {
     queryFn: async () => {
       const res = await fetch('/api/teams');
       if (!res.ok) throw new Error('Failed to fetch teams');
+      return res.json();
+    }
+  });
+
+  const getTeamForPos = (pos: number) => {
+    const teamId = Object.keys(positions).find(id => positions[id] === pos);
+    return dbTeams.find(t => t._id === teamId);
+  };
+
+  const previewTeam = getTeamForPos(previewPosition);
+
+  // Fetch TV State
+  const { data: tvState, refetch: refetchTvState } = useQuery<any>({
+    queryKey: ['tvState'],
+    queryFn: async () => {
+      const res = await fetch('/api/tv-state');
+      if (!res.ok) throw new Error('Failed to fetch TV state');
       return res.json();
     }
   });
@@ -293,8 +301,8 @@ export default function FinalRevealAdminPage() {
                     {!isActiveOnTv ? (
                       <div className="flex flex-col sm:flex-row gap-3">
                         <button
-                          onClick={() => setIsPreviewModalOpen(true)}
-                          disabled={!isFormValid || !teamForNextReveal}
+                          onClick={() => { setPreviewPosition(1); setIsPreviewModalOpen(true); }}
+                          disabled={!isFormValid}
                           className="py-4 px-6 rounded-xl font-bold text-sm tracking-wider transition-all bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 flex items-center justify-center space-x-2 uppercase shadow-sm disabled:opacity-50"
                         >
                           <Eye className="w-5 h-5" />
@@ -369,7 +377,7 @@ export default function FinalRevealAdminPage() {
                   <span>FINAL TEAM REVEAL PREVIEW</span>
                 </h2>
                 <p className="text-sm text-text-muted mt-1 uppercase tracking-wide">
-                  {getOrdinal(nextToReveal)} PLACE • {teamForNextReveal?.name || 'Selected Team'}
+                  {getOrdinal(previewPosition)} PLACE • {previewTeam?.name || 'Selected Team'}
                 </p>
               </div>
               <button
@@ -380,38 +388,91 @@ export default function FinalRevealAdminPage() {
               </button>
             </div>
 
+            {/* Position Indicators */}
+            <div className="flex flex-wrap items-center justify-center gap-2 border-b border-border-card pb-4">
+              {[1, 2, 3, 4].map((pos) => {
+                const team = getTeamForPos(pos);
+                const isCurrent = previewPosition === pos;
+                return (
+                  <button
+                    key={pos}
+                    onClick={() => setPreviewPosition(pos)}
+                    className={clsx(
+                      "px-3 py-1.5 rounded-lg font-bold text-xs uppercase tracking-wider transition flex items-center space-x-2 border",
+                      isCurrent
+                        ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
+                        : "bg-slate-800/80 border-slate-700 text-text-muted hover:bg-slate-700 hover:text-white"
+                    )}
+                  >
+                    <span>{getOrdinal(pos)} PLACE</span>
+                    {team && <span className="opacity-75 text-[10px]">({team.name})</span>}
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Live 16:9 Scaled TV Preview Container */}
             <ResultRevealPreviewBox>
               <div className="w-full h-full relative [&>div]:!absolute [&>div]:!w-full [&>div]:!h-full [&>div]:!inset-0 [&>div]:!top-0 [&>div]:!left-0 [&>div]:!right-0 [&>div]:!bottom-0">
                 <FinalTeamReveal
-                  key={`preview-${nextToReveal}-${teamForNextReveal?._id || 'team'}`}
-                  teamName={teamForNextReveal?.name || 'Team Name'}
-                  position={nextToReveal}
+                  key={`preview-${previewPosition}-${previewTeam?._id || 'team'}`}
+                  teamName={previewTeam?.name || 'Team Name'}
+                  position={previewPosition}
                   active={true}
+                  onComplete={() => {
+                    if (previewPosition < 4) {
+                      setPreviewPosition(prev => prev + 1);
+                    }
+                  }}
                 />
               </div>
             </ResultRevealPreviewBox>
 
             {/* Action Footer */}
-            <div className="flex flex-col sm:flex-row justify-end items-center gap-3 pt-2">
-              <button
-                onClick={() => setIsPreviewModalOpen(false)}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition uppercase"
-              >
-                CLOSE PREVIEW
-              </button>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setPreviewPosition(prev => Math.max(1, prev - 1))}
+                  disabled={previewPosition <= 1}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-white text-xs font-bold transition uppercase"
+                >
+                  ◀ PREV
+                </button>
+                <button
+                  onClick={() => setPreviewPosition(1)}
+                  className="px-4 py-2 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 text-xs font-bold transition uppercase"
+                >
+                  REPLAY (1ST-4TH)
+                </button>
+                <button
+                  onClick={() => setPreviewPosition(prev => Math.min(4, prev + 1))}
+                  disabled={previewPosition >= 4}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-white text-xs font-bold transition uppercase"
+                >
+                  NEXT ▶
+                </button>
+              </div>
 
-              <button
-                onClick={async () => {
-                  await handleStartNextReveal();
-                  setIsPreviewModalOpen(false);
-                }}
-                disabled={isStarting || !isFormValid || !teamForNextReveal}
-                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black tracking-wider transition shadow-lg shadow-emerald-600/30 uppercase flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                <MonitorPlay className="w-5 h-5 mr-1" />
-                <span>SHOW ON TV</span>
-              </button>
+              <div className="flex items-center space-x-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setIsPreviewModalOpen(false)}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition uppercase"
+                >
+                  CLOSE PREVIEW
+                </button>
+
+                <button
+                  onClick={async () => {
+                    await handleStartNextReveal();
+                    setIsPreviewModalOpen(false);
+                  }}
+                  disabled={isStarting || !isFormValid || !teamForNextReveal}
+                  className="w-full sm:w-auto px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black tracking-wider transition shadow-lg shadow-emerald-600/30 uppercase flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <MonitorPlay className="w-5 h-5 mr-1" />
+                  <span>SHOW ON TV</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
